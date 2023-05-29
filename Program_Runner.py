@@ -1,36 +1,32 @@
 import enum
 import seaborn as sns
-from Data_Processor import DataProcessor
+from data_handling.Data_Processor import DataProcessor
 sns.set_theme(style="ticks", color_codes=True)
 
 
 # -------------------- PATHS -------------------- #
-from constants import PATH_TO_RAW_DATA,PATH_TO_RAW_DATA_6_PARAMS, SAVE_DATA_PATH, SUBJECTS_INFO_PATH, SAVE_DATA_OF_ALL_Z_SCORE_MEANS, \
-    SAVE_DATA_OF_ADULTS_Z_SCORE_MEANS, SAVE_DATA_OF_YOUNG_Z_SCORE_MEANS, PATH_TO_RAW_DATA_Z_SCORED, \
+from constants import PATH_TO_RAW_DATA,PATH_TO_RAW_DATA_6_PARAMS, SAVE_DATA_PATH, PATH_TO_RAW_DATA_Z_SCORED, \
     PATH_TO_RAW_DATA_ROBUST_SCALED
 
 # -------------------- File Names -------------------- #
-from constants import HIERARCHICAL_CLUSTERING_FILE
 
 # -------------------- Folders ---------------------- #
 from constants import Z_SCORE_ON_AVG_ON_BRAIN_DIR, Z_SCORE_ON_BRAIN_DIR, NORMALIZE_BY_MEDIAN_DIR, \
-    MEANS_ON_BRAIN_DIR, STD_OF_PARAMS_BRAIN_DIR
+    MEANS_ON_BRAIN_DIR
 
 # -------------------- ROIs -------------------- #
-from constants import SUB_CORTEX_DICT, ROI_PUTAMEN_CAUDETE, ROI_PUTAMEN_THALAMUS, \
-    ROI_AMYGDALA_HIPPOCAMPUS, ROI_PALLIDUM_PUTAMEN_CAUDETE, ROI_ACCUM_HIPPO_AMYG, DICT_NUM_TO_ROIS
+from constants import SUB_CORTEX_DICT
 
 # -------------- Sub Folders - by ROIS ------------- #
-from constants import PUTAMEN_CAUDETE_DIR, PALLIDUM_PUTAMEN_CAUDETE_DIR, AMYGDALA_HIPPOCAMPUS_DIR
 
 # -------------- Sub Folders - by Raw Data Type ------------- #
 from constants import RAW_DATA_DIR, RAW_DATA_ROBUST_SCALED_DIR, RAW_DATA_Z_SCORED_DIR
 
 # -------------- Type of Raw Data ------------- #
-from constants import RAW_DATA, Z_SCORE, ROBUST_SCALING, RAW_DATA_6_PARAMS, DICT_NUM_TO_METHOD
+from constants import RAW_DATA, Z_SCORE, ROBUST_SCALING, RAW_DATA_6_PARAMS
 
 # -------------------- MRI Physical Parameters -------------------- #
-from constants import BASIC_4_PARAMS, PARAMETERS, PARAMETERS_W_D_TV_R1_AND_R2S, PARAMS_OF_SLOPES
+from constants import PARAMETERS
 
 # -------------------- Magic Number -------------------- #
 from constants import OLD, YOUNG, AGE_THRESHOLD
@@ -40,7 +36,7 @@ from constants import T_TEST, HIERARCHICAL_CLUSTERING_WITH_CORRELATIONS, SD_PER_
     PLOT_DATA_PER_ROI_PER_SUBJET_WITH_ALL_PARAMS
 
 # ------------------- Statistics funcs on processed data - adding normalizer/means ---------------------- #
-from Statistics import StatisticsWrapper
+from statistics_methods.Statistics import StatisticsWrapper
 
 
 # -------------------- Enums for statistical actions -------------------- #
