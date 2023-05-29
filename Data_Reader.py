@@ -7,7 +7,8 @@ import glob
 from re import search
 from sklearn.preprocessing import RobustScaler
 from sklearn.linear_model import LinearRegression
-import matplotlib.pyplot as plt
+
+
 # -------------------- MAPS and Segmentations paths -------------------- #
 from constants import R1, R2S, MT, TV, T2, DIFFUSION,\
                       MAP_DIFFUSION, MAP_MT, MAP_TV, MAP_R1, MAP_T2, MAP_R2S,\
@@ -201,6 +202,7 @@ class DataReader:
                 continue
             else:
                 return -1, -1
+
 
         return measures, seg_dict
 
