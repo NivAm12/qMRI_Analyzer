@@ -15,7 +15,7 @@ from constants import Z_SCORE_ON_AVG_ON_BRAIN_DIR, Z_SCORE_ON_BRAIN_DIR, NORMALI
     MEANS_ON_BRAIN_DIR
 
 # -------------------- ROIs -------------------- #
-from constants import SUB_CORTEX_DICT
+from constants import SUB_CORTEX_DICT, ROI_PALLIDUM_PUTAMEN_CAUDETE
 
 # -------------- Sub Folders - by ROIS ------------- #
 
@@ -121,7 +121,7 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
         elif func == SD_PER_PARAMETER:
             StatisticsWrapper.computed_std_per_parameter(young_subjects, old_subjects, params_to_work_with,
                                                          list(ROIs_to_analyze.keys()), group_a_name, group_b_name,
-                                                         save_address, visualize=True)
+                                                         save_address, log=True)
 
         elif func == HIERARCHICAL_CLUSTERING_WITH_CORRELATIONS:
             StatisticsWrapper.calculate_correlation_per_data(chosen_data, params_to_work_with, ROIs_to_analyze, "ALL",
@@ -130,7 +130,6 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
                                                              group_a_name, save_address + "/" + group_a_name + "/")
             StatisticsWrapper.calculate_correlation_per_data(old_subjects, params_to_work_with, ROIs_to_analyze,
                                                              group_b_name, save_address + "/" + group_b_name + "/")
-
 
         elif func == PLOT_DATA_PER_ROI_PER_SUBJET_WITH_ALL_PARAMS:
             StatisticsWrapper.plot_values_per_parameter_per_roi(chosen_data, params_to_work_with, list(ROIs_to_analyze),
@@ -203,11 +202,10 @@ def run():
     raw_data_path = RAW_DATA_NORMALIZER_PATH[raw_data_type]
 
     # Change Here the rois you would like to work with
-    chosen_rois_dict = SUB_CORTEX_DICT
+    chosen_rois_dict = ROI_PALLIDUM_PUTAMEN_CAUDETE
 
     # Change here the Statistics funcs to run
-    funcs_to_run = [PLOT_DATA_PER_ROI_PER_SUBJET_WITH_ALL_PARAMS, T_TEST, PLOT_DATA_PER_PARAM,
-                    SD_PER_PARAMETER, HIERARCHICAL_CLUSTERING_WITH_CORRELATIONS]
+    funcs_to_run = [SD_PER_PARAMETER]
 
     # Choose here the parameters to work with in the data
     params_to_work_with = PARAMETERS
