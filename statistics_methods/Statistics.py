@@ -7,7 +7,8 @@ import scipy.stats as stats
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr, spearmanr
 from typing import List, Dict, Any, Tuple
-
+import wandb
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 # -------------------- PATHS -------------------- #
 from constants import PATH_TO_RAW_DATA, SAVE_DATA_PATH, SUBJECTS_INFO_PATH, SAVE_DATA_OF_ALL_Z_SCORE_MEANS, \
@@ -149,7 +150,7 @@ class StatisticsWrapper:
         # mean_per_subject_per_roi_per_param[PARAMETERS] = mean_per_subject_per_roi_per_param[PARAMETERS].apply(lambda x: stats.zscore(x.groupby('subjects'))[PARAMETERS])
         # mean_per_subject_per_roi_per_param[PARAMETERS] = mean_per_subject_per_roi_per_param[PARAMETERS].apply(lambda x: stats.zscore(x)) #TODO: SUPER IMPORTNAT NOT GOOD! NEED TO BE FIXED SINCE IT IS DOING ZSCORE ON ALL DATA PER PARAm AND NOT PER SUBJECT!!
         mean_per_subject_per_roi_per_param[params] = mean_per_subject_per_roi_per_param[params + ['subjects']].groupby(
-                                                                                        "subjects").apply(stats.zscore)
+            "subjects").apply(stats.zscore)
         # TODO apply zscore function on all means of all keys!
         return mean_per_subject_per_roi_per_param
 
@@ -264,8 +265,9 @@ class StatisticsWrapper:
                           results)
 
     @staticmethod
-    def plot_values_of_two_groups_per_roi(ROIs, info_per_ROI_per_param1: List[int], info_per_ROI_per_param2 :List[int],
-                                          param, name_group_a, name_group_b, save_address: str, info_name: str):
+    def plot_values_of_two_groups_per_roi(ROIs, info_per_ROI_per_param1: List[int], info_per_ROI_per_param2: List[int],
+                                          param, name_group_a, name_group_b, save_address: str, info_name: str,
+                                          save: bool = False):
         """
         Plot values of two groups (for example given SD/Means of all values per ROI)
         :param ROIs: given ROIs to check
@@ -286,14 +288,17 @@ class StatisticsWrapper:
         plt.legend([f'{name_group_a}', f'{name_group_b}'])
         plt.ylabel(f"{info_name}")
         plt.xlabel("ROIs")
-        if not os.path.exists(save_address + f"/{info_name} /"):
-            os.makedirs(save_address + f"/{info_name} /")
-        plt.savefig(save_address + f"/{info_name} /" + f"{param}_distribution" + '.png')
-        plt.show()
+
+        if save:
+            if not os.path.exists(save_address + f"/{info_name} /"):
+                os.makedirs(save_address + f"/{info_name} /")
+
+            plt.savefig(save_address + f"/{info_name} /" + f"{param}_distribution" + '.png')
+            plt.show()
 
     @staticmethod
     def computed_std_per_parameter(data1, data2, parameters, ROIS, name_group_a, name_group_b, save_address,
-                                   visualize=False):
+                                   visualize=False, log=False):
         """
         Computes SD per parameter per ROI for young and adults.
         :param data1: group a data
@@ -307,16 +312,26 @@ class StatisticsWrapper:
         :return:
         """
         for param in parameters:
+            wandb_run = wandb.init(
+                project='qmri',
+                name=f'{param}_std'
+            )
+
             std_per_ROI_per_param1 = []
             std_per_ROI_per_param2 = []
             for ROI in ROIS:
                 std_per_ROI_per_param1.append(data1[param][data1['ROI'] == ROI].std())
                 std_per_ROI_per_param2.append(data2[param][data2['ROI'] == ROI].std())
 
-            if visualize == True:
-                StatisticsWrapper.plot_values_of_two_groups_per_roi(ROIS, std_per_ROI_per_param1,
-                                                                    std_per_ROI_per_param2, param, name_group_a,
-                                                                    name_group_b, save_address, "Standard Deviation")
+            StatisticsWrapper.plot_values_of_two_groups_per_roi(ROIS, std_per_ROI_per_param1,
+                                                                std_per_ROI_per_param2, param, name_group_a,
+                                                                name_group_b, save_address,
+                                                                "Standard Deviation",
+                                                                save=visualize)
+            if log:
+                wandb_run.log({f'{param}_std': wandb.Image(plt)})
+                wandb_run.finish()
+                plt.close()
 
     @staticmethod
     def plot_data_per_param_per_roi_next_to_each_other(data1, data2, name_group_a, name_group_b, save_address):
