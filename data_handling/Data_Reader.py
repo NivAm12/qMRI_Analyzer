@@ -30,7 +30,6 @@ FILE_NAME_Z_SCORE_ON_BRAIN = "raw_data_z_score_on_brain3"
 FILE_NAME_DMEDIAN = "raw_data_robust_scaling3"
 
 
-
 def HUJI_subjects_preprocess(analysisDir):
     """
     # Description: preprocesses HUJI subjects by the consensus in the lab
@@ -155,7 +154,6 @@ class DataReader:
             self.add_derivative_params_to_data()
         self.data_extracted = True
 
-
     def save_in_pickle_raw_data(self, save_address):
         """
         Save the extracted data as a pickle.
@@ -180,20 +178,20 @@ class DataReader:
         measures = {}
         seg_dict = {}
         for param_name in self.qmri_params.keys():
-            paramFile = os.path.join(sub_path, self.qmri_params[param_name][0])
-            segfile = os.path.join(sub_path, self.qmri_params[param_name][1])
-            if not os.path.isfile(paramFile) or not os.path.isfile(segfile):
+            param_file = os.path.join(sub_path, self.qmri_params[param_name][0])
+            seg_file = os.path.join(sub_path, self.qmri_params[param_name][1])
+            if not os.path.isfile(param_file) or not os.path.isfile(seg_file):
                 return -1, -1  # -1 acts as a return code
-            seg = nib.load(segfile)
+            seg = nib.load(seg_file)
             seg = seg.get_fdata()
             seg_dict[param_name] = seg
+
+            param_data = nib.load(param_file).get_fdata()
+
             if param_name == 'r1':
-                t1 = nib.load(paramFile)
-                r1 = 1 / t1.get_fdata()  # todo: problem with zero division, change later
+                r1 = 1 / param_data  # todo: problem with zero division, change later
                 param_data = np.nan_to_num(r1, posinf=0.0, neginf=0.0)
-            else:
-                param_data = nib.load(paramFile)
-                param_data = param_data.get_fdata()
+
             measures[param_name] = param_data
 
             if param_data.shape == (181, 217, 181) or \
@@ -389,7 +387,6 @@ class DataReader:
                             self.derive_param_with_another_param(params_as_x_y)
 
 
-
 def main():
     # The input dir containing all data of the subjects after MRI screening
     analysisDir = '/ems/elsc-labs/mezer-a/Mezer-Lab/analysis/HUJI/Calibration/Human'
@@ -425,9 +422,8 @@ def main():
 
     # ---- RUN the Reader
     reader = DataReader(analysisDir, rois, params, choose_normalizer, derivative_dict, range_for_tv_default)
-    # reader = DataReader(analysisDir, rois, params, choose_normalizer)
     reader.extract_data()
-    reader.save_in_pickle_raw_data(SAVE_ADDRESS + normalizer_file_name[choose_normalizer])
+    # reader.save_in_pickle_raw_data(SAVE_ADDRESS + normalizer_file_name[choose_normalizer])
 
 
 if __name__ == "__main__":
