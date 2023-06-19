@@ -194,13 +194,10 @@ class DataReader:
 
             measures[param_name] = param_data
 
-            if param_data.shape == (181, 217, 181) or \
-                    param_data.shape == (121, 145, 121) or \
-                    param_data.shape == (128, 100, 60):
-                continue
-            else:
-                return -1, -1
+            valid_shapes = [(181, 217, 181), (121, 145, 121), (128, 100, 60)]
 
+            if param_data.shape not in valid_shapes:
+                return -1, -1
 
         return measures, seg_dict
 
@@ -253,13 +250,13 @@ class DataReader:
 
             mea_masked = measures[param_name][roimask]  # slice to only include values with the same label,
             # keeps array only of values in a specific roi
-            if how_to_normalize == None:
+            if how_to_normalize is None:
                 non_zeroes = np.where(mea_masked > 0)
             else:
                 non_zeroes = np.where(mea_masked != np.inf)
             sub_measure[roi] = mea_masked[non_zeroes]
 
-            ## Just in order to see the distribution of the voxels data per roi you can run this:
+            # # Just in order to see the distribution of the voxels data per roi you can run this:
             # plt.hist(sub_measure[roi], bins=20)
             # plt.title(f"{how_to_normalize},{measure_idx}")
             # plt.show()
