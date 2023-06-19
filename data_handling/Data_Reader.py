@@ -12,7 +12,7 @@ from sklearn.linear_model import LinearRegression
 # -------------------- MAPS and Segmentations paths -------------------- #
 from constants import R1, R2S, MT, TV, T2, DIFFUSION,\
                       MAP_DIFFUSION, MAP_MT, MAP_TV, MAP_R1, MAP_T2, MAP_R2S,\
-                      SEG_DIFFUSION, SEG_T2, BASIC_SEG
+                      SEG_DIFFUSION, SEG_T2, BASIC_SEG, CORTEX
 
 
 # -------------------- Statistical Methods Names -------------------- #
@@ -150,8 +150,8 @@ class DataReader:
             name_idx += 1
             self.all_subjects_raw_data.append((self.add_all_info_of_param_per_subject(measures, seg_dict)))
         self.subject_names = sub_names
-        if self.derivative_params:
-            self.add_derivative_params_to_data()
+        # if self.derivative_params:
+        #     self.add_derivative_params_to_data()
         self.data_extracted = True
 
     def save_in_pickle_raw_data(self, save_address):
@@ -163,6 +163,7 @@ class DataReader:
         if self.data_extracted:
             all_subjects = pd.DataFrame(self.all_subjects_raw_data,
                                         index=self.subject_names)
+
             all_subjects.to_pickle(save_address)
         else:
             raise ("Data Not Extracted, Please Extract Data First! (DataReader object. extract_data())")
@@ -282,10 +283,6 @@ class DataReader:
             subject_params[param_name] = sub_measure
         return subject_params
 
-
-
-
-
     #TODO: CHANGE HERE TO GET ALL IDX AND THEN COMPARE THEM WITH ANOTHER PARAM SEE IF THERE IS A DIFFERENT IN THE NUM OF IDXs!
     def add_all_info_idx_of_param_per_subject(self, measures, seg):
         subject_params = {} #[[]] * len(measures)
@@ -389,11 +386,12 @@ def main():
     analysisDir = '/ems/elsc-labs/mezer-a/Mezer-Lab/analysis/HUJI/Calibration/Human'
 
     # Can be changed - list of all ROIs' numbers from the segmentation
-    rois = [10, 11, 12, 13, 17, 18, 26, 49, 50, 51, 52, 53, 54, 58]  # subcortical regions left and right
+    # rois = [10, 11, 12, 13, 17, 18, 26, 49, 50, 51, 52, 53, 54, 58]  # subcortical regions left and right
+    rois = list(CORTEX.keys())
 
     # Can be changed - this is the save address for the output
     save_address = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means/' \
-                   'subcortical_updated/with_R1/'
+                   'cortical_areas/'
 
     # Can be changed - using other params - make sure to add another parameter as a name, and tuple of the
     # full path to the map of the parameter and the full path to the compatible segmentation
@@ -409,7 +407,7 @@ def main():
                             ROBUST_SCALING: FILE_NAME_DMEDIAN}
 
     # ---- Here You Can Change the sort of normalizer ---- #
-    choose_normalizer = None
+    choose_normalizer = Z_SCORE
 
     # ---- Here you can change the derivative_dict
     derivative_dict = {TV: [R1, R2S]}
@@ -420,7 +418,7 @@ def main():
     # ---- RUN the Reader
     reader = DataReader(analysisDir, rois, params, choose_normalizer, derivative_dict, range_for_tv_default)
     reader.extract_data()
-    # reader.save_in_pickle_raw_data(SAVE_ADDRESS + normalizer_file_name[choose_normalizer])
+    reader.save_in_pickle_raw_data(save_address + normalizer_file_name[choose_normalizer])
 
 
 if __name__ == "__main__":

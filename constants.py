@@ -13,6 +13,9 @@ PATH_TO_RAW_DATA_ROBUST_SCALED = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code
 PATH_TO_RAW_DATA_Z_SCORED = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means" \
                             "/subcortical_updated/with_R1/raw_data_of_subjects/raw_data_z_score_on_brain3"
 
+PATH_TO_CORTEX_Z_SCORED = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means" \
+                            "/cortical_areas/raw_data_z_score_on_brain3"
+
 SUBJECTS_INFO_PATH = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/subjects_info.csv"
 
 # ---------------- Paths to output data ----------------- #

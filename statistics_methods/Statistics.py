@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import pearsonr, spearmanr
 from typing import List, Dict, Any, Tuple
 import wandb
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+
 
 # -------------------- PATHS -------------------- #
 from constants import PATH_TO_RAW_DATA, SAVE_DATA_PATH, SUBJECTS_INFO_PATH, SAVE_DATA_OF_ALL_Z_SCORE_MEANS, \
@@ -298,7 +298,7 @@ class StatisticsWrapper:
 
     @staticmethod
     def computed_std_per_parameter(data1, data2, parameters, ROIS, name_group_a, name_group_b, save_address,
-                                   visualize=False, log=False):
+                                   visualize=False, log=False, project_name=None):
         """
         Computes SD per parameter per ROI for young and adults.
         :param data1: group a data
@@ -313,7 +313,7 @@ class StatisticsWrapper:
         """
         for param in parameters:
             wandb_run = wandb.init(
-                project='qmri',
+                project=project_name,
                 name=f'{param}_std'
             )
 
