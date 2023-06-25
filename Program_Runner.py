@@ -5,8 +5,8 @@ sns.set_theme(style="ticks", color_codes=True)
 
 
 # -------------------- PATHS -------------------- #
-from constants import PATH_TO_RAW_DATA,PATH_TO_RAW_DATA_6_PARAMS, SAVE_DATA_PATH, PATH_TO_RAW_DATA_Z_SCORED, \
-    PATH_TO_RAW_DATA_ROBUST_SCALED, PATH_TO_CORTEX_Z_SCORED
+from constants import PATH_TO_FRONTAL_CORTEX_NO_NORMAL,PATH_TO_RAW_DATA_6_PARAMS, SAVE_DATA_PATH, PATH_TO_RAW_DATA_Z_SCORED, \
+    PATH_TO_RAW_DATA_ROBUST_SCALED, PATH_TO_FRONTAL_CORTEX_Z_SCORED
 
 # -------------------- File Names -------------------- #
 
@@ -15,7 +15,7 @@ from constants import Z_SCORE_ON_AVG_ON_BRAIN_DIR, Z_SCORE_ON_BRAIN_DIR, NORMALI
     MEANS_ON_BRAIN_DIR
 
 # -------------------- ROIs -------------------- #
-from constants import SUB_CORTEX_DICT, ROI_PALLIDUM_PUTAMEN_CAUDETE, CORTEX
+from constants import SUB_CORTEX_DICT, ROI_PALLIDUM_PUTAMEN_CAUDETE, ROI_CORTEX, ROI_FRONTAL_CORTEX
 
 # -------------- Sub Folders - by ROIS ------------- #
 
@@ -48,7 +48,7 @@ class Actions(enum.Enum):
 
 
 # -------------- Dictionaries of raw_data_type to their input path and output Dir ------------- #
-RAW_DATA_NORMALIZER_PATH = {RAW_DATA: PATH_TO_RAW_DATA, Z_SCORE: PATH_TO_CORTEX_Z_SCORED,
+RAW_DATA_NORMALIZER_PATH = {RAW_DATA: PATH_TO_FRONTAL_CORTEX_NO_NORMAL, Z_SCORE: PATH_TO_FRONTAL_CORTEX_Z_SCORED,
                             ROBUST_SCALING: PATH_TO_RAW_DATA_ROBUST_SCALED, RAW_DATA_6_PARAMS: PATH_TO_RAW_DATA_6_PARAMS}
 
 RAW_DATA_NORMALIZER_OUTPUT_DIR = {RAW_DATA: RAW_DATA_DIR, Z_SCORE: RAW_DATA_Z_SCORED_DIR,
@@ -121,7 +121,7 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
         elif func == SD_PER_PARAMETER:
             StatisticsWrapper.computed_std_per_parameter(young_subjects, old_subjects, params_to_work_with,
                                                          list(ROIs_to_analyze.keys()), group_a_name, group_b_name,
-                                                         save_address, log=True, project_name='qmri_z_score_cortical')
+                                                         save_address, log=True, project_name='qmri_raw_data_frontal_cortex')
 
         elif func == HIERARCHICAL_CLUSTERING_WITH_CORRELATIONS:
             StatisticsWrapper.calculate_correlation_per_data(chosen_data, params_to_work_with, ROIs_to_analyze, "ALL",
@@ -148,7 +148,7 @@ def run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_
     :return: None
     """
     # Process Data
-    subjects_raw_data = DataProcessor(raw_data_path, CORTEX, chosen_rois_dict).get_data_proccessed()
+    subjects_raw_data = DataProcessor(raw_data_path, ROI_FRONTAL_CORTEX, chosen_rois_dict).get_data_proccessed()
 
     # Choose Statistics
     statistics_func = ACTION_FUNCTION_DICT[pattern]
@@ -202,7 +202,7 @@ def run():
     raw_data_path = RAW_DATA_NORMALIZER_PATH[raw_data_type]
 
     # Change Here the rois you would like to work with
-    chosen_rois_dict = CORTEX
+    chosen_rois_dict = ROI_FRONTAL_CORTEX
 
     # Change here the Statistics funcs to run
     funcs_to_run = [SD_PER_PARAMETER]

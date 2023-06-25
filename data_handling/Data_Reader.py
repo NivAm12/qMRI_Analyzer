@@ -12,7 +12,7 @@ from sklearn.linear_model import LinearRegression
 # -------------------- MAPS and Segmentations paths -------------------- #
 from constants import R1, R2S, MT, TV, T2, DIFFUSION,\
                       MAP_DIFFUSION, MAP_MT, MAP_TV, MAP_R1, MAP_T2, MAP_R2S,\
-                      SEG_DIFFUSION, SEG_T2, BASIC_SEG, CORTEX
+                      SEG_DIFFUSION, SEG_T2, BASIC_SEG, ROI_CORTEX, ROI_FRONTAL_CORTEX
 
 
 # -------------------- Statistical Methods Names -------------------- #
@@ -387,11 +387,11 @@ def main():
 
     # Can be changed - list of all ROIs' numbers from the segmentation
     # rois = [10, 11, 12, 13, 17, 18, 26, 49, 50, 51, 52, 53, 54, 58]  # subcortical regions left and right
-    rois = list(CORTEX.keys())
+    rois = list(ROI_FRONTAL_CORTEX.keys())
 
     # Can be changed - this is the save address for the output
     save_address = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means/' \
-                   'cortical_areas/'
+                   'cortical_areas/frontal_cortex/'
 
     # Can be changed - using other params - make sure to add another parameter as a name, and tuple of the
     # full path to the map of the parameter and the full path to the compatible segmentation
@@ -407,7 +407,7 @@ def main():
                             ROBUST_SCALING: FILE_NAME_DMEDIAN}
 
     # ---- Here You Can Change the sort of normalizer ---- #
-    choose_normalizer = Z_SCORE
+    choose_normalizer = None
 
     # ---- Here you can change the derivative_dict
     derivative_dict = {TV: [R1, R2S]}

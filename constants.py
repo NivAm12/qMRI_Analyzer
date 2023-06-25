@@ -16,6 +16,14 @@ PATH_TO_RAW_DATA_Z_SCORED = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Cova
 PATH_TO_CORTEX_Z_SCORED = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means" \
                             "/cortical_areas/raw_data_z_score_on_brain3"
 
+PATH_TO_FRONTAL_CORTEX_Z_SCORED = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
+                                  '/corr_by_means/' \
+                   'cortical_areas/frontal_cortex/raw_data_z_score_on_brain3'
+
+PATH_TO_FRONTAL_CORTEX_NO_NORMAL = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
+                                  '/corr_by_means/' \
+                   'cortical_areas/frontal_cortex/raw_data3'
+
 SUBJECTS_INFO_PATH = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/subjects_info.csv"
 
 # ---------------- Paths to output data ----------------- #
@@ -89,7 +97,30 @@ ROI_PUTAMEN_CAUDETE = {11: 'Left-Caudate', 12: 'Left-Putamen', 50: 'Right-Caudat
 ROI_ACCUM_HIPPO_AMYG = {17: 'Left-Hippocampus', 18: 'Left-Amygdala', 26: 'Left-Accumbens-area',
                         53: 'Right-Hippocampus', 54: 'Right-Amygdala', 58: 'Right-Accumbens-area'}
 
-CORTEX = {
+ROI_FRONTAL_CORTEX = {
+    1003: 'ctx-lh-caudalmiddlefrontal',
+    2003: 'ctx-rh-caudalmiddlefrontal',
+    1012: 'ctx-lh-lateralorbitofrontal',
+    2012: 'ctx-rh-lateralorbitofrontal',
+    1017: 'ctx-lh-paracentral',
+    2017: 'ctx-rh-paracentral',
+    1018: 'ctx-lh-parsopercularis',
+    2018: 'ctx-rh-parsopercularis',
+    1019: 'ctx-lh-parsorbitalis',
+    2019: 'ctx-rh-parsorbitalis',
+    1020: 'ctx-lh-parstriangularis',
+    2020: 'ctx-rh-parstriangularis',
+    1024: 'ctx-lh-precentral',
+    2024: 'ctx-rh-precentral',
+    1027: 'ctx-lh-rostralmiddlefrontal',
+    2027: 'ctx-rh-rostralmiddlefrontal',
+    1028: 'ctx-lh-superiorfrontal',
+    2028: 'ctx-rh-superiorfrontal',
+    1032: 'ctx-lh-frontalpole',
+    2032: 'ctx-rh-frontalpole',
+}
+
+ROI_CORTEX = {
     1000: 'ctx-lh-unknown',
     1001: 'ctx-lh-bankssts',
     1002: 'ctx-lh-caudalanteriorcingulate',

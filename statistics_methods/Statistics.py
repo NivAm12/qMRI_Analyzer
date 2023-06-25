@@ -319,6 +319,7 @@ class StatisticsWrapper:
 
             std_per_ROI_per_param1 = []
             std_per_ROI_per_param2 = []
+
             for ROI in ROIS:
                 std_per_ROI_per_param1.append(data1[param][data1['ROI'] == ROI].std())
                 std_per_ROI_per_param2.append(data2[param][data2['ROI'] == ROI].std())
