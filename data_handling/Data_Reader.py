@@ -141,17 +141,23 @@ class DataReader:
         """
         name_idx = 0
         sub_names = []
+
         for sub_path in self.subject_paths:
             measures, seg_dict = self.measures_per_subject(sub_path)
+
             if measures == -1:
                 name_idx += 1
                 continue
+
             sub_names.append(self.subject_names[name_idx][0])  # save names of subjects that have all of the data relevant for analysis
             name_idx += 1
             self.all_subjects_raw_data.append((self.add_all_info_of_param_per_subject(measures, seg_dict)))
+
         self.subject_names = sub_names
-        # if self.derivative_params:
-        #     self.add_derivative_params_to_data()
+
+        if self.derivative_params:
+            self.add_derivative_params_to_data()
+
         self.data_extracted = True
 
     def save_in_pickle_raw_data(self, save_address):
@@ -183,8 +189,7 @@ class DataReader:
             seg_file = os.path.join(sub_path, self.qmri_params[param_name][1])
             if not os.path.isfile(param_file) or not os.path.isfile(seg_file):
                 return -1, -1  # -1 acts as a return code
-            seg = nib.load(seg_file)
-            seg = seg.get_fdata()
+            seg = nib.load(seg_file).get_fdata()
             seg_dict[param_name] = seg
 
             param_data = nib.load(param_file).get_fdata()
@@ -211,9 +216,8 @@ class DataReader:
         :param param_name: the parameter name.
         :return:
         """
-        roimask = np.where((np.isin(seg_dict[param_name], self.rois)) & (measures[param_name] > 0))
-        # print("zeros calculated:", len(measures[measure_idx][roimask][measures[measure_idx][roimask] < 0]))
-        measures[param_name][roimask] = stats.zscore(measures[param_name][roimask], nan_policy='omit')
+        roi_mask = np.where((np.isin(seg_dict[param_name], self.rois)) & (measures[param_name] > 0))
+        measures[param_name][roi_mask] = stats.zscore(measures[param_name][roi_mask], nan_policy='omit')
 
     def normalize_raw_data_by_robust_scaling(self, measures, seg_dict, param_name) -> None:
         """
@@ -247,20 +251,16 @@ class DataReader:
         """
         for roi in self.rois:
             # all indices in seg file with value roi, all coordinates with same label (associated with same area)
-            roimask = np.where(seg_dict[param_name] == roi)
+            roi_mask = np.where(seg_dict[param_name] == roi)
 
-            mea_masked = measures[param_name][roimask]  # slice to only include values with the same label,
+            mea_masked = measures[param_name][roi_mask]  # slice to only include values with the same label,
             # keeps array only of values in a specific roi
+            # TODO fix the shapes
             if how_to_normalize is None:
                 non_zeroes = np.where(mea_masked > 0)
             else:
                 non_zeroes = np.where(mea_masked != np.inf)
             sub_measure[roi] = mea_masked[non_zeroes]
-
-            # # Just in order to see the distribution of the voxels data per roi you can run this:
-            # plt.hist(sub_measure[roi], bins=20)
-            # plt.title(f"{how_to_normalize},{measure_idx}")
-            # plt.show()
 
     def add_all_info_of_param_per_subject(self, measures, seg_dict):
         """
@@ -278,44 +278,12 @@ class DataReader:
                 self.normalize_raw_data_by_z_score(measures, seg_dict, param_name)
             if self.choose_normalize == ROBUST_SCALING:
                 self.normalize_raw_data_by_robust_scaling(measures, seg_dict, param_name)
+
             # this will hold the all subject's measures for a specific measurement
             self._add_only_voxels_from_rois(measures, seg_dict, param_name, sub_measure, self.choose_normalize)
             subject_params[param_name] = sub_measure
-        return subject_params
 
-    #TODO: CHANGE HERE TO GET ALL IDX AND THEN COMPARE THEM WITH ANOTHER PARAM SEE IF THERE IS A DIFFERENT IN THE NUM OF IDXs!
-    def add_all_info_idx_of_param_per_subject(self, measures, seg):
-        subject_params = {} #[[]] * len(measures)
-        for param_name in measures.keys():  # loop over all parameters ex: t1, r2s, tv..
-            sub_measure = {}
-            # this will hold the all subject's measures for a specific measurement
-            self._add_voxels_idx_to_all_rois(measures, seg, param_name, sub_measure, self.choose_normalize)
-            subject_params[param_name] = sub_measure
         return subject_params
-    #
-    #
-    def _add_voxels_idx_to_all_rois(self, measures, seg_dict, measure_idx, sub_measure, how_to_normalize):
-        """
-        Add voxels idxs to all rois
-        :param measures: all measures of the brain of all parameters for the subject (dictionary = parameter:values of
-                         the parameter over all the brain)
-        :param seg_dict: segmentation dictionary
-        :param measure_idx:
-        :param sub_measure:
-        :param how_to_normalize:
-        :return:
-        """
-        for roi in self.rois:
-            roimask = np.where(
-                seg_dict[measure_idx] == roi)  # all indices in seg file with value roi, all coordinates with same
-            # label (associated with same area)
-            mea_masked = measures[measure_idx][roimask]  # slice to only include values with the same label,
-            # keeps array only of values in a specific roi
-            if how_to_normalize == None:
-                non_zeroes = np.where(mea_masked > 0)
-            else:
-                non_zeroes = np.where(mea_masked != np.inf)
-            sub_measure[roi] = mea_masked[non_zeroes]
 
     def derive_param_with_another_param(self, params):
         """
@@ -323,15 +291,10 @@ class DataReader:
         :param params: given params
         :return:
         """
-        # plt.scatter(param1_data, param2_data)
-        # plt.show()
         sorted_tup = np.array(sorted(params))
-        # param1_data_index_sorted = np.argsort(param1_data)
-        # param1_data_sorted = np.sort(param1_data)
-        # param2_data_sorted_to_param1 = np.array(param2_data)[param1_data_index_sorted]
-
         buckets = np.split(sorted_tup, np.bincount(np.digitize(sorted_tup[:, 0], self.bin_data)).cumsum())
         del_idx = []
+
         for i in range(len(buckets)):
             if len(buckets[i]) < 0.04 * len(params):
                 del_idx.append(i)
@@ -355,25 +318,20 @@ class DataReader:
         add the derivative params to the data
         :return:
         """
-        count = 0
         for param_to_derive in self.derivative_params.keys():
             for subject_index in range(len(self.all_subjects_raw_data)):
                 for second_param_to_derive in self.derivative_params[param_to_derive]:
                     self.all_subjects_raw_data[subject_index][f'Slope-{param_to_derive}-{second_param_to_derive}'] = {}
                     self.all_subjects_raw_data[subject_index][
                         f'D{param_to_derive}-{second_param_to_derive}-values'] = {}
+
                     for roi in self.rois:
                         param1_data = self.all_subjects_raw_data[subject_index][param_to_derive][roi]
                         param2_data = self.all_subjects_raw_data[subject_index][second_param_to_derive][roi]
 
-                        # todo: Just checkup
-                        if (len(param1_data) != len(param2_data)):
-                            count += 1
-                            print("OHH SHIT!, Not another one", count, "\nSubject:", subject_index,
-                                  "\nParam", second_param_to_derive, "\nroi", roi)
-
                         min_len = min(len(param1_data), len(param2_data))  # TODO: Make it better solution!!
                         params_as_x_y = np.array([param1_data[:min_len], param2_data[:min_len]]).T.tolist()
+
                         self.all_subjects_raw_data[subject_index][f'Slope-{param_to_derive}-{second_param_to_derive}'][
                             roi], \
                         self.all_subjects_raw_data[subject_index][
@@ -407,7 +365,7 @@ def main():
                             ROBUST_SCALING: FILE_NAME_DMEDIAN}
 
     # ---- Here You Can Change the sort of normalizer ---- #
-    choose_normalizer = None
+    choose_normalizer = Z_SCORE
 
     # ---- Here you can change the derivative_dict
     derivative_dict = {TV: [R1, R2S]}
@@ -418,9 +376,8 @@ def main():
     # ---- RUN the Reader
     reader = DataReader(analysisDir, rois, params, choose_normalizer, derivative_dict, range_for_tv_default)
     reader.extract_data()
-    reader.save_in_pickle_raw_data(save_address + normalizer_file_name[choose_normalizer])
+    # reader.save_in_pickle_raw_data(save_address + normalizer_file_name[choose_normalizer])
 
 
 if __name__ == "__main__":
     main()
-

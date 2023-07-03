@@ -133,6 +133,7 @@ class StatisticsWrapper:
         zscore_per_subject_per_roi_per_param = subjects_raw_data.copy()
         zscore_per_subject_per_roi_per_param[params] = zscore_per_subject_per_roi_per_param[params].applymap(
             StatisticsWrapper.computed_zscore_per_values)
+
         return zscore_per_subject_per_roi_per_param
 
     @staticmethod
