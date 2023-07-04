@@ -2,11 +2,12 @@ import enum
 import seaborn as sns
 from data_handling.Data_Processor import DataProcessor
 sns.set_theme(style="ticks", color_codes=True)
+import constants
 
 
 # -------------------- PATHS -------------------- #
-from constants import PATH_TO_FRONTAL_CORTEX_NO_NORMAL,PATH_TO_RAW_DATA_6_PARAMS, SAVE_DATA_PATH, PATH_TO_RAW_DATA_Z_SCORED, \
-    PATH_TO_RAW_DATA_ROBUST_SCALED, PATH_TO_FRONTAL_CORTEX_Z_SCORED
+from constants import PATH_TO_RAW_DATA_6_PARAMS, SAVE_DATA_PATH, PATH_TO_RAW_DATA_Z_SCORED, \
+    PATH_TO_RAW_DATA_ROBUST_SCALED
 
 # -------------------- File Names -------------------- #
 
@@ -48,8 +49,8 @@ class Actions(enum.Enum):
 
 
 # -------------- Dictionaries of raw_data_type to their input path and output Dir ------------- #
-RAW_DATA_NORMALIZER_PATH = {RAW_DATA: PATH_TO_FRONTAL_CORTEX_NO_NORMAL, Z_SCORE: PATH_TO_FRONTAL_CORTEX_Z_SCORED,
-                            ROBUST_SCALING: PATH_TO_RAW_DATA_ROBUST_SCALED, RAW_DATA_6_PARAMS: PATH_TO_RAW_DATA_6_PARAMS}
+# RAW_DATA_NORMALIZER_PATH = {RAW_DATA: PATH_TO_FRONTAL_CORTEX_NO_NORMAL, Z_SCORE: PATH_TO_FRONTAL_CORTEX_Z_SCORED,
+#                             ROBUST_SCALING: PATH_TO_RAW_DATA_ROBUST_SCALED, RAW_DATA_6_PARAMS: PATH_TO_RAW_DATA_6_PARAMS}
 
 RAW_DATA_NORMALIZER_OUTPUT_DIR = {RAW_DATA: RAW_DATA_DIR, Z_SCORE: RAW_DATA_Z_SCORED_DIR,
                                   ROBUST_SCALING: RAW_DATA_ROBUST_SCALED_DIR, RAW_DATA_6_PARAMS: RAW_DATA_DIR}
@@ -81,7 +82,7 @@ def get_save_address(output_path, raw_data_type, manipulation_on_data_name, dir_
 
 
 def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run, params_to_work_with,
-                 ROIs_to_analyze=SUB_CORTEX_DICT):
+                 ROIs_to_analyze, project_name):
     """
     This is the analyzing part -
         1) Take the raw data (raw, z_scored raw data or robust scaling on the raw data) -> and make manipulation
@@ -107,8 +108,8 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
     # You can choose here which column you want ('Age' / 'Gender' / etc') and the threshold (AGE_THRESHOLD / 'M' / etc')
     # and the names of each group.
     group_a_name, group_b_name, col_divider, threshold = YOUNG, OLD, 'Age', AGE_THRESHOLD
-
     young_subjects, old_subjects = StatisticsWrapper.seperate_data_to_two_groups(chosen_data, col_divider, threshold)
+
     for func in funcs_to_run:
         if func == T_TEST:
             StatisticsWrapper.t_test_per_parameter_per_area(young_subjects, old_subjects, ROIs_to_analyze,
@@ -121,7 +122,8 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
         elif func == SD_PER_PARAMETER:
             StatisticsWrapper.computed_std_per_parameter(young_subjects, old_subjects, params_to_work_with,
                                                          list(ROIs_to_analyze.keys()), group_a_name, group_b_name,
-                                                         save_address, log=True, project_name='qmri_raw_data_frontal_cortex')
+                                                         save_address, log=True,
+                                                         project_name=project_name)
 
         elif func == HIERARCHICAL_CLUSTERING_WITH_CORRELATIONS:
             StatisticsWrapper.calculate_correlation_per_data(chosen_data, params_to_work_with, ROIs_to_analyze, "ALL",
@@ -136,7 +138,8 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
                                                                 save_address)
 
 
-def run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_dict, params_to_work_with):
+def run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_dict, params_to_work_with,
+                project_name):
     """
     Run Program
     :param pattern: the pattern we chose (how to manipulate the data)
@@ -145,16 +148,18 @@ def run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_
     :param funcs_to_run: all the functions to run
     :param chosen_rois_dict: all the chosen rois
     :param params_to_work_with: all the parameters to work with.
+    :param project_name: wandb project name
     :return: None
     """
     # Process Data
-    subjects_raw_data = DataProcessor(raw_data_path, ROI_FRONTAL_CORTEX, chosen_rois_dict).get_data_proccessed()
+    subjects_raw_data = DataProcessor(raw_data_path, chosen_rois_dict, chosen_rois_dict).get_data_proccessed()
 
     # Choose Statistics
     statistics_func = ACTION_FUNCTION_DICT[pattern]
 
     # Analyse data
-    analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run, params_to_work_with, chosen_rois_dict)
+    analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run, params_to_work_with, chosen_rois_dict,
+                 project_name)
 
 
 def run():
@@ -199,10 +204,13 @@ def run():
     raw_data_type = Z_SCORE
 
     # DONT CHANGE - from here get the raw data
-    raw_data_path = RAW_DATA_NORMALIZER_PATH[raw_data_type]
+    raw_data_path = constants.PATH_TO_FRONTAL_CORTEX_6_params
 
     # Change Here the rois you would like to work with
-    chosen_rois_dict = ROI_FRONTAL_CORTEX
+    chosen_rois_dict = constants.ROI_FRONTAL_CORTEX
+
+    # wandb
+    project_name = 'FRONTAL_CORTEX_6_params_zcore'
 
     # Change here the Statistics funcs to run
     funcs_to_run = [SD_PER_PARAMETER]
@@ -219,14 +227,13 @@ def run():
     # DONT CHANGE - from here you get the directory name in which the file will be saved
     raw_output_data_dir = RAW_DATA_NORMALIZER_OUTPUT_DIR[raw_data_type]
 
-
     # Possible to change Save Address: the format is as following :
     # <output_path>/<dir_name_by_raw_data_type>/<dir name by manipulation done on the data-like z_score>/<possible - ROIs took place in the run>
     save_address = get_save_address(output_path, raw_output_data_dir, ACTION_SAVE_ADDRESS_DICT[pattern],
                                     rois_output_dir)
 
     # Run the Program
-    run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_dict, params_to_work_with)
+    run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_dict, params_to_work_with, project_name)
 
 
 def main():

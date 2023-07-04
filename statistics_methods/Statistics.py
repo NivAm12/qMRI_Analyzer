@@ -267,8 +267,7 @@ class StatisticsWrapper:
 
     @staticmethod
     def plot_values_of_two_groups_per_roi(ROIs, info_per_ROI_per_param1: List[int], info_per_ROI_per_param2: List[int],
-                                          param, name_group_a, name_group_b, save_address: str, info_name: str,
-                                          save: bool = False):
+                                          param, name_group_a, name_group_b, save_address: str, info_name: str):
         """
         Plot values of two groups (for example given SD/Means of all values per ROI)
         :param ROIs: given ROIs to check
@@ -290,12 +289,11 @@ class StatisticsWrapper:
         plt.ylabel(f"{info_name}")
         plt.xlabel("ROIs")
 
-        if save:
-            if not os.path.exists(save_address + f"/{info_name} /"):
-                os.makedirs(save_address + f"/{info_name} /")
+        if not os.path.exists(save_address + f"/{info_name} /"):
+            os.makedirs(save_address + f"/{info_name} /")
 
-            plt.savefig(save_address + f"/{info_name} /" + f"{param}_distribution" + '.png')
-            plt.show()
+        plt.savefig(save_address + f"/{info_name} /" + f"{param}_distribution" + '.png')
+        plt.show()
 
     @staticmethod
     def computed_std_per_parameter(data1, data2, parameters, ROIS, name_group_a, name_group_b, save_address,
@@ -322,18 +320,28 @@ class StatisticsWrapper:
             std_per_ROI_per_param2 = []
 
             for ROI in ROIS:
-                std_per_ROI_per_param1.append(data1[param][data1['ROI'] == ROI].std())
-                std_per_ROI_per_param2.append(data2[param][data2['ROI'] == ROI].std())
+                std1 = data1[param][data1['ROI'] == ROI].std()
+                std2 = data2[param][data2['ROI'] == ROI].std()
+                std_per_ROI_per_param1.append(std1)
+                std_per_ROI_per_param2.append(std2)
 
-            StatisticsWrapper.plot_values_of_two_groups_per_roi(ROIS, std_per_ROI_per_param1,
-                                                                std_per_ROI_per_param2, param, name_group_a,
-                                                                name_group_b, save_address,
-                                                                "Standard Deviation",
-                                                                save=visualize)
+            if visualize:
+                StatisticsWrapper.plot_values_of_two_groups_per_roi(ROIS, std_per_ROI_per_param1,
+                                                                    std_per_ROI_per_param2, param, name_group_a,
+                                                                    name_group_b, save_address,
+                                                                    "Standard Deviation")
+
             if log:
-                wandb_run.log({f'{param}_std': wandb.Image(plt)})
+                wandb_run.log({f'{param}_std': wandb.plot.line_series(
+                    xs=ROIS,
+                    ys=[std_per_ROI_per_param1, std_per_ROI_per_param2],
+                    keys=[name_group_a, name_group_b],
+                    title=f'{param} Rois Standard Deviation',
+                    xname="ROI",
+                )})
+
                 wandb_run.finish()
-                plt.close()
+
 
     @staticmethod
     def plot_data_per_param_per_roi_next_to_each_other(data1, data2, name_group_a, name_group_b, save_address):
