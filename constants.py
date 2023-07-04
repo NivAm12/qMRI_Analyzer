@@ -5,24 +5,39 @@ import enum
 PATH_TO_RAW_DATA = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means" \
                    "/subcortical_updated/with_R1/raw_data_of_subjects/raw_data"
 PATH_TO_RAW_DATA_6_PARAMS = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means" \
-                   "/subcortical_updated/with_R1/raw_data_of_subjects/raw_data_6_params"
+                            "/subcortical_updated/with_R1/raw_data_of_subjects/raw_data_6_params"
 
 PATH_TO_RAW_DATA_ROBUST_SCALED = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means" \
-                                "/subcortical_updated/with_R1/raw_data_of_subjects/raw_data_robust_scaling3"
+                                 "/subcortical_updated/with_R1/raw_data_of_subjects/raw_data_robust_scaling3"
 
 PATH_TO_RAW_DATA_Z_SCORED = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means" \
                             "/subcortical_updated/with_R1/raw_data_of_subjects/raw_data_z_score_on_brain3"
 
 PATH_TO_CORTEX_Z_SCORED = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means" \
-                            "/cortical_areas/raw_data_z_score_on_brain3"
+                          "/cortical_areas/raw_data_z_score_on_brain3"
 
-PATH_TO_FRONTAL_CORTEX_Z_SCORED = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
+PATH_TO_FRONTAL_CORTEX_6_params = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
                                   '/corr_by_means/' \
-                   'cortical_areas/frontal_cortex/raw_data_z_score_on_brain3'
+                                  '2023_analysis/FRONTAL_CORTEX_6_params/raw_data_z_score_on_brain3'
 
-PATH_TO_FRONTAL_CORTEX_NO_NORMAL = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
-                                  '/corr_by_means/' \
-                   'cortical_areas/frontal_cortex/raw_data3'
+PATH_TO_PUTAMEN_CAUDETE_6_params = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
+                                   '/corr_by_means/2023_analysis/PUTAMEN_CAUDETE _6_params/raw_data_z_score_on_brain3'
+
+PATH_TO_PUTAMEN_THALAMUS_6_params = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
+                                    '/corr_by_means/2023_analysis/PUTAMEN_THALAMUS_6_params/raw_data_z_score_on_brain3'
+
+PATH_TO_PALLIDUM_PUTAMEN_CAUDETE_6_params = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
+                                            '/corr_by_means/2023_analysis/PALLIDUM_PUTAMEN_CAUDETE_6_params' \
+                                            '/raw_data_z_score_on_brain3'
+
+PATH_TO_AMYGDALA_HIPPOCAMPUS_6_params = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
+                                        '/corr_by_means/2023_analysis/AMYGDALA_HIPPOCAMPUS_6_params' \
+                                        '/raw_data_z_score_on_brain3'
+
+PATH_TO_ACCUM_HIPPO_AMYG_6_params = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
+                                        '/corr_by_means/2023_analysis/ACCUM_HIPPO_AMYG_6_params' \
+                                        '/raw_data_z_score_on_brain3'
+
 
 SUBJECTS_INFO_PATH = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/subjects_info.csv"
 
@@ -36,19 +51,20 @@ SAVE_DATA_OF_ADULTS_Z_SCORE_MEANS = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/c
                                     "default_z_score_on_average_of_params/calculation/adults/"
 
 SAVE_DATA_OF_YOUNG_Z_SCORE_MEANS = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/" \
-                                    "Covariance_Aging/saved_versions/corr_by_means/" \
-                                    "subcortical_updated/with_R1/Analysis/young_adults_comparison/" \
-                                    "default_z_score_on_average_of_params/calculation/young/"
+                                   "Covariance_Aging/saved_versions/corr_by_means/" \
+                                   "subcortical_updated/with_R1/Analysis/young_adults_comparison/" \
+                                   "default_z_score_on_average_of_params/calculation/young/"
 
 SAVE_DATA_OF_ALL_Z_SCORE_MEANS = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/" \
-                                    "Covariance_Aging/saved_versions/corr_by_means/" \
-                                    "subcortical_updated/with_R1/Analysis/young_adults_comparison/" \
-                                    "default_z_score_on_average_of_params/calculation/all/"
+                                 "Covariance_Aging/saved_versions/corr_by_means/" \
+                                 "subcortical_updated/with_R1/Analysis/young_adults_comparison/" \
+                                 "default_z_score_on_average_of_params/calculation/all/"
 
+# ---------------- Paths to subject data ----------------- #
+ANALYSIS_DIR = '/ems/elsc-labs/mezer-a/Mezer-Lab/analysis/HUJI/Calibration/Human'
 
 # -------------------- File Names -------------------- #
 HIERARCHICAL_CLUSTERING_FILE = "corr_hirr_clustering_"
-
 
 # -------------------- Statistics Funcs to Run -------------------- #
 T_TEST = 't_tests'
@@ -56,7 +72,6 @@ HIERARCHICAL_CLUSTERING_WITH_CORRELATIONS = 'hierarchical_clustering_with_correl
 SD_PER_PARAMETER = 'sd_per_parameter'
 PLOT_DATA_PER_PARAM = 'plot data per param'
 PLOT_DATA_PER_ROI_PER_SUBJET_WITH_ALL_PARAMS = 'PLOT_DATA_PER_ROI_PER_SUBJET_WITH_ALL_PARAMS'
-
 
 # -------------------- Folders Output ---------------------- #
 Z_SCORE_ON_AVG_ON_BRAIN_DIR = "default_z_score_on_average_of_params/"
@@ -195,7 +210,6 @@ ROI_CORTEX = {
     2035: 'ctx-rh-insula'
 }
 
-
 DICT_NUM_TO_ROIS = {1: SUB_CORTEX_DICT,
                     2: ROI_PUTAMEN_THALAMUS,
                     3: ROI_PALLIDUM_PUTAMEN_CAUDETE,
@@ -206,7 +220,8 @@ DICT_NUM_TO_ROIS = {1: SUB_CORTEX_DICT,
 # -------------------- MRI Physical Parameters -------------------- #
 BASIC_4_PARAMS = ["r1", "tv", "r2s", "mt"]
 PARAMETERS = ["r1", "tv", "r2s", "mt", "t2", "diffusion"]
-PARAMETERS_W_D_TV_R1_AND_R2S = ["r1", "tv", "r2s", "mt", "t2", "diffusion", "Slope-tv-r1", "Slope-tv-r2s", "Dtv-r1-values", "Dtv-r2s-values"]
+PARAMETERS_W_D_TV_R1_AND_R2S = ["r1", "tv", "r2s", "mt", "t2", "diffusion", "Slope-tv-r1", "Slope-tv-r2s",
+                                "Dtv-r1-values", "Dtv-r2s-values"]
 PARAMS_OF_SLOPES = ["Slope-tv-r1", "Slope-tv-r2s", "Dtv-r1-values", "Dtv-r2s-values"]
 
 # -------------------- Groups Dividers Consts -------------------- #
@@ -217,10 +232,10 @@ AGE_THRESHOLD = 40
 
 # -------------------- Enums for statistical actions -------------------- #
 class Actions(enum.Enum):
-    z_score = 1             # Z Score on data - per subject, per parameter, per ROI
-    z_score_means = 2       # Z Score on means of all subjects, per parameters, per its ROI
-    means_per_subject = 3   # Means on each Subject, per its ROI (per parameter)
-    robust_scaling = 4      # subtracting the median and dividing by the interquartile range
+    z_score = 1  # Z Score on data - per subject, per parameter, per ROI
+    z_score_means = 2  # Z Score on means of all subjects, per parameters, per its ROI
+    means_per_subject = 3  # Means on each Subject, per its ROI (per parameter)
+    robust_scaling = 4  # subtracting the median and dividing by the interquartile range
 
 
 # -------------------- Statistical Methods Names -------------------- #

@@ -12,7 +12,8 @@ from sklearn.linear_model import LinearRegression
 # -------------------- MAPS and Segmentations paths -------------------- #
 from constants import R1, R2S, MT, TV, T2, DIFFUSION,\
                       MAP_DIFFUSION, MAP_MT, MAP_TV, MAP_R1, MAP_T2, MAP_R2S,\
-                      SEG_DIFFUSION, SEG_T2, BASIC_SEG, ROI_CORTEX, ROI_FRONTAL_CORTEX
+                      SEG_DIFFUSION, SEG_T2, BASIC_SEG
+import constants
 
 
 # -------------------- Statistical Methods Names -------------------- #
@@ -344,12 +345,11 @@ def main():
     analysisDir = '/ems/elsc-labs/mezer-a/Mezer-Lab/analysis/HUJI/Calibration/Human'
 
     # Can be changed - list of all ROIs' numbers from the segmentation
-    # rois = [10, 11, 12, 13, 17, 18, 26, 49, 50, 51, 52, 53, 54, 58]  # subcortical regions left and right
-    rois = list(ROI_FRONTAL_CORTEX.keys())
+    rois = list(constants.ROI_PUTAMEN_THALAMUS.keys())
 
     # Can be changed - this is the save address for the output
     save_address = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means/' \
-                   'cortical_areas/frontal_cortex/'
+                   '2023_analysis/ROI_PUTAMEN_THALAMUS_6_params/'
 
     # Can be changed - using other params - make sure to add another parameter as a name, and tuple of the
     # full path to the map of the parameter and the full path to the compatible segmentation
@@ -376,7 +376,11 @@ def main():
     # ---- RUN the Reader
     reader = DataReader(analysisDir, rois, params, choose_normalizer, derivative_dict, range_for_tv_default)
     reader.extract_data()
-    # reader.save_in_pickle_raw_data(save_address + normalizer_file_name[choose_normalizer])
+
+    if not os.path.exists(save_address):
+        os.mkdir(save_address)
+
+    reader.save_in_pickle_raw_data(save_address + normalizer_file_name[choose_normalizer])
 
 
 if __name__ == "__main__":
