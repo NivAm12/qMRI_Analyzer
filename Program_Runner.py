@@ -117,12 +117,13 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
 
         elif func == PLOT_DATA_PER_PARAM:
             StatisticsWrapper.plot_data_per_param_per_roi_next_to_each_other(young_subjects, old_subjects,
-                                                                             group_a_name, group_b_name, save_address)
+                                                                             group_a_name, group_b_name,
+                                                                             save_address, project_name)
 
         elif func == SD_PER_PARAMETER:
             StatisticsWrapper.computed_std_per_parameter(young_subjects, old_subjects, params_to_work_with,
                                                          list(ROIs_to_analyze.keys()), group_a_name, group_b_name,
-                                                         save_address, log=True,
+                                                         save_address,
                                                          project_name=project_name)
 
         elif func == HIERARCHICAL_CLUSTERING_WITH_CORRELATIONS:
@@ -210,10 +211,10 @@ def run():
     chosen_rois_dict = constants.ROI_FRONTAL_CORTEX
 
     # wandb
-    project_name = 'FRONTAL_CORTEX_6_params_zcore'
+    project_name = 'FRONTAL_CORTEX_6_params_zscore'
 
     # Change here the Statistics funcs to run
-    funcs_to_run = [SD_PER_PARAMETER]
+    funcs_to_run = [PLOT_DATA_PER_PARAM]
 
     # Choose here the parameters to work with in the data
     params_to_work_with = PARAMETERS

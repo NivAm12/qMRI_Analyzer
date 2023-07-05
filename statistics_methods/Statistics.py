@@ -297,7 +297,7 @@ class StatisticsWrapper:
 
     @staticmethod
     def computed_std_per_parameter(data1, data2, parameters, ROIS, name_group_a, name_group_b, save_address,
-                                   visualize=False, log=False, project_name=None):
+                                   visualize=False, project_name=None):
         """
         Computes SD per parameter per ROI for young and adults.
         :param data1: group a data
@@ -307,7 +307,8 @@ class StatisticsWrapper:
         :param name_group_a:
         :param name_group_b:
         :param save_address: the save address (path) to where the output will be saved.
-        :param visualize: true - create a grpah to visualize the data, false otherwise.
+        :param visualize: true - create a graph to visualize the data, false otherwise.
+        :param project_name: wandb project name
         :return:
         """
         for param in parameters:
@@ -331,7 +332,7 @@ class StatisticsWrapper:
                                                                     name_group_b, save_address,
                                                                     "Standard Deviation")
 
-            if log:
+            if project_name:
                 wandb_run.log({f'{param}_std': wandb.plot.line_series(
                     xs=ROIS,
                     ys=[std_per_ROI_per_param1, std_per_ROI_per_param2],
@@ -342,9 +343,9 @@ class StatisticsWrapper:
 
                 wandb_run.finish()
 
-
     @staticmethod
-    def plot_data_per_param_per_roi_next_to_each_other(data1, data2, name_group_a, name_group_b, save_address):
+    def plot_data_per_param_per_roi_next_to_each_other(data1, data2, name_group_a, name_group_b, save_address,
+                                                       project_name):
         """
         Plot data per parameter per roi next to each other - group a near group b
         :param data1: data of group a
@@ -352,6 +353,7 @@ class StatisticsWrapper:
         :param name_group_a: name of group a (old, etc')
         :param name_group_b: name of group b (young, etc')
         :param save_address: save address
+        :param project_name: wandb project name
         :return: None
         """
         data = pd.concat([data2, data1])
@@ -360,23 +362,33 @@ class StatisticsWrapper:
             if col_name == 'subjects' or col_name == 'ROI' or col_name == 'Age' \
                     or col_name == "Gender" or col_name == "ROI_name" or col_name == 'Mature':
                 continue
-            range_y_values = [min(data[col_name]) - min(data[col_name]) / 100,
-                              max(data[col_name]) + max(data[col_name]) / 100]
-            sns.boxplot(x="ROI", y=col_name, data=data, showmeans=True, hue='Mature',
+            # range_y_values = [min(data[col_name]) - min(data[col_name]) / 100,
+            #                   max(data[col_name]) + max(data[col_name]) / 100]
+            sns.set(rc={'figure.figsize': (25, 25)})
+            sns.boxplot(x="ROI", y=col_name, data=data, showmeans=True, hue='Mature', width=0.3,
                         meanprops={"marker": "o", "markerfacecolor": "white", "markeredgecolor": "black",
                                    "markersize": "3"})
-            plt.ylim(range_y_values)
-            plt.ylabel(col_name)
-            plt.xlabel("ROI")
-            plt.suptitle(f"{col_name} per ROI for all subjects")
 
-            if not os.path.exists(save_address + "/distribution/"):
-                os.makedirs(save_address + "/distribution/")
-            plt.savefig(save_address + "/distribution/" + f"{col_name}_distribution" + '.png')
-            plt.show()
+            if project_name:
+                wandb_run = wandb.init(
+                    project=project_name,
+                    name=f'{col_name}boxplot'
+                )
 
-            StatisticsWrapper.plot_data_per_parameter_for_rois(data1, data2, "", YOUNG, OLD)
-        return
+                wandb_run.log({f'{col_name}': wandb.Image(plt)})
+                wandb_run.finish()
+                plt.close()
+            # plt.ylim(range_y_values)
+            # plt.ylabel(col_name)
+            # plt.xlabel("ROI")
+            # plt.suptitle(f"{col_name} per ROI for all subjects")
+
+            # if not os.path.exists(save_address + "/distribution/"):
+            #     os.makedirs(save_address + "/distribution/")
+            # plt.savefig(save_address + "/distribution/" + f"{col_name}_distribution" + '.png')
+            # plt.show()
+
+            # StatisticsWrapper.plot_data_per_parameter_for_rois(data1, data2, "", YOUNG, OLD)
 
     @staticmethod
     def plot_data_per_parameter_for_rois(data1, data2, description_data, compare_val1, compare_val2, wanted_dict=None):
