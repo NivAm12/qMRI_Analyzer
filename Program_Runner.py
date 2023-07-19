@@ -27,7 +27,7 @@ from constants import RAW_DATA_DIR, RAW_DATA_ROBUST_SCALED_DIR, RAW_DATA_Z_SCORE
 from constants import RAW_DATA, Z_SCORE, ROBUST_SCALING, RAW_DATA_6_PARAMS
 
 # -------------------- MRI Physical Parameters -------------------- #
-from constants import PARAMETERS, BASIC_4_PARAMS
+from constants import PARAMETERS, BASIC_4_PARAMS, BASIC_4_PARAMS_WITH_SLOPES
 
 # -------------------- Magic Number -------------------- #
 from constants import OLD, YOUNG, AGE_THRESHOLD
@@ -82,7 +82,7 @@ def get_save_address(output_path, raw_data_type, manipulation_on_data_name, dir_
 
 
 def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run, params_to_work_with,
-                 ROIs_to_analyze, project_name):
+                 ROIs_to_analyze, raw_params, project_name):
     """
     This is the analyzing part -
         1) Take the raw data (raw, z_scored raw data or robust scaling on the raw data) -> and make manipulation
@@ -103,7 +103,7 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
     :return: None
     """
     analyzed_data = statistics_func(subjects_raw_data, params_to_work_with)
-    chosen_data = StatisticsWrapper.chose_relevant_data(analyzed_data, ROIs_to_analyze, params_to_work_with)
+    chosen_data = StatisticsWrapper.chose_relevant_data(analyzed_data, ROIs_to_analyze, raw_params, params_to_work_with)
 
     # You can choose here which column you want ('Age' / 'Gender' / etc') and the threshold (AGE_THRESHOLD / 'M' / etc')
     # and the names of each group.
@@ -128,11 +128,13 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
 
         elif func == HIERARCHICAL_CLUSTERING_WITH_CORRELATIONS:
             StatisticsWrapper.calculate_correlation_per_data(chosen_data, params_to_work_with, ROIs_to_analyze, "ALL",
-                                                             save_address)
+                                                             save_address, project_name=project_name)
             StatisticsWrapper.calculate_correlation_per_data(young_subjects, params_to_work_with, ROIs_to_analyze,
-                                                             group_a_name, save_address + "/" + group_a_name + "/")
+                                                             group_a_name, save_address + "/" + group_a_name + "/",
+                                                             project_name=project_name)
             StatisticsWrapper.calculate_correlation_per_data(old_subjects, params_to_work_with, ROIs_to_analyze,
-                                                             group_b_name, save_address + "/" + group_b_name + "/")
+                                                             group_b_name, save_address + "/" + group_b_name + "/",
+                                                             project_name=project_name)
 
         elif func == PLOT_DATA_PER_ROI_PER_SUBJET_WITH_ALL_PARAMS:
             StatisticsWrapper.plot_values_per_parameter_per_roi(chosen_data, params_to_work_with, list(ROIs_to_analyze),
@@ -140,7 +142,7 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
 
 
 def run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_dict, params_to_work_with,
-                project_name):
+                raw_params, project_name):
     """
     Run Program
     :param pattern: the pattern we chose (how to manipulate the data)
@@ -149,6 +151,7 @@ def run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_
     :param funcs_to_run: all the functions to run
     :param chosen_rois_dict: all the chosen rois
     :param params_to_work_with: all the parameters to work with.
+    :param raw_params: original params of the data
     :param project_name: wandb project name
     :return: None
     """
@@ -160,7 +163,7 @@ def run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_
 
     # Analyse data
     analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run, params_to_work_with, chosen_rois_dict,
-                 project_name)
+                 raw_params, project_name)
 
 
 def run():
@@ -205,19 +208,20 @@ def run():
     raw_data_type = Z_SCORE
 
     # DONT CHANGE - from here get the raw data
-    raw_data_path = constants.PATH_TO_FRONTAL_CORTEX_6_params
+    raw_data_path = constants.PATH_TO_FRONTAL_CORTEX_4_params
 
     # Change Here the rois you would like to work with
     chosen_rois_dict = constants.ROI_FRONTAL_CORTEX
 
     # wandb
-    project_name = 'FRONTAL_CORTEX_6_params_zscore'
+    project_name = 'FRONTAL_CORTEX_4_params_zscore_with_der'
 
     # Change here the Statistics funcs to run
     funcs_to_run = [PLOT_DATA_PER_PARAM]
 
     # Choose here the parameters to work with in the data
-    params_to_work_with = PARAMETERS
+    data_params = constants.BASIC_4_PARAMS_WITH_SLOPES
+    params_to_work_with = ["Slope-tv-r2s", "Dtv-r1-values", "Dtv-r2s-values"]
 
     # Change here the path to save the results to - default is SAVE_DATA_PATH:
     output_path = SAVE_DATA_PATH
@@ -234,7 +238,7 @@ def run():
                                     rois_output_dir)
 
     # Run the Program
-    run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_dict, params_to_work_with, project_name)
+    run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_dict, params_to_work_with, data_params, project_name)
 
 
 def main():

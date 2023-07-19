@@ -9,7 +9,6 @@ from scipy.stats import pearsonr, spearmanr
 from typing import List, Dict, Any, Tuple
 import wandb
 
-
 # -------------------- PATHS -------------------- #
 from constants import PATH_TO_RAW_DATA, SAVE_DATA_PATH, SUBJECTS_INFO_PATH, SAVE_DATA_OF_ALL_Z_SCORE_MEANS, \
     SAVE_DATA_OF_ADULTS_Z_SCORE_MEANS, SAVE_DATA_OF_YOUNG_Z_SCORE_MEANS, PATH_TO_RAW_DATA_Z_SCORED, \
@@ -205,18 +204,19 @@ class StatisticsWrapper:
         return robust_scaling_per_subject_per_roi_per_param
 
     @staticmethod
-    def chose_relevant_data(data: pd.DataFrame, rois_to_analyze=SUB_CORTEX_DICT,
+    def chose_relevant_data(data: pd.DataFrame, rois_to_analyze=SUB_CORTEX_DICT, raw_params: List[str] = None,
                             params_to_work_with: List[str] = None) -> pd.DataFrame:
         """
         Chose only the data with relevant ROIs
         :param data: given data
         :param rois_to_analyze: rois to analyze in the data
         :param params_to_work_with: parameter to work with
+        :param raw_params: original params of the data
         :return: data only with given rois and params
         """
-        if params_to_work_with != None:
+        if params_to_work_with is not None:
             cols = data.columns
-            params_to_remove = set(PARAMETERS_W_D_TV_R1_AND_R2S) - set(params_to_work_with)
+            params_to_remove = set(raw_params) - set(params_to_work_with)
             if all(param in cols for param in params_to_remove):
                 return data[data["ROI"].isin(list(rois_to_analyze.keys()))].drop(params_to_remove, axis=1)
             else:
@@ -436,12 +436,14 @@ class StatisticsWrapper:
         :return:
         """
         df = df.dropna()._get_numeric_data()
-        dfcols = pd.DataFrame(columns=df.columns)
-        pvalues = dfcols.transpose().join(dfcols, how='outer')
+        df_cols = pd.DataFrame(columns=df.columns)
+        p_values = df_cols.transpose().join(df_cols, how='outer')
+
         for r in df.columns:
             for c in df.columns:
-                pvalues[r][c] = round(pearsonr(df[r], df[c])[1], 4)
-        return pvalues
+                p_values[r][c] = round(pearsonr(df[r], df[c])[1], 4)
+
+        return p_values
 
     @staticmethod
     def plot_hierarchical_correlation_map(sub_name, df_corr, colums_name, save_address=None, file_name=None):
@@ -454,23 +456,26 @@ class StatisticsWrapper:
         :param file_name: The name the file will be saved
         :return:
         """
-        plt.figure(figsize=(250, 250))
-        sns.set(font_scale=0.75)
+        # plt.figure(figsize=(250, 250))
+        # sns.set(font_scale=0.75)
         plt.suptitle(str(sub_name) + " Correlation Map\n")
         df_corr.columns = colums_name
         df_corr.index = colums_name
-        sns.clustermap(df_corr, cmap='coolwarm',
-                       # xticklabels=colums_name,
-                       # yticklabels=colums_name,
-                       annot=True)
-        if not (save_address is None or file_name is None):
-            if not os.path.exists(save_address):
-                os.makedirs(save_address)
-            plt.savefig(save_address + file_name + sub_name + '.png')
-        # plt.show()
+        sns.heatmap(df_corr, cmap='coolwarm',
+                    # xticklabels=colums_name,
+                    # yticklabels=colums_name,
+                    annot=True,
+                    # row_cluster=False,
+                    fmt=".2f")
+        # if not (save_address is None or file_name is None):
+        #     if not os.path.exists(save_address):
+        #         os.makedirs(save_address)
+        #     plt.savefig(save_address + file_name + sub_name + '.png')
+        plt.show()
 
     @staticmethod
-    def calculate_correlation_per_data(df, params_to_work_with, ROIs_to_analyze, group_name, save_address):
+    def calculate_correlation_per_data(df, params_to_work_with, ROIs_to_analyze, group_name, save_address,
+                                       project_name=None):
         """
         Calculates correlation in each subject, between all ROI's when each ROI has a vector of parameters.
         :param df: df containing all subject and their values in each ROI and in each Parameter.
@@ -486,18 +491,29 @@ class StatisticsWrapper:
         for subject_name in df.subjects.unique():
             # Compute correlation only with the current subject between all rois with given parameters.
             df_corr = df[df['subjects'] == subject_name][params_to_work_with].T.corr()
-            StatisticsWrapper.plot_hierarchical_correlation_map(subject_name, df_corr, relevant_ROIs, save_address,
-                                                                HIERARCHICAL_CLUSTERING_FILE)
+            # StatisticsWrapper.plot_hierarchical_correlation_map(subject_name, df_corr, relevant_ROIs, save_address,
+            #                                                     HIERARCHICAL_CLUSTERING_FILE)
             all_correlations += df_corr.to_numpy()
 
-            a = StatisticsWrapper.calculate_pvalues(df[df['subjects'] == subject_name][params_to_work_with].T)
-            if a[a < 0.05].count().sum() > 6:
-                print(StatisticsWrapper.calculate_pvalues(df[df['subjects'] == subject_name][params_to_work_with].T))
+            # a = StatisticsWrapper.calculate_pvalues(df[df['subjects'] == subject_name][params_to_work_with].T)
+            # if a[a < 0.05].count().sum() > 6:
+            #     print(StatisticsWrapper.calculate_pvalues(df[df['subjects'] == subject_name][params_to_work_with].T))
+
         all_correlations /= len(df.subjects.unique())
         all_correlations = pd.DataFrame(all_correlations)
         StatisticsWrapper.plot_hierarchical_correlation_map(f"Mean Of {group_name} Subjects", all_correlations,
                                                             relevant_ROIs,
                                                             save_address, HIERARCHICAL_CLUSTERING_FILE)
+
+        # if project_name:
+        #     wandb_run = wandb.init(
+        #         project=project_name,
+        #         name=f'{group_name} hierarchical correlation'
+        #     )
+        #
+        #     wandb_run.log({f'{group_name}': wandb.Image(plt)})
+        #     wandb_run.finish()
+        #     plt.close()
 
     @staticmethod
     def plot_values_per_parameter_per_roi(data, params, rois, save_address):

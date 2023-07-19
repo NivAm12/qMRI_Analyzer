@@ -20,6 +20,10 @@ PATH_TO_FRONTAL_CORTEX_6_params = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/cod
                                   '/corr_by_means/' \
                                   '2023_analysis/FRONTAL_CORTEX_6_params/raw_data_z_score_on_brain3'
 
+PATH_TO_FRONTAL_CORTEX_4_params = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
+                                  '/corr_by_means/' \
+                                  '2023_analysis/ROI_FRONTAL_CORTEX_4_params/raw_data_z_score_on_brain3'
+
 PATH_TO_PUTAMEN_CAUDETE_6_params = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
                                    '/corr_by_means/2023_analysis/PUTAMEN_CAUDETE _6_params/raw_data_z_score_on_brain3'
 
@@ -62,6 +66,7 @@ SAVE_DATA_OF_ALL_Z_SCORE_MEANS = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code
 
 # ---------------- Paths to subject data ----------------- #
 ANALYSIS_DIR = '/ems/elsc-labs/mezer-a/Mezer-Lab/analysis/HUJI/Calibration/Human'
+ANALYSIS_DIR_Par = '/ems/elsc-labs/mezer-a/Mezer-Lab/analysis/HUJI/Parkinson_SZ'
 
 # -------------------- File Names -------------------- #
 HIERARCHICAL_CLUSTERING_FILE = "corr_hirr_clustering_"
@@ -219,6 +224,7 @@ DICT_NUM_TO_ROIS = {1: SUB_CORTEX_DICT,
 
 # -------------------- MRI Physical Parameters -------------------- #
 BASIC_4_PARAMS = ["r1", "tv", "r2s", "mt"]
+BASIC_4_PARAMS_WITH_SLOPES = ["r1", "tv", "r2s", "mt", "Slope-tv-r1", "Slope-tv-r2s", "Dtv-r1-values", "Dtv-r2s-values"]
 PARAMETERS = ["r1", "tv", "r2s", "mt", "t2", "diffusion"]
 PARAMETERS_W_D_TV_R1_AND_R2S = ["r1", "tv", "r2s", "mt", "t2", "diffusion", "Slope-tv-r1", "Slope-tv-r2s",
                                 "Dtv-r1-values", "Dtv-r2s-values"]
