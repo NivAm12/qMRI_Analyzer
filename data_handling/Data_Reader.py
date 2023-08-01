@@ -7,18 +7,16 @@ import glob
 from re import search
 from sklearn.preprocessing import RobustScaler
 from sklearn.linear_model import LinearRegression
-
+import matplotlib.pyplot as plt
 
 # -------------------- MAPS and Segmentations paths -------------------- #
-from constants import R1, R2S, MT, TV, T2, DIFFUSION,\
-                      MAP_DIFFUSION, MAP_MT, MAP_TV, MAP_R1, MAP_T2, MAP_R2S,\
-                      SEG_DIFFUSION, SEG_T2, BASIC_SEG
+from constants import R1, R2S, MT, TV, T2, DIFFUSION, \
+    MAP_DIFFUSION, MAP_MT, MAP_TV, MAP_R1, MAP_T2, MAP_R2S, \
+    SEG_DIFFUSION, SEG_T2, BASIC_SEG
 import constants
-
 
 # -------------------- Statistical Methods Names -------------------- #
 from constants import ROBUST_SCALING, Z_SCORE
-
 
 # -------------- Save Addresses ---------------#
 SAVE_ADDRESS = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means/" \
@@ -77,6 +75,7 @@ def get_subject_paths(analysis_dir, subject_names):
 
     subject_paths = []
     names = []
+
     for sub in range(len(subject_names)):
         subject = subject_names[sub]
         os.chdir(analysis_dir)
@@ -86,18 +85,18 @@ def get_subject_paths(analysis_dir, subject_names):
                                      scanedate)  # This method returns a string value which represents the relative file path to given path from the start directory.
         if os.path.isfile(readmepath):  # has a read me
             file1 = open(readmepath, 'r')
-            A = file1.readlines()[0]
-            sub_path = scanedate + '/' + A
-
+            A = file1.read().splitlines()[0]
+            sub_path = [scanedate + '/' + A]
         else:
             subfolders = glob.glob(scanedate + '/*/')
             if subfolders == []:
                 # print(subject, "no folder")
                 continue
 
-            sub_path = subfolders[0]
+            sub_path = subfolders
         subject_paths.append(sub_path)
         names.append(subject[0])
+
     return subject_paths, subject_names
 
 
@@ -130,9 +129,9 @@ class DataReader:
         self.derivative_params = derivative_params  # All derivative params represented as {param: [list of param to derviate with]}
 
         self.bin_data = np.linspace(0.00, 0.4, 36) if bin_data is None else bin_data
-        self.all_subjects_raw_data = []     # This is a list where each cell in the list represents a subject, in each
-                                            # cell there is a dictionary of {param: {roi: values}}
-        self.data_extracted = False         # Indicates if the data was extracted
+        self.all_subjects_raw_data = []  # This is a list where each cell in the list represents a subject, in each
+        # cell there is a dictionary of {param: {roi: values}}
+        self.data_extracted = False  # Indicates if the data was extracted
         self.idx_used_all_subject = []
 
     def extract_data(self):
@@ -150,7 +149,8 @@ class DataReader:
                 name_idx += 1
                 continue
 
-            sub_names.append(self.subject_names[name_idx][0])  # save names of subjects that have all of the data relevant for analysis
+            sub_names.append(self.subject_names[name_idx][
+                                 0])  # save names of subjects that have all the data relevant for analysis
             name_idx += 1
             self.all_subjects_raw_data.append((self.add_all_info_of_param_per_subject(measures, seg_dict)))
 
@@ -183,28 +183,42 @@ class DataReader:
         :return: tuple: first is dictionary where key is the parameter and values are the measures of the parameter,
                         second is segmentation dict
         """
+        valid_shapes = [(181, 217, 181), (121, 145, 121), (128, 100, 60)]
+
         measures = {}
         seg_dict = {}
+
         for param_name in self.qmri_params.keys():
-            param_file = os.path.join(sub_path, self.qmri_params[param_name][0])
-            seg_file = os.path.join(sub_path, self.qmri_params[param_name][1])
-            if not os.path.isfile(param_file) or not os.path.isfile(seg_file):
-                return -1, -1  # -1 acts as a return code
-            seg = nib.load(seg_file).get_fdata()
+            param_file_to_use = None
+            seg_file_to_use = None
+
+            # check sub folders of subject
+            for path in sub_path:
+                param_file = os.path.join(path, self.qmri_params[param_name][0])
+                seg_file = os.path.join(path, self.qmri_params[param_name][1])
+
+                if not os.path.isfile(param_file) or not os.path.isfile(seg_file):
+                    continue
+
+                param_file_to_use = param_file
+                seg_file_to_use = seg_file
+
+            if param_file_to_use is None or seg_file_to_use is None:
+                return -1, -1
+
+            seg = nib.load(seg_file_to_use).get_fdata()
             seg_dict[param_name] = seg
 
-            param_data = nib.load(param_file).get_fdata()
+            param_data = nib.load(param_file_to_use).get_fdata()
 
             if param_name == 'r1':
                 r1 = 1 / param_data  # todo: problem with zero division, change later
                 param_data = np.nan_to_num(r1, posinf=0.0, neginf=0.0)
 
-            measures[param_name] = param_data
-
-            valid_shapes = [(181, 217, 181), (121, 145, 121), (128, 100, 60)]
-
             if param_data.shape not in valid_shapes:
                 return -1, -1
+
+            measures[param_name] = param_data
 
         return measures, seg_dict
 
@@ -335,30 +349,29 @@ class DataReader:
 
                         self.all_subjects_raw_data[subject_index][f'Slope-{param_to_derive}-{second_param_to_derive}'][
                             roi], \
-                        self.all_subjects_raw_data[subject_index][
-                            f'D{param_to_derive}-{second_param_to_derive}-values'][roi] = \
+                            self.all_subjects_raw_data[subject_index][
+                                f'D{param_to_derive}-{second_param_to_derive}-values'][roi] = \
                             self.derive_param_with_another_param(params_as_x_y)
 
 
-def main():
+if __name__ == "__main__":
     # The input dir containing all data of the subjects after MRI screening
-    analysisDir = '/ems/elsc-labs/mezer-a/Mezer-Lab/analysis/HUJI/Calibration/Human'
+    analysis_dir = '/ems/elsc-labs/mezer-a/Mezer-Lab/analysis/HUJI/Calibration/Human'
 
     # Can be changed - list of all ROIs' numbers from the segmentation
-    rois = list(constants.ROI_PUTAMEN_THALAMUS.keys())
+    rois = list(constants.ROI_FRONTAL_CORTEX.keys())
 
     # Can be changed - this is the save address for the output
     save_address = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means/' \
-                   '2023_analysis/ROI_PUTAMEN_THALAMUS_6_params/'
+                   '2023_analysis/ROI_FRONTAL_CORTEX_4_params/'
 
     # Can be changed - using other params - make sure to add another parameter as a name, and tuple of the
     # full path to the map of the parameter and the full path to the compatible segmentation
-    params = {T2: (MAP_T2, SEG_T2),
-              R1: (MAP_R1, BASIC_SEG),
-              DIFFUSION: (MAP_DIFFUSION, SEG_DIFFUSION),
-              R2S: (MAP_R2S, BASIC_SEG),
-              MT: (MAP_MT, BASIC_SEG),
-              TV: (MAP_TV, BASIC_SEG)}
+    params = {
+        R1: (MAP_R1, BASIC_SEG),
+        R2S: (MAP_R2S, BASIC_SEG),
+        MT: (MAP_MT, BASIC_SEG),
+        TV: (MAP_TV, BASIC_SEG)}
 
     # Can be changed - add more sort of normalizer and fit to it the compatible name to the file
     normalizer_file_name = {None: FILE_NAME_PURE_RAW_DATA, Z_SCORE: FILE_NAME_Z_SCORE_ON_BRAIN,
@@ -374,14 +387,11 @@ def main():
     range_for_tv_default = np.linspace(0.00, 0.4, 36)
 
     # ---- RUN the Reader
-    reader = DataReader(analysisDir, rois, params, choose_normalizer, derivative_dict, range_for_tv_default)
+    reader = DataReader(analysis_dir, rois, params, choose_normalizer, derivative_dict, range_for_tv_default)
     reader.extract_data()
+    print(f'NUmber of subjects: {len(reader.all_subjects_raw_data)}')
 
     if not os.path.exists(save_address):
         os.mkdir(save_address)
 
     reader.save_in_pickle_raw_data(save_address + normalizer_file_name[choose_normalizer])
-
-
-if __name__ == "__main__":
-    main()
