@@ -3,6 +3,7 @@ import seaborn as sns
 from data_handling.Data_Processor import DataProcessor
 sns.set_theme(style="ticks", color_codes=True)
 import constants
+import os
 
 
 # -------------------- PATHS -------------------- #
@@ -166,7 +167,7 @@ def run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_
                  raw_params, project_name)
 
 
-def run():
+if __name__ == "__main__":
     """
     For programmer -> Here you CAN/SHOULD choose how to run the program:
 
@@ -202,26 +203,26 @@ def run():
     :return: None
     """
     # Change here the action to go on the raw data (look at actions options)
-    pattern = Actions.means_per_subject
+    pattern = Actions.robust_scaling
 
     # Change here the type of raw data you would like (RAW_DATA, Z_SCORE, ROBUST_SCALING)
-    raw_data_type = Z_SCORE
+    raw_data_type = RAW_DATA
 
     # DONT CHANGE - from here get the raw data
-    raw_data_path = constants.PATH_TO_FRONTAL_CORTEX_4_params
+    raw_data_path = constants.PATH_TO_RIGHT_CORTEX_4_params_ZSCORE
 
     # Change Here the rois you would like to work with
     chosen_rois_dict = constants.ROI_FRONTAL_CORTEX
 
     # wandb
-    project_name = 'FRONTAL_CORTEX_4_params_zscore_with_der'
+    project_name = 'RIGHT_CORTEX_4_params_34_subjects_zscore_robust'
 
     # Change here the Statistics funcs to run
-    funcs_to_run = [PLOT_DATA_PER_PARAM]
+    funcs_to_run = [SD_PER_PARAMETER,  PLOT_DATA_PER_PARAM]
 
     # Choose here the parameters to work with in the data
-    data_params = constants.BASIC_4_PARAMS_WITH_SLOPES
-    params_to_work_with = ["Slope-tv-r2s", "Dtv-r1-values", "Dtv-r2s-values"]
+    data_params = constants.BASIC_4_PARAMS
+    params_to_work_with = constants.BASIC_4_PARAMS
 
     # Change here the path to save the results to - default is SAVE_DATA_PATH:
     output_path = SAVE_DATA_PATH
@@ -238,18 +239,6 @@ def run():
                                     rois_output_dir)
 
     # Run the Program
+    os.environ['WANDB_ENTITY'] = 'nivamos704'
     run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_dict, params_to_work_with, data_params, project_name)
 
-
-def main():
-    """
-    The main function which run the program -> here you can chose in which mode to run it:
-    user -> will need to insert some information by your own and chose options.
-    programmer -> you can change it manually be choosing from constants
-    :return:
-    """
-    run()
-
-
-if __name__ == "__main__":
-    main()

@@ -378,6 +378,7 @@ class StatisticsWrapper:
                 wandb_run.log({f'{col_name}': wandb.Image(plt)})
                 wandb_run.finish()
                 plt.close()
+
             # plt.ylim(range_y_values)
             # plt.ylabel(col_name)
             # plt.xlabel("ROI")
@@ -461,17 +462,17 @@ class StatisticsWrapper:
         plt.suptitle(str(sub_name) + " Correlation Map\n")
         df_corr.columns = colums_name
         df_corr.index = colums_name
-        sns.heatmap(df_corr, cmap='coolwarm',
-                    # xticklabels=colums_name,
-                    # yticklabels=colums_name,
-                    annot=True,
-                    # row_cluster=False,
-                    fmt=".2f")
+        sns.clustermap(df_corr, cmap='coolwarm',
+                       annot=True,
+                       row_cluster=False,
+                       fmt=".2f",
+                       figsize=(20, 10))
+
         # if not (save_address is None or file_name is None):
         #     if not os.path.exists(save_address):
         #         os.makedirs(save_address)
         #     plt.savefig(save_address + file_name + sub_name + '.png')
-        plt.show()
+        # plt.show()
 
     @staticmethod
     def calculate_correlation_per_data(df, params_to_work_with, ROIs_to_analyze, group_name, save_address,
@@ -485,7 +486,7 @@ class StatisticsWrapper:
         :param save_address: The save address
         :return: None
         """
-        relevant_ROIs = list(ROIs_to_analyze.values())
+        relevant_ROIs = list(ROIs_to_analyze.keys())
         all_correlations = np.zeros((len(relevant_ROIs),
                                      len(relevant_ROIs)))  # Variable which will have sum of all correlations and then divide it with num of subject
         for subject_name in df.subjects.unique():
@@ -505,15 +506,15 @@ class StatisticsWrapper:
                                                             relevant_ROIs,
                                                             save_address, HIERARCHICAL_CLUSTERING_FILE)
 
-        # if project_name:
-        #     wandb_run = wandb.init(
-        #         project=project_name,
-        #         name=f'{group_name} hierarchical correlation'
-        #     )
-        #
-        #     wandb_run.log({f'{group_name}': wandb.Image(plt)})
-        #     wandb_run.finish()
-        #     plt.close()
+        if project_name:
+            wandb_run = wandb.init(
+                project=project_name,
+                name=f'{group_name} hierarchical correlation'
+            )
+
+            wandb_run.log({f'{group_name}': wandb.Image(plt)})
+            wandb_run.finish()
+            plt.close()
 
     @staticmethod
     def plot_values_per_parameter_per_roi(data, params, rois, save_address):
