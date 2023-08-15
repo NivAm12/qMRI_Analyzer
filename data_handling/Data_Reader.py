@@ -7,7 +7,7 @@ import glob
 from re import search
 from sklearn.preprocessing import RobustScaler
 from sklearn.linear_model import LinearRegression
-import matplotlib.pyplot as plt
+
 
 # -------------------- MAPS and Segmentations paths -------------------- #
 from constants import R1, R2S, MT, TV, T2, DIFFUSION, \
@@ -81,6 +81,7 @@ def get_subject_paths(analysis_dir, subject_names):
         os.chdir(analysis_dir)
         scanedate = os.path.join(analysis_dir, subject[0])  # adds the to the string the second string so we have a path
         os.chdir(scanedate)  # goes to current path
+
         readmepath = os.path.relpath('readme',
                                      scanedate)  # This method returns a string value which represents the relative file path to given path from the start directory.
         if os.path.isfile(readmepath):  # has a read me
@@ -88,12 +89,11 @@ def get_subject_paths(analysis_dir, subject_names):
             A = file1.read().splitlines()[0]
             sub_path = [scanedate + '/' + A]
         else:
-            subfolders = glob.glob(scanedate + '/*/')
-            if subfolders == []:
-                # print(subject, "no folder")
-                continue
+            sub_path = glob.glob(scanedate + '/*/')
 
-            sub_path = subfolders
+        if not sub_path:
+            continue
+
         subject_paths.append(sub_path)
         names.append(subject[0])
 
@@ -183,7 +183,6 @@ class DataReader:
         :return: tuple: first is dictionary where key is the parameter and values are the measures of the parameter,
                         second is segmentation dict
         """
-        valid_shapes = [(181, 217, 181), (121, 145, 121), (128, 100, 60)]
 
         measures = {}
         seg_dict = {}
@@ -195,28 +194,36 @@ class DataReader:
             # check sub folders of subject
             for path in sub_path:
                 param_file = os.path.join(path, self.qmri_params[param_name][0])
-                seg_file = os.path.join(path, self.qmri_params[param_name][1])
 
-                if not os.path.isfile(param_file) or not os.path.isfile(seg_file):
+                if not os.path.isfile(param_file):
                     continue
 
                 param_file_to_use = param_file
+                break
+
+            for path in sub_path:
+                seg_file = os.path.join(path, self.qmri_params[param_name][1])
+
+                if not os.path.isfile(seg_file):
+                    continue
+
                 seg_file_to_use = seg_file
+                break
 
             if param_file_to_use is None or seg_file_to_use is None:
                 return -1, -1
+
+            # print(f'param: {param_name}')
+            # os.system(f'freeview -v {param_file_to_use} {seg_file_to_use}:colormap=lut &')
 
             seg = nib.load(seg_file_to_use).get_fdata()
             seg_dict[param_name] = seg
 
             param_data = nib.load(param_file_to_use).get_fdata()
 
-            if param_name == 'r1':
-                r1 = 1 / param_data  # todo: problem with zero division, change later
-                param_data = np.nan_to_num(r1, posinf=0.0, neginf=0.0)
-
-            if param_data.shape not in valid_shapes:
-                return -1, -1
+            # if param_name == 'r1':
+            #     r1 = 1 / param_data  # todo: problem with zero division, change later
+            #     param_data = np.nan_to_num(r1, posinf=0.0, neginf=0.0)
 
             measures[param_name] = param_data
 
@@ -275,6 +282,7 @@ class DataReader:
                 non_zeroes = np.where(mea_masked > 0)
             else:
                 non_zeroes = np.where(mea_masked != np.inf)
+
             sub_measure[roi] = mea_masked[non_zeroes]
 
     def add_all_info_of_param_per_subject(self, measures, seg_dict):
@@ -359,29 +367,31 @@ if __name__ == "__main__":
     analysis_dir = '/ems/elsc-labs/mezer-a/Mezer-Lab/analysis/HUJI/Calibration/Human'
 
     # Can be changed - list of all ROIs' numbers from the segmentation
-    rois = list(constants.ROI_FRONTAL_CORTEX.keys())
+    rois = list(constants.ROI_CORTEX.keys())
 
     # Can be changed - this is the save address for the output
-    save_address = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means/' \
-                   '2023_analysis/ROI_FRONTAL_CORTEX_4_params/'
+    save_address = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means/2023_analysis/ROI_RIGHT_CORTEX_4_params/'
 
     # Can be changed - using other params - make sure to add another parameter as a name, and tuple of the
     # full path to the map of the parameter and the full path to the compatible segmentation
     params = {
         R1: (MAP_R1, BASIC_SEG),
-        R2S: (MAP_R2S, BASIC_SEG),
+        # R2S: (MAP_R2S, BASIC_SEG),
         MT: (MAP_MT, BASIC_SEG),
-        TV: (MAP_TV, BASIC_SEG)}
+        TV: (MAP_TV, BASIC_SEG),
+        T2: (MAP_T2, SEG_T2)
+    }
 
     # Can be changed - add more sort of normalizer and fit to it the compatible name to the file
     normalizer_file_name = {None: FILE_NAME_PURE_RAW_DATA, Z_SCORE: FILE_NAME_Z_SCORE_ON_BRAIN,
                             ROBUST_SCALING: FILE_NAME_DMEDIAN}
 
     # ---- Here You Can Change the sort of normalizer ---- #
-    choose_normalizer = Z_SCORE
+    choose_normalizer = None
 
     # ---- Here you can change the derivative_dict
-    derivative_dict = {TV: [R1, R2S]}
+    # derivative_dict = {TV: [R1, R2S]}
+    derivative_dict = None
 
     # ---- Here You Can Change
     range_for_tv_default = np.linspace(0.00, 0.4, 36)
