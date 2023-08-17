@@ -283,6 +283,9 @@ class DataReader:
             else:
                 non_zeroes = np.where(mea_masked != np.inf)
 
+            if not np.any(mea_masked):
+                continue
+
             sub_measure[roi] = mea_masked[non_zeroes]
 
     def add_all_info_of_param_per_subject(self, measures, seg_dict):
@@ -370,7 +373,7 @@ if __name__ == "__main__":
     rois = list(constants.ROI_CORTEX.keys())
 
     # Can be changed - this is the save address for the output
-    save_address = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means/2023_analysis/ROI_RIGHT_CORTEX_4_params/'
+    save_address = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means/2023_analysis/ROI_CORTEX_4_params/'
 
     # Can be changed - using other params - make sure to add another parameter as a name, and tuple of the
     # full path to the map of the parameter and the full path to the compatible segmentation
@@ -379,7 +382,8 @@ if __name__ == "__main__":
         # R2S: (MAP_R2S, BASIC_SEG),
         MT: (MAP_MT, BASIC_SEG),
         TV: (MAP_TV, BASIC_SEG),
-        T2: (MAP_T2, SEG_T2)
+        T2: (MAP_T2, SEG_T2),
+        # DIFFUSION: (MAP_DIFFUSION, SEG_DIFFUSION)
     }
 
     # Can be changed - add more sort of normalizer and fit to it the compatible name to the file
