@@ -35,23 +35,12 @@ def HUJI_subjects_preprocess(analysisDir):
     :param analysisDir: A path to the dir from which the data will be taken
     :return: np array shape: (num_of_subjects after preprocess, 1)
     """
-
     subject_names = os.listdir(analysisDir)
     subject_names = [i for i in subject_names if (search('H\d\d_[A-Z][A-Z]', i) or search('H\d\d\d_[A-Z][A-Z]', i))]
-    # currently this regex is good for the 'H010_AG' and 'H60_GG' expressions
     subject_names.sort()
-    del subject_names[1:8]
-
-    subject_names.remove('H010_AG')
-    subject_names.remove('H011_GP')
-    subject_names.remove('H014_ZW')
-    subject_names.remove('H029_ON')
-    subject_names.remove('H057_YP')
-    subject_names.remove('H60_GG')
-    subject_names.remove('H061_SE')
     subject_names = np.array(subject_names)
-
     subject_names = subject_names.reshape(-1, 1)
+
     return subject_names
 
 
@@ -213,18 +202,12 @@ class DataReader:
             if param_file_to_use is None or seg_file_to_use is None:
                 return -1, -1
 
-            # print(f'param: {param_name}')
             # os.system(f'freeview -v {param_file_to_use} {seg_file_to_use}:colormap=lut &')
 
             seg = nib.load(seg_file_to_use).get_fdata()
             seg_dict[param_name] = seg
 
             param_data = nib.load(param_file_to_use).get_fdata()
-
-            # if param_name == 'r1':
-            #     r1 = 1 / param_data  # todo: problem with zero division, change later
-            #     param_data = np.nan_to_num(r1, posinf=0.0, neginf=0.0)
-
             measures[param_name] = param_data
 
         return measures, seg_dict
@@ -283,6 +266,7 @@ class DataReader:
             else:
                 non_zeroes = np.where(mea_masked != np.inf)
 
+            # remove empty roi
             if not np.any(mea_masked):
                 continue
 
@@ -367,22 +351,22 @@ class DataReader:
 
 if __name__ == "__main__":
     # The input dir containing all data of the subjects after MRI screening
-    analysis_dir = '/ems/elsc-labs/mezer-a/Mezer-Lab/analysis/HUJI/Calibration/Human'
+    analysis_dir = '/ems/elsc-labs/mezer-a/Mezer-Lab/analysis/HUJI/HUJI_PD_Unified/'
 
     # Can be changed - list of all ROIs' numbers from the segmentation
     rois = list(constants.ROI_CORTEX.keys())
 
     # Can be changed - this is the save address for the output
-    save_address = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means/2023_analysis/ROI_CORTEX_4_params/'
+    save_address = constants.PATH_TO_CORTEX_4_PARAMS_RAW
 
     # Can be changed - using other params - make sure to add another parameter as a name, and tuple of the
     # full path to the map of the parameter and the full path to the compatible segmentation
     params = {
         R1: (MAP_R1, BASIC_SEG),
-        # R2S: (MAP_R2S, BASIC_SEG),
+        R2S: (MAP_R2S, BASIC_SEG),
         MT: (MAP_MT, BASIC_SEG),
         TV: (MAP_TV, BASIC_SEG),
-        T2: (MAP_T2, SEG_T2),
+        # T2: (MAP_T2, SEG_T2),
         # DIFFUSION: (MAP_DIFFUSION, SEG_DIFFUSION)
     }
 
@@ -394,8 +378,7 @@ if __name__ == "__main__":
     choose_normalizer = None
 
     # ---- Here you can change the derivative_dict
-    # derivative_dict = {TV: [R1, R2S]}
-    derivative_dict = None
+    derivative_dict = {TV: [R1, R2S]}
 
     # ---- Here You Can Change
     range_for_tv_default = np.linspace(0.00, 0.4, 36)

@@ -130,11 +130,8 @@ ROI_ACCUM_HIPPO_AMYG = {17: 'Left-Hippocampus', 18: 'Left-Amygdala', 26: 'Left-A
                         53: 'Right-Hippocampus', 54: 'Right-Amygdala', 58: 'Right-Accumbens-area'}
 
 ROI_CORTEX = {
-    1000: 'ctx-lh-unknown',
-    1001: 'ctx-lh-bankssts',
     1002: 'ctx-lh-caudalanteriorcingulate',
     1003: 'ctx-lh-caudalmiddlefrontal',
-    1004: 'ctx-lh-corpuscallosum',
     1005: 'ctx-lh-cuneus',
     1006: 'ctx-lh-entorhinal',
     1007: 'ctx-lh-fusiform',
@@ -162,17 +159,11 @@ ROI_CORTEX = {
     1029: 'ctx-lh-superiorparietal',
     1030: 'ctx-lh-superiortemporal',
     1031: 'ctx-lh-supramarginal',
-    1032: 'ctx-lh-frontalpole',
-    1033: 'ctx-lh-temporalpole',
     1034: 'ctx-lh-transversetemporal',
     1035: 'ctx-lh-insula',
-    2000: 'ctx-rh-unknown',
-    2001: 'ctx-rh-bankssts',
     2002: 'ctx-rh-caudalanteriorcingulate',
     2003: 'ctx-rh-caudalmiddlefrontal',
-    2004: 'ctx-rh-corpuscallosum',
     2005: 'ctx-rh-cuneus',
-    2006: 'ctx-rh-entorhinal',
     2007: 'ctx-rh-fusiform',
     2008: 'ctx-rh-inferiorparietal',
     2009: 'ctx-rh-inferiortemporal',
@@ -198,8 +189,6 @@ ROI_CORTEX = {
     2029: 'ctx-rh-superiorparietal',
     2030: 'ctx-rh-superiortemporal',
     2031: 'ctx-rh-supramarginal',
-    2032: 'ctx-rh-frontalpole',
-    2033: 'ctx-rh-temporalpole',
     2034: 'ctx-rh-transversetemporal',
     2035: 'ctx-rh-insula'
 }
@@ -357,18 +346,19 @@ T2 = 't2'
 
 # qMRI parameter's maps
 # MAP_R1 = 'mrQ_fixbias/OutPutFiles_1/BrainMaps/T1_map_Wlin.nii.gz'
-MAP_R2S = 'multiecho_flash_R2s/R2_mean_2TVfixB1.nii.gz'
+# MAP_R2S = 'multiecho_flash_R2s/R2_mean_2TVfixB1.nii.gz'
 # MAP_MT = 'MT/MT_sat_mrQ_fixbias.nii.gz'
 # MAP_TV = 'mrQ/OutPutFiles_1/BrainMaps/TV_correctedForT2s.nii.gz'
 MAP_T2 = 'T2/T2map.nii.gz'
 MAP_DIFFUSION = 'Dif_fsl_preprocessed/eddy/aligned2T1/dtiInit/dti94trilin/bin/MD.nii.gz'
 
-MAP_R1 = 'mrQ_2022/OutPutFiles_1/BrainMaps/R1_map.nii.gz'
-MAP_TV = 'mrQ_2022/OutPutFiles_1/BrainMaps/TV_map.nii.gz'
-MAP_MT = 'MT_2022/MT_sat.nii.gz'
+MAP_R1 = 'mrQ/OutPutFiles_1/BrainMaps/R1_map_Wlin.nii.gz'
+MAP_TV = 'mrQ/OutPutFiles_1/BrainMaps/T1_map_Wlin.nii.gz'
+MAP_MT = 'MT/MT_sat.nii.gz'
+MAP_R2S = 'multiecho_flash_R2s/R2_mean_2TV.nii.gz'
 
 # qMRI segmentation's maps
-BASIC_SEG = 'freesurfer/segFSLMPRAGE_BS_wmparc2newmrQ_B1corrALL.nii.gz'
-# BASIC_SEG = 'freesurfer/seg.nii.gz'
+# BASIC_SEG = 'freesurfer/segFSLMPRAGE_BS_wmparc2newmrQ_B1corrALL.nii.gz'
+BASIC_SEG = 'FastSurfer/mri/aparc.DKTatlas+aseg.deep.nii.gz'
 SEG_T2 = 'T2/segFSLMPRAGE_BS_wmparc2newmrQ_B1corrALL_2T2_resamp_BMnewmrQ.nii.gz'
 SEG_DIFFUSION = 'Dif_fsl_preprocessed/eddy/aligned2T1/dtiInit/dti94trilin/bin/segFSLMPRAGE_BS_wmparc2newmrQ_B1corrALL_2DTI_resamp.nii.gz'
