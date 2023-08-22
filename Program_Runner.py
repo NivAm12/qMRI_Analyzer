@@ -1,23 +1,19 @@
 import enum
 import seaborn as sns
 from data_handling.Data_Processor import DataProcessor
-sns.set_theme(style="ticks", color_codes=True)
 import constants
 import os
 
+sns.set_theme(style="ticks", color_codes=True)
 
 # -------------------- PATHS -------------------- #
-from constants import PATH_TO_RAW_DATA_6_PARAMS, SAVE_DATA_PATH, PATH_TO_RAW_DATA_Z_SCORED, \
-    PATH_TO_RAW_DATA_ROBUST_SCALED
+from constants import SAVE_DATA_PATH
 
 # -------------------- File Names -------------------- #
 
 # -------------------- Folders ---------------------- #
 from constants import Z_SCORE_ON_AVG_ON_BRAIN_DIR, Z_SCORE_ON_BRAIN_DIR, NORMALIZE_BY_MEDIAN_DIR, \
     MEANS_ON_BRAIN_DIR
-
-# -------------------- ROIs -------------------- #
-from constants import SUB_CORTEX_DICT, ROI_PALLIDUM_PUTAMEN_CAUDETE, ROI_CORTEX, ROI_FRONTAL_CORTEX
 
 # -------------- Sub Folders - by ROIS ------------- #
 
@@ -26,9 +22,6 @@ from constants import RAW_DATA_DIR, RAW_DATA_ROBUST_SCALED_DIR, RAW_DATA_Z_SCORE
 
 # -------------- Type of Raw Data ------------- #
 from constants import RAW_DATA, Z_SCORE, ROBUST_SCALING, RAW_DATA_6_PARAMS
-
-# -------------------- MRI Physical Parameters -------------------- #
-from constants import PARAMETERS, BASIC_4_PARAMS, BASIC_4_PARAMS_WITH_SLOPES
 
 # -------------------- Magic Number -------------------- #
 from constants import OLD, YOUNG, AGE_THRESHOLD
@@ -118,6 +111,7 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
 
         elif func == PLOT_DATA_PER_PARAM:
             StatisticsWrapper.plot_data_per_param_per_roi_next_to_each_other(young_subjects, old_subjects,
+                                                                             params_to_work_with,
                                                                              group_a_name, group_b_name,
                                                                              save_address, project_name)
 
@@ -203,26 +197,26 @@ if __name__ == "__main__":
     :return: None
     """
     # Change here the action to go on the raw data (look at actions options)
-    pattern = Actions.robust_scaling
+    pattern = Actions.means_per_subject
 
     # Change here the type of raw data you would like (RAW_DATA, Z_SCORE, ROBUST_SCALING)
-    raw_data_type = RAW_DATA
+    raw_data_type = Z_SCORE
 
     # DONT CHANGE - from here get the raw data
-    raw_data_path = constants.PATH_TO_RIGHT_CORTEX_4_params_ZSCORE
+    raw_data_path = constants.PATH_TO_CORTEX_4_PARAMS_Z
 
     # Change Here the rois you would like to work with
-    chosen_rois_dict = constants.ROI_FRONTAL_CORTEX
+    chosen_rois_dict = constants.ROI_CORTEX
 
     # wandb
-    project_name = 'RIGHT_CORTEX_4_params_34_subjects_zscore_robust'
+    project_name = 'CORTEX_4_params_42_subjects_raw'
 
     # Change here the Statistics funcs to run
-    funcs_to_run = [SD_PER_PARAMETER,  PLOT_DATA_PER_PARAM]
+    funcs_to_run = [HIERARCHICAL_CLUSTERING_WITH_CORRELATIONS]
 
     # Choose here the parameters to work with in the data
-    data_params = constants.BASIC_4_PARAMS
-    params_to_work_with = constants.BASIC_4_PARAMS
+    data_params = constants.BASIC_4_PARAMS_WITH_SLOPES
+    params_to_work_with = constants.BASIC_4_PARAMS_WITH_SLOPES
 
     # Change here the path to save the results to - default is SAVE_DATA_PATH:
     output_path = SAVE_DATA_PATH
@@ -240,5 +234,5 @@ if __name__ == "__main__":
 
     # Run the Program
     os.environ['WANDB_ENTITY'] = 'nivamos704'
-    run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_dict, params_to_work_with, data_params, project_name)
-
+    run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_dict, params_to_work_with, data_params,
+                project_name)

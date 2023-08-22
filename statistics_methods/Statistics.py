@@ -146,27 +146,24 @@ class StatisticsWrapper:
         """
         mean_per_subject_per_roi_per_param = StatisticsWrapper.calc_mean_per_subject_per_parameter_per_ROI(
             subjects_raw_data, params)
-        # mean_per_subject_per_roi_per_param[PARAMETERS] = mean_per_subject_per_roi_per_param[PARAMETERS].applymap(lambda x: stats.zscore(x.groupby('subjects')[PARAMETERS]))
-        # mean_per_subject_per_roi_per_param[PARAMETERS] = mean_per_subject_per_roi_per_param[PARAMETERS].apply(lambda x: stats.zscore(x.groupby('subjects'))[PARAMETERS])
-        # mean_per_subject_per_roi_per_param[PARAMETERS] = mean_per_subject_per_roi_per_param[PARAMETERS].apply(lambda x: stats.zscore(x)) #TODO: SUPER IMPORTNAT NOT GOOD! NEED TO BE FIXED SINCE IT IS DOING ZSCORE ON ALL DATA PER PARAm AND NOT PER SUBJECT!!
+
         mean_per_subject_per_roi_per_param[params] = mean_per_subject_per_roi_per_param[params + ['subjects']].groupby(
             "subjects").apply(stats.zscore)
+
         # TODO apply zscore function on all means of all keys!
         return mean_per_subject_per_roi_per_param
 
     @staticmethod
     def calc_z_score_on_mean_per_subject2(subjects_raw_data, params):
         """
-        First do z_score on each cell, than takes the everage of each z_score - doesn't depend
+        First do z_score on each cell, then takes the average of each z_score - doesn't depend
         on num of ROIS
         :param subjects_raw_data: given data
         :param params: given relevant params to analyze.
         :return:
         """
         mean_per_subject_per_roi_per_param = StatisticsWrapper.calc_z_score_per_subject(subjects_raw_data, params)
-        # mean_per_subject_per_roi_per_param[PARAMETERS] = mean_per_subject_per_roi_per_param[PARAMETERS].applymap(lambda x: stats.zscore(x.groupby('subjects')[PARAMETERS]))
-        # mean_per_subject_per_roi_per_param[PARAMETERS] = mean_per_subject_per_roi_per_param[PARAMETERS].apply(lambda x: stats.zscore(x.groupby('subjects'))[PARAMETERS])
-        # mean_per_subject_per_roi_per_param[PARAMETERS] = mean_per_subject_per_roi_per_param[PARAMETERS].apply(lambda x: stats.zscore(x)) #TODO: SUPER IMPORTNAT NOT GOOD! NEED TO BE FIXED SINCE IT IS DOING ZSCORE ON ALL DATA PER PARAm AND NOT PER SUBJECT!!
+
         return StatisticsWrapper.calc_mean_per_subject_per_parameter_per_ROI(mean_per_subject_per_roi_per_param, params)
         # TODO apply zscore function on all means of all keys!
 
@@ -175,7 +172,7 @@ class StatisticsWrapper:
         """
         Calculates the robust scaling
         :param cell: given cell
-        :return: return the value after it was normilzed with robust-scaling
+        :return: return the value after it was normalized with robust-scaling
         """
         return list((np.array(cell) - np.median(cell)) / (np.quantile(cell, 0.75) - np.quantile(cell, 0.25)))
 
@@ -344,7 +341,7 @@ class StatisticsWrapper:
                 wandb_run.finish()
 
     @staticmethod
-    def plot_data_per_param_per_roi_next_to_each_other(data1, data2, name_group_a, name_group_b, save_address,
+    def plot_data_per_param_per_roi_next_to_each_other(data1, data2, params, name_group_a, name_group_b, save_address,
                                                        project_name):
         """
         Plot data per parameter per roi next to each other - group a near group b
@@ -358,26 +355,23 @@ class StatisticsWrapper:
         """
         data = pd.concat([data2, data1])
         data = data.assign(Mature=np.where(data['Age'] >= AGE_THRESHOLD, name_group_b, name_group_a))
-        for col_name in data.columns:
-            if col_name == 'subjects' or col_name == 'ROI' or col_name == 'Age' \
-                    or col_name == "Gender" or col_name == "ROI_name" or col_name == 'Mature':
-                continue
-            # range_y_values = [min(data[col_name]) - min(data[col_name]) / 100,
-            #                   max(data[col_name]) + max(data[col_name]) / 100]
+
+        for param in params:
             sns.set(rc={'figure.figsize': (25, 25)})
-            sns.boxplot(x="ROI", y=col_name, data=data, showmeans=True, hue='Mature', width=0.3,
+
+            sns.boxplot(x="ROI", y=param, data=data, showmeans=True, hue='Mature', width=0.3,
                         meanprops={"marker": "o", "markerfacecolor": "white", "markeredgecolor": "black",
                                    "markersize": "3"})
 
-            if project_name:
-                wandb_run = wandb.init(
-                    project=project_name,
-                    name=f'{col_name}boxplot'
-                )
-
-                wandb_run.log({f'{col_name}': wandb.Image(plt)})
-                wandb_run.finish()
-                plt.close()
+            # if project_name:
+            #     wandb_run = wandb.init(
+            #         project=project_name,
+            #         name=f'{param}boxplot'
+            #     )
+            #
+            #     wandb_run.log({f'{param}': wandb.Image(plt)})
+            #     wandb_run.finish()
+            #     plt.close()
 
             # plt.ylim(range_y_values)
             # plt.ylabel(col_name)
@@ -387,7 +381,7 @@ class StatisticsWrapper:
             # if not os.path.exists(save_address + "/distribution/"):
             #     os.makedirs(save_address + "/distribution/")
             # plt.savefig(save_address + "/distribution/" + f"{col_name}_distribution" + '.png')
-            # plt.show()
+            plt.show()
 
             # StatisticsWrapper.plot_data_per_parameter_for_rois(data1, data2, "", YOUNG, OLD)
 
@@ -447,32 +441,24 @@ class StatisticsWrapper:
         return p_values
 
     @staticmethod
-    def plot_hierarchical_correlation_map(sub_name, df_corr, colums_name, save_address=None, file_name=None):
+    def plot_hierarchical_correlation_map(sub_name, corr_mat, colunm_name):
         """
         Plot Hierarchical Correlation Map in a subject per ROI, with the given correlation matrix.
         :param sub_name: subject name
-        :param df_corr: correlation matrix between ROIS, that does the correlation on vector of given params
-        :param colums_name: Names of ROIs
-        :param save_address: The path to where the file will be saved
-        :param file_name: The name the file will be saved
+        :param corr_mat: correlation matrix between ROIS, that does the correlation on vector of given params
+        :param colunm_name: Names of ROIs
         :return:
         """
-        # plt.figure(figsize=(250, 250))
-        # sns.set(font_scale=0.75)
-        plt.suptitle(str(sub_name) + " Correlation Map\n")
-        df_corr.columns = colums_name
-        df_corr.index = colums_name
-        sns.clustermap(df_corr, cmap='coolwarm',
-                       annot=True,
-                       row_cluster=False,
-                       fmt=".2f",
-                       figsize=(20, 10))
+        df_corr = pd.DataFrame(corr_mat)
 
-        # if not (save_address is None or file_name is None):
-        #     if not os.path.exists(save_address):
-        #         os.makedirs(save_address)
-        #     plt.savefig(save_address + file_name + sub_name + '.png')
-        # plt.show()
+        cluster_map = sns.clustermap(df_corr,
+                                     cmap='coolwarm',
+                                     row_cluster=False,
+                                     fmt=".2f",
+                                     figsize=(20, 10))
+
+        cluster_map.fig.suptitle(str(sub_name) + " Correlation Map\n")
+        plt.show()
 
     @staticmethod
     def calculate_correlation_per_data(df, params_to_work_with, ROIs_to_analyze, group_name, save_address,
@@ -486,35 +472,29 @@ class StatisticsWrapper:
         :param save_address: The save address
         :return: None
         """
-        relevant_ROIs = list(ROIs_to_analyze.keys())
-        all_correlations = np.zeros((len(relevant_ROIs),
-                                     len(relevant_ROIs)))  # Variable which will have sum of all correlations and then divide it with num of subject
+        relevant_rois = list(df.ROI.unique())
+        all_correlations = np.zeros((len(relevant_rois),
+                                     len(relevant_rois)))
+
         for subject_name in df.subjects.unique():
             # Compute correlation only with the current subject between all rois with given parameters.
             df_corr = df[df['subjects'] == subject_name][params_to_work_with].T.corr()
-            # StatisticsWrapper.plot_hierarchical_correlation_map(subject_name, df_corr, relevant_ROIs, save_address,
-            #                                                     HIERARCHICAL_CLUSTERING_FILE)
             all_correlations += df_corr.to_numpy()
 
-            # a = StatisticsWrapper.calculate_pvalues(df[df['subjects'] == subject_name][params_to_work_with].T)
-            # if a[a < 0.05].count().sum() > 6:
-            #     print(StatisticsWrapper.calculate_pvalues(df[df['subjects'] == subject_name][params_to_work_with].T))
-
         all_correlations /= len(df.subjects.unique())
-        all_correlations = pd.DataFrame(all_correlations)
+
         StatisticsWrapper.plot_hierarchical_correlation_map(f"Mean Of {group_name} Subjects", all_correlations,
-                                                            relevant_ROIs,
-                                                            save_address, HIERARCHICAL_CLUSTERING_FILE)
+                                                            relevant_rois)
 
-        if project_name:
-            wandb_run = wandb.init(
-                project=project_name,
-                name=f'{group_name} hierarchical correlation'
-            )
-
-            wandb_run.log({f'{group_name}': wandb.Image(plt)})
-            wandb_run.finish()
-            plt.close()
+        # if project_name:
+        #     wandb_run = wandb.init(
+        #         project=project_name,
+        #         name=f'{group_name} hierarchical correlation'
+        #     )
+        #
+        #     wandb_run.log({f'{group_name}': wandb.Image(plt)})
+        #     wandb_run.finish()
+        #     plt.close()
 
     @staticmethod
     def plot_values_per_parameter_per_roi(data, params, rois, save_address):
@@ -557,3 +537,6 @@ class StatisticsWrapper:
                             plt.savefig(save_address_for_func + "/" +
                                         f"cor_{SUB_CORTEX_DICT[rois[i]]}_and_{SUB_CORTEX_DICT[rois[j]]}.png")
                         plt.show()
+
+
+

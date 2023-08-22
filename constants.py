@@ -17,6 +17,10 @@ PATH_TO_CORTEX_4_PARAMS_RAW = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Co
                                   '/corr_by_means/' \
                                   '2023_analysis/ROI_CORTEX_4_params/raw_data3'
 
+PATH_TO_CORTEX_4_PARAMS_Z = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
+                                  '/corr_by_means/' \
+                                  '2023_analysis/ROI_CORTEX_4_params/raw_data_z_score_on_brain3'
+
 PATH_TO_CORTEX_Z_SCORED = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means" \
                           "/cortical_areas/raw_data_z_score_on_brain3"
 

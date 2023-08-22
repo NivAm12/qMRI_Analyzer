@@ -357,7 +357,9 @@ if __name__ == "__main__":
     rois = list(constants.ROI_CORTEX.keys())
 
     # Can be changed - this is the save address for the output
-    save_address = constants.PATH_TO_CORTEX_4_PARAMS_RAW
+    save_address = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
+                                  '/corr_by_means/' \
+                                  '2023_analysis/ROI_CORTEX_4_params/'
 
     # Can be changed - using other params - make sure to add another parameter as a name, and tuple of the
     # full path to the map of the parameter and the full path to the compatible segmentation
