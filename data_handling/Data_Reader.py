@@ -257,9 +257,11 @@ class DataReader:
         for roi in self.rois:
             # all indices in seg file with value roi, all coordinates with same label (associated with same area)
             roi_mask = np.where(seg_dict[param_name] == roi)
+            # slice to only include values with the same label
+            mea_masked = measures[param_name][roi_mask]
+            # remove nans
+            mea_masked = mea_masked[~np.isnan(mea_masked)]
 
-            mea_masked = measures[param_name][roi_mask]  # slice to only include values with the same label,
-            # keeps array only of values in a specific roi
             # TODO fix the shapes
             if how_to_normalize is None:
                 non_zeroes = np.where(mea_masked > 0)
@@ -312,8 +314,6 @@ class DataReader:
         avg_points_bucket = list(map(lambda x: np.array([np.mean(x[:, 0]), np.mean(x[:, 1])]), buckets))
         avg_points_bucket = np.delete(avg_points_bucket, del_idx, axis=0)
 
-        # rows_idx_contain_nan = [np.any(i) for i in np.isnan(avg_points_bucket)]
-        # avg_points_bucket = np.delete(avg_points_bucket, rows_idx_contain_nan, axis=0)
         X = np.array(avg_points_bucket)[:, 0].reshape(-1, 1)
         y = np.array(avg_points_bucket)[:, 1].reshape(-1, 1)
         reg = LinearRegression().fit(X, y)
@@ -377,7 +377,7 @@ if __name__ == "__main__":
                             ROBUST_SCALING: FILE_NAME_DMEDIAN}
 
     # ---- Here You Can Change the sort of normalizer ---- #
-    choose_normalizer = None
+    choose_normalizer = Z_SCORE
 
     # ---- Here you can change the derivative_dict
     derivative_dict = {TV: [R1, R2S]}

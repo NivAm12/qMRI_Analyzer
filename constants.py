@@ -93,6 +93,8 @@ HIERARCHICAL_CLUSTERING_WITH_CORRELATIONS = 'hierarchical_clustering_with_correl
 SD_PER_PARAMETER = 'sd_per_parameter'
 PLOT_DATA_PER_PARAM = 'plot data per param'
 PLOT_DATA_PER_ROI_PER_SUBJET_WITH_ALL_PARAMS = 'PLOT_DATA_PER_ROI_PER_SUBJET_WITH_ALL_PARAMS'
+HIERARCHICAL_CLUSTERING = 'hierarchical_clustering'
+ROIS_CORRELATIONS = 'rois_correlations'
 
 # -------------------- Folders Output ---------------------- #
 Z_SCORE_ON_AVG_ON_BRAIN_DIR = "default_z_score_on_average_of_params/"

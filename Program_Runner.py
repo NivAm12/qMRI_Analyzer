@@ -28,7 +28,7 @@ from constants import OLD, YOUNG, AGE_THRESHOLD
 
 # -------------------- Statistics Funcs to Run -------------------- #
 from constants import T_TEST, HIERARCHICAL_CLUSTERING_WITH_CORRELATIONS, SD_PER_PARAMETER, PLOT_DATA_PER_PARAM, \
-    PLOT_DATA_PER_ROI_PER_SUBJET_WITH_ALL_PARAMS
+    PLOT_DATA_PER_ROI_PER_SUBJET_WITH_ALL_PARAMS, HIERARCHICAL_CLUSTERING, ROIS_CORRELATIONS
 
 # ------------------- Statistics funcs on processed data - adding normalizer/means ---------------------- #
 from statistics_methods.Statistics import StatisticsWrapper
@@ -42,14 +42,9 @@ class Actions(enum.Enum):
     robust_scaling = 4  # subtracting the median and dividing by the interquartile range
 
 
-# -------------- Dictionaries of raw_data_type to their input path and output Dir ------------- #
-# RAW_DATA_NORMALIZER_PATH = {RAW_DATA: PATH_TO_FRONTAL_CORTEX_NO_NORMAL, Z_SCORE: PATH_TO_FRONTAL_CORTEX_Z_SCORED,
-#                             ROBUST_SCALING: PATH_TO_RAW_DATA_ROBUST_SCALED, RAW_DATA_6_PARAMS: PATH_TO_RAW_DATA_6_PARAMS}
-
 RAW_DATA_NORMALIZER_OUTPUT_DIR = {RAW_DATA: RAW_DATA_DIR, Z_SCORE: RAW_DATA_Z_SCORED_DIR,
                                   ROBUST_SCALING: RAW_DATA_ROBUST_SCALED_DIR, RAW_DATA_6_PARAMS: RAW_DATA_DIR}
 
-# -------------------- Dict action:function -------------------- #
 ACTION_FUNCTION_DICT = {Actions.z_score: StatisticsWrapper.calc_z_score_per_subject,
                         Actions.z_score_means: StatisticsWrapper.calc_z_score_on_mean_per_subject2,
                         Actions.means_per_subject: StatisticsWrapper.calc_mean_per_subject_per_parameter_per_ROI,
@@ -105,11 +100,7 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
     young_subjects, old_subjects = StatisticsWrapper.seperate_data_to_two_groups(chosen_data, col_divider, threshold)
 
     for func in funcs_to_run:
-        if func == T_TEST:
-            StatisticsWrapper.t_test_per_parameter_per_area(young_subjects, old_subjects, ROIs_to_analyze,
-                                                            'ROI', group_a_name, group_b_name)
-
-        elif func == PLOT_DATA_PER_PARAM:
+        if func == PLOT_DATA_PER_PARAM:
             StatisticsWrapper.plot_data_per_param_per_roi_next_to_each_other(young_subjects, old_subjects,
                                                                              params_to_work_with,
                                                                              group_a_name, group_b_name,
@@ -131,9 +122,10 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
                                                              group_b_name, save_address + "/" + group_b_name + "/",
                                                              project_name=project_name)
 
-        elif func == PLOT_DATA_PER_ROI_PER_SUBJET_WITH_ALL_PARAMS:
-            StatisticsWrapper.plot_values_per_parameter_per_roi(chosen_data, params_to_work_with, list(ROIs_to_analyze),
-                                                                save_address)
+        elif func == HIERARCHICAL_CLUSTERING:
+            StatisticsWrapper.hierarchical_clustering(chosen_data, params_to_work_with, project_name, "all")
+            StatisticsWrapper.hierarchical_clustering(young_subjects, params_to_work_with, project_name, group_a_name)
+            StatisticsWrapper.hierarchical_clustering(old_subjects, params_to_work_with, project_name, group_b_name)
 
 
 def run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_dict, params_to_work_with,
@@ -209,10 +201,10 @@ if __name__ == "__main__":
     chosen_rois_dict = constants.ROI_CORTEX
 
     # wandb
-    project_name = 'CORTEX_4_params_42_subjects_raw'
+    project_name = 'CORTEX_8_params_38_subjects'
 
     # Change here the Statistics funcs to run
-    funcs_to_run = [HIERARCHICAL_CLUSTERING_WITH_CORRELATIONS]
+    funcs_to_run = [HIERARCHICAL_CLUSTERING]
 
     # Choose here the parameters to work with in the data
     data_params = constants.BASIC_4_PARAMS_WITH_SLOPES
@@ -224,11 +216,10 @@ if __name__ == "__main__":
     # If you chose another ROIs - you can put them in another sub-dir inside the raw_data_type dir :)
     rois_output_dir = ""
 
-    # DONT CHANGE - from here you get the directory name in which the file will be saved
+    # DON'T CHANGE - from here you get the directory name in which the file will be saved
     raw_output_data_dir = RAW_DATA_NORMALIZER_OUTPUT_DIR[raw_data_type]
 
     # Possible to change Save Address: the format is as following :
-    # <output_path>/<dir_name_by_raw_data_type>/<dir name by manipulation done on the data-like z_score>/<possible - ROIs took place in the run>
     save_address = get_save_address(output_path, raw_output_data_dir, ACTION_SAVE_ADDRESS_DICT[pattern],
                                     rois_output_dir)
 

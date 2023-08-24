@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 from scipy.stats import pearsonr, spearmanr
 from typing import List, Dict, Any, Tuple
 import wandb
+from scipy.spatial.distance import pdist, squareform
+from scipy.cluster.hierarchy import linkage, dendrogram
 
 # -------------------- PATHS -------------------- #
 from constants import PATH_TO_RAW_DATA, SAVE_DATA_PATH, SUBJECTS_INFO_PATH, SAVE_DATA_OF_ALL_Z_SCORE_MEANS, \
@@ -538,5 +540,37 @@ class StatisticsWrapper:
                                         f"cor_{SUB_CORTEX_DICT[rois[i]]}_and_{SUB_CORTEX_DICT[rois[j]]}.png")
                         plt.show()
 
+    @staticmethod
+    def hierarchical_clustering(data: pd.DataFrame, params_to_work_with: list, project_name: str, title: str):
+        subjects = data.groupby('subjects')
+        relevant_rois = list(data.ROI_name.unique())
+        distances = np.zeros((len(relevant_rois),
+                              len(relevant_rois)))
 
+        for subject_name, subject_df in subjects:
+            df = subject_df[params_to_work_with]
+            dist = pdist(df, metric='euclidean')
+            distance_matrix = pd.DataFrame(squareform(dist), index=relevant_rois, columns=relevant_rois)
+            distances += distance_matrix.to_numpy()
 
+        distances /= data.subjects.nunique()
+        clusters = linkage(distances, method='single')
+
+        plt.figure(figsize=(20, 10))
+        dendrogram(clusters, labels=np.array(relevant_rois), leaf_rotation=90)
+        plt.title(f'Hierarchical Clustering Dendrogram of {title} group')
+        plt.xlabel('ROI')
+        plt.ylabel('Distance')
+
+        if project_name:
+            wandb_run = wandb.init(
+                project=project_name,
+                name=f'{title} hierarchical clustering'
+            )
+
+            wandb_run.log({f'{title}': wandb.Image(plt)})
+            wandb_run.finish()
+            plt.close()
+    @staticmethod
+    def roi_correlations(data: pd.DataFrame, params_to_work_with: list, project_name: str):
+        pass
