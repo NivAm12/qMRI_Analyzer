@@ -488,15 +488,15 @@ class StatisticsWrapper:
         StatisticsWrapper.plot_hierarchical_correlation_map(f"Mean Of {group_name} Subjects", all_correlations,
                                                             relevant_rois)
 
-        # if project_name:
-        #     wandb_run = wandb.init(
-        #         project=project_name,
-        #         name=f'{group_name} hierarchical correlation'
-        #     )
-        #
-        #     wandb_run.log({f'{group_name}': wandb.Image(plt)})
-        #     wandb_run.finish()
-        #     plt.close()
+        if project_name:
+            wandb_run = wandb.init(
+                project=project_name,
+                name=f'{group_name} hierarchical correlation'
+            )
+
+            wandb_run.log({f'{group_name}': wandb.Image(plt)})
+            wandb_run.finish()
+            plt.close()
 
     @staticmethod
     def plot_values_per_parameter_per_roi(data, params, rois, save_address):
@@ -541,7 +541,8 @@ class StatisticsWrapper:
                         plt.show()
 
     @staticmethod
-    def hierarchical_clustering(data: pd.DataFrame, params_to_work_with: list, project_name: str, title: str):
+    def hierarchical_clustering(data: pd.DataFrame, params_to_work_with: list, project_name: str = None,
+                                title: str = None):
         subjects = data.groupby('subjects')
         relevant_rois = list(data.ROI_name.unique())
         distances = np.zeros((len(relevant_rois),
@@ -557,7 +558,8 @@ class StatisticsWrapper:
         clusters = linkage(distances, method='single')
 
         plt.figure(figsize=(20, 10))
-        dendrogram_data = dendrogram(clusters, labels=np.array([label[4:] for label in relevant_rois]), leaf_rotation=90)
+        dendrogram_data = dendrogram(clusters, labels=np.array([label[4:] for label in relevant_rois]),
+                                     orientation='right', leaf_font_size=8)
         plt.title(f'Hierarchical Clustering Dendrogram of {title} group')
         plt.xlabel('ROI')
         plt.ylabel('Distance')
@@ -576,6 +578,41 @@ class StatisticsWrapper:
         return {'clusters': clusters, 'dendrogram_data': dendrogram_data}
 
     @staticmethod
-    def roi_correlations(data: pd.DataFrame, params_to_work_with: list, rois: list, project_name: str):
-        pass
+    def roi_correlations(data: pd.DataFrame, params_to_work_with: list, rois: list,
+                         group_title: str = None, project_name: str = None):
+        subjects = data.groupby('subjects')
+        relevant_rois = list(data.ROI_name.unique())
+        correlations = np.zeros((len(relevant_rois),
+                                 len(relevant_rois)))
+
+        for subject_name, subject_df in subjects:
+            df_corr = subject_df[params_to_work_with].T.corr()
+            correlations += df_corr.to_numpy()
+
+        correlations /= data.subjects.nunique()
+        labels = [label[4:] for label in relevant_rois]  # remove prefix as 'ctx'
+        correlations_df = pd.DataFrame(correlations, index=labels, columns=labels)
+
+        # plot the heatmap
+        StatisticsWrapper.plot_heatmap(correlations_df, group_title, project_name)
+
+        return correlations_df
+
+    @staticmethod
+    def plot_heatmap(data: pd.DataFrame, group_title: str, project_name):
+        sns.set(font_scale=0.5)
+        plt.figure(figsize=(20, 10))
+        cluster_map = sns.heatmap(data, linewidth=.5, cmap='coolwarm')
+        plt.title(f'Correlations of {group_title} group')
+
+        if project_name:
+            wandb_run = wandb.init(
+                project=project_name,
+                name=f'{group_title} Correlations'
+            )
+
+            wandb_run.log({f'{group_title}': wandb.Image(plt)})
+            wandb_run.finish()
+
+        plt.close()
 

@@ -127,6 +127,17 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
             StatisticsWrapper.hierarchical_clustering(young_subjects, params_to_work_with, project_name, group_a_name)
             StatisticsWrapper.hierarchical_clustering(old_subjects, params_to_work_with, project_name, group_b_name)
 
+        elif func == ROIS_CORRELATIONS:
+            clusters_rois = StatisticsWrapper.hierarchical_clustering(chosen_data, params_to_work_with,
+                                                                      title="all")['dendrogram_data']['ivl']
+            young_result = StatisticsWrapper.roi_correlations(young_subjects, params_to_work_with, clusters_rois,
+                                                              'young',
+                                                              project_name)
+            old_result = StatisticsWrapper.roi_correlations(old_subjects, params_to_work_with, clusters_rois, 'old',
+                                                            project_name)
+
+            StatisticsWrapper.plot_heatmap(old_result - young_result, 'differences of old and young', project_name)
+
 
 def run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_dict, params_to_work_with,
                 raw_params, project_name):
