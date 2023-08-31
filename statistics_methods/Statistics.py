@@ -557,7 +557,7 @@ class StatisticsWrapper:
         clusters = linkage(distances, method='single')
 
         plt.figure(figsize=(20, 10))
-        dendrogram(clusters, labels=np.array(relevant_rois), leaf_rotation=90)
+        dendrogram_data = dendrogram(clusters, labels=np.array([label[4:] for label in relevant_rois]), leaf_rotation=90)
         plt.title(f'Hierarchical Clustering Dendrogram of {title} group')
         plt.xlabel('ROI')
         plt.ylabel('Distance')
@@ -570,7 +570,12 @@ class StatisticsWrapper:
 
             wandb_run.log({f'{title}': wandb.Image(plt)})
             wandb_run.finish()
-            plt.close()
+
+        plt.close()
+
+        return {'clusters': clusters, 'dendrogram_data': dendrogram_data}
+
     @staticmethod
-    def roi_correlations(data: pd.DataFrame, params_to_work_with: list, project_name: str):
+    def roi_correlations(data: pd.DataFrame, params_to_work_with: list, rois: list, project_name: str):
         pass
+
