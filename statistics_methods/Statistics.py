@@ -10,6 +10,9 @@ from typing import List, Dict, Any, Tuple
 import wandb
 from scipy.spatial.distance import pdist, squareform
 from scipy.cluster.hierarchy import linkage, dendrogram
+import nibabel as nib
+import constants
+import copy
 
 # -------------------- PATHS -------------------- #
 from constants import PATH_TO_RAW_DATA, SAVE_DATA_PATH, SUBJECTS_INFO_PATH, SAVE_DATA_OF_ALL_Z_SCORE_MEANS, \
@@ -541,8 +544,8 @@ class StatisticsWrapper:
                         plt.show()
 
     @staticmethod
-    def hierarchical_clustering(data: pd.DataFrame, params_to_work_with: list, project_name: str = None,
-                                title: str = None):
+    def hierarchical_clustering(data: pd.DataFrame, params_to_work_with: list, linkage_metric: str,
+                                project_name: str = None, title: str = None):
         subjects = data.groupby('subjects')
         relevant_rois = list(data.ROI_name.unique())
         distances = np.zeros((len(relevant_rois),
@@ -555,19 +558,22 @@ class StatisticsWrapper:
             distances += distance_matrix.to_numpy()
 
         distances /= data.subjects.nunique()
-        clusters = linkage(distances, method='single')
+        clusters = linkage(distances, method=linkage_metric)
 
         plt.figure(figsize=(20, 10))
         dendrogram_data = dendrogram(clusters, labels=np.array([label[4:] for label in relevant_rois]),
                                      orientation='right', leaf_font_size=8)
-        plt.title(f'Hierarchical Clustering Dendrogram of {title} group')
+        plt.title(f'Hierarchical Clustering Dendrogram of {title} group with {linkage_metric}')
         plt.xlabel('ROI')
         plt.ylabel('Distance')
 
         if project_name:
             wandb_run = wandb.init(
                 project=project_name,
-                name=f'{title} hierarchical clustering'
+                name=f'{title} hierarchical clustering {linkage_metric}',
+                config={
+                    'linkage_metric': linkage_metric
+                }
             )
 
             wandb_run.log({f'{title}': wandb.Image(plt)})
@@ -599,7 +605,36 @@ class StatisticsWrapper:
         return correlations_df
 
     @staticmethod
-    def plot_heatmap(data: pd.DataFrame, group_title: str, project_name):
+    def plot_clusters_on_brain(dendrogram_data: dict, example_subject: str, rois: dict, project_name: str = None):
+        rois_values = {f'{v[4:]}': k for k, v in rois.items()}
+        data_path = os.path.join(constants.ANALYSIS_DIR, example_subject)
+        seg_path = os.path.join(data_path, os.listdir(data_path)[0], constants.BASIC_SEG)
+        brain_path = os.path.join(data_path, os.listdir(data_path)[0], constants.MAP_TV)
+        save_path = os.path.join(constants.CLUSTERING_PATH, 'clusters_data.nii.gz')
+
+        # read the map
+        seg_file = nib.load(seg_path)
+        seg_file_data = seg_file.get_fdata()
+        cluster_map = copy.deepcopy(seg_file_data)
+
+        # paint each roi with his cluster color
+        roi_values_as_other_type = np.array(list(rois_values.values()), dtype=seg_file_data.dtype)
+        remove_mask = np.logical_not(np.isin(seg_file_data, roi_values_as_other_type))
+
+        for roi, cluster in zip(dendrogram_data['ivl'], dendrogram_data['color_list']):
+            roi_mask = np.where(seg_file_data == rois_values[roi])
+            cluster_map[roi_mask] = constants.COLOR_LIST[cluster]
+
+        # save the map
+        cluster_map[remove_mask] = None
+        cluster_map = nib.Nifti1Image(cluster_map, seg_file.affine)
+        nib.save(cluster_map, save_path)
+        os.system(f'freeview -v {brain_path} {save_path}:colormap=lut & --viewport 3d')
+
+
+
+    @staticmethod
+    def plot_heatmap(data: pd.DataFrame, group_title: str, project_name: str):
         sns.set(font_scale=0.5)
         plt.figure(figsize=(20, 10))
         cluster_map = sns.heatmap(data, linewidth=.5, cmap='coolwarm')
@@ -615,4 +650,3 @@ class StatisticsWrapper:
             wandb_run.finish()
 
         plt.close()
-

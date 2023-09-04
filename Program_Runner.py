@@ -27,8 +27,8 @@ from constants import RAW_DATA, Z_SCORE, ROBUST_SCALING, RAW_DATA_6_PARAMS
 from constants import OLD, YOUNG, AGE_THRESHOLD
 
 # -------------------- Statistics Funcs to Run -------------------- #
-from constants import T_TEST, HIERARCHICAL_CLUSTERING_WITH_CORRELATIONS, SD_PER_PARAMETER, PLOT_DATA_PER_PARAM, \
-    PLOT_DATA_PER_ROI_PER_SUBJET_WITH_ALL_PARAMS, HIERARCHICAL_CLUSTERING, ROIS_CORRELATIONS
+from constants import HIERARCHICAL_CLUSTERING_WITH_CORRELATIONS, SD_PER_PARAMETER, PLOT_DATA_PER_PARAM, \
+    HIERARCHICAL_CLUSTERING, ROIS_CORRELATIONS, PLOT_BRAIN_CLUSTERS
 
 # ------------------- Statistics funcs on processed data - adding normalizer/means ---------------------- #
 from statistics_methods.Statistics import StatisticsWrapper
@@ -123,12 +123,16 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
                                                              project_name=project_name)
 
         elif func == HIERARCHICAL_CLUSTERING:
-            StatisticsWrapper.hierarchical_clustering(chosen_data, params_to_work_with, project_name, "all")
-            StatisticsWrapper.hierarchical_clustering(young_subjects, params_to_work_with, project_name, group_a_name)
-            StatisticsWrapper.hierarchical_clustering(old_subjects, params_to_work_with, project_name, group_b_name)
+            for linkage_metric in constants.LINKAGE_METRICS:
+                StatisticsWrapper.hierarchical_clustering(chosen_data, params_to_work_with, linkage_metric,
+                                                          project_name, "all")
+                StatisticsWrapper.hierarchical_clustering(young_subjects, params_to_work_with, linkage_metric,
+                                                          project_name, group_a_name)
+                StatisticsWrapper.hierarchical_clustering(old_subjects, params_to_work_with, linkage_metric,
+                                                          project_name, group_b_name)
 
         elif func == ROIS_CORRELATIONS:
-            clusters_rois = StatisticsWrapper.hierarchical_clustering(chosen_data, params_to_work_with,
+            clusters_rois = StatisticsWrapper.hierarchical_clustering(chosen_data, params_to_work_with, 'complete',
                                                                       title="all")['dendrogram_data']['ivl']
             young_result = StatisticsWrapper.roi_correlations(young_subjects, params_to_work_with, clusters_rois,
                                                               'young',
@@ -137,6 +141,20 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
                                                             project_name)
 
             StatisticsWrapper.plot_heatmap(old_result - young_result, 'differences of old and young', project_name)
+
+        elif func == PLOT_BRAIN_CLUSTERS:
+            all_dendrogram_data = StatisticsWrapper.hierarchical_clustering(chosen_data, params_to_work_with, 'complete',
+                                                                      title="all")['dendrogram_data']
+
+            young_dendrogram_data = StatisticsWrapper.hierarchical_clustering(young_subjects, params_to_work_with, 'complete',
+                                                      title="young")['dendrogram_data']
+
+            old_dendrogram_data = StatisticsWrapper.hierarchical_clustering(old_subjects, params_to_work_with, 'complete',
+                                                      title="old")['dendrogram_data']
+
+            # StatisticsWrapper.plot_clusters_on_brain(all_dendrogram_data, chosen_data.iloc[0].subjects, chosen_rois_dict)
+            StatisticsWrapper.plot_clusters_on_brain(young_dendrogram_data, chosen_data.iloc[0].subjects, chosen_rois_dict)
+            StatisticsWrapper.plot_clusters_on_brain(old_dendrogram_data, chosen_data.iloc[0].subjects, chosen_rois_dict)
 
 
 def run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_dict, params_to_work_with,
@@ -215,7 +233,7 @@ if __name__ == "__main__":
     project_name = 'CORTEX_8_params_38_subjects'
 
     # Change here the Statistics funcs to run
-    funcs_to_run = [HIERARCHICAL_CLUSTERING]
+    funcs_to_run = [PLOT_BRAIN_CLUSTERS]
 
     # Choose here the parameters to work with in the data
     data_params = constants.BASIC_4_PARAMS_WITH_SLOPES

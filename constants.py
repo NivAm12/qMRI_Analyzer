@@ -81,8 +81,9 @@ SAVE_DATA_OF_ALL_Z_SCORE_MEANS = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code
                                  "default_z_score_on_average_of_params/calculation/all/"
 
 # ---------------- Paths to subject data ----------------- #
-ANALYSIS_DIR = '/ems/elsc-labs/mezer-a/Mezer-Lab/analysis/HUJI/Calibration/Human'
+ANALYSIS_DIR = '/ems/elsc-labs/mezer-a/Mezer-Lab/analysis/HUJI/HUJI_PD_Unified/'
 ANALYSIS_DIR_Par = '/ems/elsc-labs/mezer-a/Mezer-Lab/analysis/HUJI/Parkinson_SZ'
+CLUSTERING_PATH = '/ems/elsc-labs/mezer-a/Mezer-Lab/analysis/HUJI/clustering_data'
 
 # -------------------- File Names -------------------- #
 HIERARCHICAL_CLUSTERING_FILE = "corr_hirr_clustering_"
@@ -95,6 +96,8 @@ PLOT_DATA_PER_PARAM = 'plot data per param'
 PLOT_DATA_PER_ROI_PER_SUBJET_WITH_ALL_PARAMS = 'PLOT_DATA_PER_ROI_PER_SUBJET_WITH_ALL_PARAMS'
 HIERARCHICAL_CLUSTERING = 'hierarchical_clustering'
 ROIS_CORRELATIONS = 'rois_correlations'
+PLOT_BRAIN_CLUSTERS = 'plot_brain_clusters'
+LINKAGE_METRICS = ['single', 'complete', 'average', 'ward', 'median']
 
 # -------------------- Folders Output ---------------------- #
 Z_SCORE_ON_AVG_ON_BRAIN_DIR = "default_z_score_on_average_of_params/"
@@ -368,3 +371,12 @@ MAP_R2S = 'multiecho_flash_R2s/R2_mean_2TV.nii.gz'
 BASIC_SEG = 'FastSurfer/mri/aparc.DKTatlas+aseg.deep.nii.gz'
 SEG_T2 = 'T2/segFSLMPRAGE_BS_wmparc2newmrQ_B1corrALL_2T2_resamp_BMnewmrQ.nii.gz'
 SEG_DIFFUSION = 'Dif_fsl_preprocessed/eddy/aligned2T1/dtiInit/dti94trilin/bin/segFSLMPRAGE_BS_wmparc2newmrQ_B1corrALL_2DTI_resamp.nii.gz'
+
+# Plots values
+COLOR_LIST = {
+    0: 1021,
+    1: 3,
+    3: 1016,
+    4: 1024,
+    5: 2030
+}
