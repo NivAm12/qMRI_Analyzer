@@ -143,18 +143,23 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
             StatisticsWrapper.plot_heatmap(old_result - young_result, 'differences of old and young', project_name)
 
         elif func == PLOT_BRAIN_CLUSTERS:
-            all_dendrogram_data = StatisticsWrapper.hierarchical_clustering(chosen_data, params_to_work_with, 'complete',
-                                                                      title="all")['dendrogram_data']
+            for linkage_metric in constants.LINKAGE_METRICS:
+                young_dendrogram_data = \
+                    StatisticsWrapper.hierarchical_clustering(young_subjects, params_to_work_with,
+                                                              linkage_metric=linkage_metric,
+                                                              title="young")['dendrogram_data']
 
-            young_dendrogram_data = StatisticsWrapper.hierarchical_clustering(young_subjects, params_to_work_with, 'complete',
-                                                      title="young")['dendrogram_data']
+                old_dendrogram_data = \
+                    StatisticsWrapper.hierarchical_clustering(old_subjects, params_to_work_with,
+                                                              linkage_metric=linkage_metric,
+                                                              title="old")['dendrogram_data']
 
-            old_dendrogram_data = StatisticsWrapper.hierarchical_clustering(old_subjects, params_to_work_with, 'complete',
-                                                      title="old")['dendrogram_data']
+                StatisticsWrapper.plot_clusters_on_brain(young_dendrogram_data, chosen_data.iloc[0].subjects,
+                                                         chosen_rois_dict, title=f'young_with_{linkage_metric}')
+                StatisticsWrapper.plot_clusters_on_brain(old_dendrogram_data, chosen_data.iloc[0].subjects,
+                                                         chosen_rois_dict, title=f'old_with_{linkage_metric}')
 
-            # StatisticsWrapper.plot_clusters_on_brain(all_dendrogram_data, chosen_data.iloc[0].subjects, chosen_rois_dict)
-            StatisticsWrapper.plot_clusters_on_brain(young_dendrogram_data, chosen_data.iloc[0].subjects, chosen_rois_dict)
-            StatisticsWrapper.plot_clusters_on_brain(old_dendrogram_data, chosen_data.iloc[0].subjects, chosen_rois_dict)
+
 
 
 def run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_dict, params_to_work_with,
@@ -233,7 +238,7 @@ if __name__ == "__main__":
     project_name = 'CORTEX_8_params_38_subjects'
 
     # Change here the Statistics funcs to run
-    funcs_to_run = [PLOT_BRAIN_CLUSTERS]
+    funcs_to_run = [ROIS_CORRELATIONS]
 
     # Choose here the parameters to work with in the data
     data_params = constants.BASIC_4_PARAMS_WITH_SLOPES

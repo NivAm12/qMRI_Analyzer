@@ -374,9 +374,8 @@ SEG_DIFFUSION = 'Dif_fsl_preprocessed/eddy/aligned2T1/dtiInit/dti94trilin/bin/se
 
 # Plots values
 COLOR_LIST = {
-    0: 1021,
-    1: 3,
-    3: 1016,
-    4: 1024,
-    5: 2030
+    0: 3,
+    1: 1016,
+    2: 1024,
+    3: 26
 }

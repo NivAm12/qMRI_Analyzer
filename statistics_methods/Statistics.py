@@ -13,6 +13,8 @@ from scipy.cluster.hierarchy import linkage, dendrogram
 import nibabel as nib
 import constants
 import copy
+from collections import Counter
+
 
 # -------------------- PATHS -------------------- #
 from constants import PATH_TO_RAW_DATA, SAVE_DATA_PATH, SUBJECTS_INFO_PATH, SAVE_DATA_OF_ALL_Z_SCORE_MEANS, \
@@ -605,12 +607,13 @@ class StatisticsWrapper:
         return correlations_df
 
     @staticmethod
-    def plot_clusters_on_brain(dendrogram_data: dict, example_subject: str, rois: dict, project_name: str = None):
+    def plot_clusters_on_brain(dendrogram_data: dict, example_subject: str, rois: dict, title: str,
+                               project_name: str = None):
         rois_values = {f'{v[4:]}': k for k, v in rois.items()}
         data_path = os.path.join(constants.ANALYSIS_DIR, example_subject)
         seg_path = os.path.join(data_path, os.listdir(data_path)[0], constants.BASIC_SEG)
         brain_path = os.path.join(data_path, os.listdir(data_path)[0], constants.MAP_TV)
-        save_path = os.path.join(constants.CLUSTERING_PATH, 'clusters_data.nii.gz')
+        save_path = os.path.join(constants.CLUSTERING_PATH, f'clusters_data_{title}.nii.gz')
 
         # read the map
         seg_file = nib.load(seg_path)
@@ -620,18 +623,17 @@ class StatisticsWrapper:
         # paint each roi with his cluster color
         roi_values_as_other_type = np.array(list(rois_values.values()), dtype=seg_file_data.dtype)
         remove_mask = np.logical_not(np.isin(seg_file_data, roi_values_as_other_type))
+        color_list = StatisticsWrapper.create_clusters_color_list(dendrogram_data['color_list'])
 
-        for roi, cluster in zip(dendrogram_data['ivl'], dendrogram_data['color_list']):
+        for roi, cluster in zip(dendrogram_data['ivl'], color_list):
             roi_mask = np.where(seg_file_data == rois_values[roi])
             cluster_map[roi_mask] = constants.COLOR_LIST[cluster]
 
         # save the map
-        cluster_map[remove_mask] = None
+        cluster_map[remove_mask] = 0
         cluster_map = nib.Nifti1Image(cluster_map, seg_file.affine)
         nib.save(cluster_map, save_path)
-        os.system(f'freeview -v {brain_path} {save_path}:colormap=lut & --viewport 3d')
-
-
+        os.system(f'freeview -v {brain_path} {save_path}:colormap=lut &')
 
     @staticmethod
     def plot_heatmap(data: pd.DataFrame, group_title: str, project_name: str):
@@ -650,3 +652,18 @@ class StatisticsWrapper:
             wandb_run.finish()
 
         plt.close()
+
+    @staticmethod
+    def create_clusters_color_list(color_list: list):
+        color_new_list = []
+        clusters_counter = Counter(color_list)
+        # Sort the dictionary items by their values in descending order
+        counter_values = sorted(clusters_counter.items(), key=lambda x: x[1], reverse=True)
+        counter_values = [item[0] for item in counter_values]
+
+        for color in color_list:
+            color_new_list.append(counter_values.index(color))
+
+        return color_new_list
+
+
