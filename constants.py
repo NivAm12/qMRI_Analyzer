@@ -1,91 +1,39 @@
 import enum
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 
 # ------------------------- PATHS ------------------------- #
 # ---------------- Paths to raw data ----------------- #
-PATH_TO_RAW_DATA = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means" \
-                   "/subcortical_updated/with_R1/raw_data_of_subjects/raw_data"
-PATH_TO_RAW_DATA_6_PARAMS = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means" \
-                            "/subcortical_updated/with_R1/raw_data_of_subjects/raw_data_6_params"
-
-PATH_TO_RAW_DATA_ROBUST_SCALED = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means" \
-                                 "/subcortical_updated/with_R1/raw_data_of_subjects/raw_data_robust_scaling3"
-
-PATH_TO_RAW_DATA_Z_SCORED = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means" \
-                            "/subcortical_updated/with_R1/raw_data_of_subjects/raw_data_z_score_on_brain3"
-
-PATH_TO_CORTEX_4_PARAMS_RAW = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
-                                  '/corr_by_means/' \
-                                  '2023_analysis/ROI_CORTEX_4_params/raw_data3'
-
-PATH_TO_CORTEX_4_PARAMS_Z = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
-                                  '/corr_by_means/' \
-                                  '2023_analysis/ROI_CORTEX_4_params/raw_data_z_score_on_brain3'
-
-PATH_TO_CORTEX_Z_SCORED = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means" \
-                          "/cortical_areas/raw_data_z_score_on_brain3"
-
-PATH_TO_FRONTAL_CORTEX_6_params = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
-                                  '/corr_by_means/' \
-                                  '2023_analysis/FRONTAL_CORTEX_6_params/raw_data_z_score_on_brain3'
-
-PATH_TO_FRONTAL_CORTEX_4_params = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
-                                  '/corr_by_means/' \
-                                  '2023_analysis/ROI_FRONTAL_CORTEX_4_params/raw_data_z_score_on_brain3'
-
-PATH_TO_RIGHT_CORTEX_4_params_ZSCORE = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
-                                  '/corr_by_means/' \
-                                  '2023_analysis/ROI_RIGHT_CORTEX_4_params/raw_data_z_score_on_brain3'
-
-PATH_TO_FRONTAL_CORTEX_4_params_RAW = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
-                                  '/corr_by_means/' \
-                                  '2023_analysis/ROI_FRONTAL_CORTEX_4_params/raw_data3'
-
-PATH_TO_PUTAMEN_CAUDETE_6_params = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
-                                   '/corr_by_means/2023_analysis/PUTAMEN_CAUDETE _6_params/raw_data_z_score_on_brain3'
-
-PATH_TO_PUTAMEN_THALAMUS_6_params = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
-                                    '/corr_by_means/2023_analysis/PUTAMEN_THALAMUS_6_params/raw_data_z_score_on_brain3'
-
-PATH_TO_PALLIDUM_PUTAMEN_CAUDETE_6_params = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
-                                            '/corr_by_means/2023_analysis/PALLIDUM_PUTAMEN_CAUDETE_6_params' \
-                                            '/raw_data_z_score_on_brain3'
-
-PATH_TO_AMYGDALA_HIPPOCAMPUS_6_params = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
-                                        '/corr_by_means/2023_analysis/AMYGDALA_HIPPOCAMPUS_6_params' \
-                                        '/raw_data_z_score_on_brain3'
-
-PATH_TO_ACCUM_HIPPO_AMYG_6_params = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
-                                        '/corr_by_means/2023_analysis/ACCUM_HIPPO_AMYG_6_params' \
-                                        '/raw_data_z_score_on_brain3'
-
-
-SUBJECTS_INFO_PATH = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/subjects_info.csv"
+PATH_TO_RAW_DATA = os.getenv("PATH_TO_RAW_DATA")
+PATH_TO_RAW_DATA_6_PARAMS = os.getenv("PATH_TO_RAW_DATA_6_PARAMS")
+PATH_TO_RAW_DATA_ROBUST_SCALED = os.getenv("PATH_TO_RAW_DATA_ROBUST_SCALED")
+PATH_TO_RAW_DATA_Z_SCORED = os.getenv("PATH_TO_RAW_DATA_Z_SCORED")
+PATH_TO_CORTEX_4_PARAMS_RAW = os.getenv("PATH_TO_CORTEX_4_PARAMS_RAW")
+PATH_TO_CORTEX_4_PARAMS_Z = os.getenv("PATH_TO_CORTEX_4_PARAMS_Z")
+PATH_TO_CORTEX_Z_SCORED = os.getenv("PATH_TO_CORTEX_Z_SCORED")
+PATH_TO_FRONTAL_CORTEX_6_params = os.getenv("PATH_TO_FRONTAL_CORTEX_6_params")
+PATH_TO_FRONTAL_CORTEX_4_params = os.getenv("PATH_TO_FRONTAL_CORTEX_4_params")
+PATH_TO_RIGHT_CORTEX_4_params_ZSCORE = os.getenv("PATH_TO_RIGHT_CORTEX_4_params_ZSCORE")
+PATH_TO_FRONTAL_CORTEX_4_params_RAW = os.getenv("PATH_TO_FRONTAL_CORTEX_4_params_RAW")
+PATH_TO_PUTAMEN_CAUDETE_6_params = os.getenv("PATH_TO_PUTAMEN_CAUDETE_6_params")
+PATH_TO_PUTAMEN_THALAMUS_6_params = os.getenv("PATH_TO_PUTAMEN_THALAMUS_6_params")
+PATH_TO_PALLIDUM_PUTAMEN_CAUDETE_6_params = os.getenv("PATH_TO_PALLIDUM_PUTAMEN_CAUDETE_6_params")
+PATH_TO_AMYGDALA_HIPPOCAMPUS_6_params = os.getenv("PATH_TO_AMYGDALA_HIPPOCAMPUS_6_params")
+PATH_TO_ACCUM_HIPPO_AMYG_6_params = os.getenv("PATH_TO_ACCUM_HIPPO_AMYG_6_params")
+SUBJECTS_INFO_PATH = os.getenv("SUBJECTS_INFO_PATH")
 
 # ---------------- Paths to output data ----------------- #
-SAVE_DATA_PATH = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means/" \
-                 "subcortical_updated/with_R1/Analysis/young_adults_comparison/"
-
-SAVE_DATA_OF_ADULTS_Z_SCORE_MEANS = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/" \
-                                    "Covariance_Aging/saved_versions/corr_by_means/" \
-                                    "subcortical_updated/with_R1/Analysis/young_adults_comparison/" \
-                                    "default_z_score_on_average_of_params/calculation/adults/"
-
-SAVE_DATA_OF_YOUNG_Z_SCORE_MEANS = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/" \
-                                   "Covariance_Aging/saved_versions/corr_by_means/" \
-                                   "subcortical_updated/with_R1/Analysis/young_adults_comparison/" \
-                                   "default_z_score_on_average_of_params/calculation/young/"
-
-SAVE_DATA_OF_ALL_Z_SCORE_MEANS = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/" \
-                                 "Covariance_Aging/saved_versions/corr_by_means/" \
-                                 "subcortical_updated/with_R1/Analysis/young_adults_comparison/" \
-                                 "default_z_score_on_average_of_params/calculation/all/"
+SAVE_DATA_PATH = os.getenv("SAVE_DATA_PATH")
+SAVE_DATA_OF_ADULTS_Z_SCORE_MEANS = os.getenv("SAVE_DATA_OF_ADULTS_Z_SCORE_MEANS")
+SAVE_DATA_OF_YOUNG_Z_SCORE_MEANS = os.getenv("SAVE_DATA_OF_YOUNG_Z_SCORE_MEANS")
+SAVE_DATA_OF_ALL_Z_SCORE_MEANS = os.getenv("SAVE_DATA_OF_ALL_Z_SCORE_MEANS")
 
 # ---------------- Paths to subject data ----------------- #
-ANALYSIS_DIR = '/ems/elsc-labs/mezer-a/Mezer-Lab/analysis/HUJI/HUJI_PD_Unified/'
-ANALYSIS_DIR_Par = '/ems/elsc-labs/mezer-a/Mezer-Lab/analysis/HUJI/Parkinson_SZ'
-CLUSTERING_PATH = '/ems/elsc-labs/mezer-a/Mezer-Lab/analysis/HUJI/clustering_data'
+ANALYSIS_DIR = os.getenv('ANALYSIS_DIR')
+ANALYSIS_DIR_Par = os.getenv('ANALYSIS_DIR_Par')
+CLUSTERING_PATH = os.getenv('CLUSTERING_PATH')
 
 # -------------------- File Names -------------------- #
 HIERARCHICAL_CLUSTERING_FILE = "corr_hirr_clustering_"
@@ -327,7 +275,6 @@ OLD = "OLD"
 YOUNG = "YOUNG"
 AGE_THRESHOLD = 40
 
-
 # -------------------- Enums for statistical actions -------------------- #
 class Actions(enum.Enum):
     z_score = 1  # Z Score on data - per subject, per parameter, per ROI
@@ -356,23 +303,17 @@ DIFFUSION = 'diffusion'
 T2 = 't2'
 
 # qMRI parameter's maps
-# MAP_R1 = 'mrQ_fixbias/OutPutFiles_1/BrainMaps/T1_map_Wlin.nii.gz'
-# MAP_R2S = 'multiecho_flash_R2s/R2_mean_2TVfixB1.nii.gz'
-# MAP_MT = 'MT/MT_sat_mrQ_fixbias.nii.gz'
-# MAP_TV = 'mrQ/OutPutFiles_1/BrainMaps/TV_correctedForT2s.nii.gz'
-MAP_T2 = 'T2/T2map.nii.gz'
-MAP_DIFFUSION = 'Dif_fsl_preprocessed/eddy/aligned2T1/dtiInit/dti94trilin/bin/MD.nii.gz'
-
-MAP_R1 = 'mrQ/OutPutFiles_1/BrainMaps/R1_map_Wlin.nii.gz'
-MAP_TV = 'mrQ/OutPutFiles_1/BrainMaps/T1_map_Wlin.nii.gz'
-MAP_MT = 'MT/MT_sat.nii.gz'
-MAP_R2S = 'multiecho_flash_R2s/R2_mean_2TV.nii.gz'
+MAP_T2 = os.getenv("MAP_T2")
+MAP_DIFFUSION = os.getenv("MAP_DIFFUSION")
+MAP_R1 = os.getenv("MAP_R1")
+MAP_TV = os.getenv("MAP_TV")
+MAP_MT = os.getenv("MAP_MT")
+MAP_R2S = os.getenv("MAP_R2S")
 
 # qMRI segmentation's maps
-# BASIC_SEG = 'freesurfer/segFSLMPRAGE_BS_wmparc2newmrQ_B1corrALL.nii.gz'
-BASIC_SEG = 'FastSurfer/mri/aparc.DKTatlas+aseg.deep.nii.gz'
-SEG_T2 = 'T2/segFSLMPRAGE_BS_wmparc2newmrQ_B1corrALL_2T2_resamp_BMnewmrQ.nii.gz'
-SEG_DIFFUSION = 'Dif_fsl_preprocessed/eddy/aligned2T1/dtiInit/dti94trilin/bin/segFSLMPRAGE_BS_wmparc2newmrQ_B1corrALL_2DTI_resamp.nii.gz'
+BASIC_SEG = os.getenv("BASIC_SEG")
+SEG_T2 = os.getenv("SEG_T2")
+SEG_DIFFUSION = os.getenv("SEG_DIFFUSION")
 
 # Plots values
 COLOR_LIST = {

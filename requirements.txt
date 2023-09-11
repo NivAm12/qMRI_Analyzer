@@ -12,3 +12,4 @@ seaborn==0.12.2
 nibabel==5.1.0
 xgboost==1.7.5
 brainspace==0.1.10
+python-dotenv==1.0.0
