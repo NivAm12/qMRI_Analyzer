@@ -7,20 +7,8 @@ import glob
 from re import search
 from sklearn.preprocessing import RobustScaler
 from sklearn.linear_model import LinearRegression
-
-
-# -------------------- MAPS and Segmentations paths -------------------- #
-from constants import R1, R2S, MT, TV, T2, DIFFUSION, \
-    MAP_DIFFUSION, MAP_MT, MAP_TV, MAP_R1, MAP_T2, MAP_R2S, \
-    SEG_DIFFUSION, SEG_T2, BASIC_SEG
 import constants
 
-# -------------------- Statistical Methods Names -------------------- #
-from constants import ROBUST_SCALING, Z_SCORE
-
-# -------------- Save Addresses ---------------#
-SAVE_ADDRESS = "/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions/corr_by_means/" \
-               "subcortical_updated/with_R1/raw_data_of_subjects/"
 
 # ------------- File Names -------------------#
 FILE_NAME_PURE_RAW_DATA = "raw_data3"
@@ -286,9 +274,9 @@ class DataReader:
         subject_params = {}
         for param_name in measures.keys():  # loop over all parameters ex: t1, r2s, tv..
             sub_measure = {}
-            if self.choose_normalize == Z_SCORE:
+            if self.choose_normalize == constants.Z_SCORE:
                 self.normalize_raw_data_by_z_score(measures, seg_dict, param_name)
-            if self.choose_normalize == ROBUST_SCALING:
+            if self.choose_normalize == constants.ROBUST_SCALING:
                 self.normalize_raw_data_by_robust_scaling(measures, seg_dict, param_name)
 
             # this will hold the all subject's measures for a specific measurement
@@ -364,23 +352,23 @@ if __name__ == "__main__":
     # Can be changed - using other params - make sure to add another parameter as a name, and tuple of the
     # full path to the map of the parameter and the full path to the compatible segmentation
     params = {
-        R1: (MAP_R1, BASIC_SEG),
-        R2S: (MAP_R2S, BASIC_SEG),
-        MT: (MAP_MT, BASIC_SEG),
-        TV: (MAP_TV, BASIC_SEG),
+        constants.R1: (constants.MAP_R1, constants.BASIC_SEG),
+        constants.R2S: (constants.MAP_R2S, constants.BASIC_SEG),
+        constants.MT: (constants.MAP_MT, constants.BASIC_SEG),
+        constants.TV: (constants.MAP_TV, constants.BASIC_SEG),
         # T2: (MAP_T2, SEG_T2),
         # DIFFUSION: (MAP_DIFFUSION, SEG_DIFFUSION)
     }
 
     # Can be changed - add more sort of normalizer and fit to it the compatible name to the file
-    normalizer_file_name = {None: FILE_NAME_PURE_RAW_DATA, Z_SCORE: FILE_NAME_Z_SCORE_ON_BRAIN,
-                            ROBUST_SCALING: FILE_NAME_DMEDIAN}
+    normalizer_file_name = {None: FILE_NAME_PURE_RAW_DATA, constants.Z_SCORE: FILE_NAME_Z_SCORE_ON_BRAIN,
+                            constants.ROBUST_SCALING: FILE_NAME_DMEDIAN}
 
     # ---- Here You Can Change the sort of normalizer ---- #
-    choose_normalizer = Z_SCORE
+    choose_normalizer = constants.Z_SCORE
 
     # ---- Here you can change the derivative_dict
-    derivative_dict = {TV: [R1, R2S]}
+    derivative_dict = {constants.TV: [constants.R1, constants.R2S]}
 
     # ---- Here You Can Change
     range_for_tv_default = np.linspace(0.00, 0.4, 36)

@@ -16,22 +16,6 @@ import copy
 from collections import Counter
 
 
-# -------------------- PATHS -------------------- #
-from constants import PATH_TO_RAW_DATA, PATH_TO_RAW_DATA_Z_SCORED, PATH_TO_RAW_DATA_ROBUST_SCALED
-
-# -------------------- ROIs -------------------- #
-from constants import SUB_CORTEX_DICT
-
-# -------------- Sub Folders - by Raw Data Type ------------- #
-from constants import RAW_DATA_DIR, RAW_DATA_ROBUST_SCALED_DIR, RAW_DATA_Z_SCORED_DIR
-
-# -------------- Type of Raw Data ------------- #
-from constants import RAW_DATA, Z_SCORE, ROBUST_SCALING
-
-# -------------------- Magic Number -------------------- #
-from constants import AGE_THRESHOLD
-
-
 # -------------------- Enums for statistical actions -------------------- #
 class Actions(enum.Enum):
     z_score = 1  # Z Score on data - per subject, per parameter, per ROI
@@ -41,11 +25,11 @@ class Actions(enum.Enum):
 
 
 # -------------- Dictionaries of raw_data_type to their input path and output Dir ------------- #
-RAW_DATA_NORMALIZER_PATH = {RAW_DATA: PATH_TO_RAW_DATA, Z_SCORE: PATH_TO_RAW_DATA_Z_SCORED,
-                            ROBUST_SCALING: PATH_TO_RAW_DATA_ROBUST_SCALED}
+RAW_DATA_NORMALIZER_PATH = {constants.RAW_DATA: constants.PATH_TO_RAW_DATA, constants.Z_SCORE: constants.PATH_TO_RAW_DATA_Z_SCORED,
+                            constants.ROBUST_SCALING: constants.PATH_TO_RAW_DATA_ROBUST_SCALED}
 
-RAW_DATA_NORMALIZER_OUTPUT_DIR = {RAW_DATA: RAW_DATA_DIR, Z_SCORE: RAW_DATA_Z_SCORED_DIR,
-                                  ROBUST_SCALING: RAW_DATA_ROBUST_SCALED_DIR}
+RAW_DATA_NORMALIZER_OUTPUT_DIR = {constants.RAW_DATA: constants.RAW_DATA_DIR, constants.Z_SCORE: constants.RAW_DATA_Z_SCORED_DIR,
+                                  constants.ROBUST_SCALING: constants.RAW_DATA_ROBUST_SCALED_DIR}
 
 sns.set_theme(style="ticks", color_codes=True)
 
@@ -192,7 +176,7 @@ class StatisticsWrapper:
         return robust_scaling_per_subject_per_roi_per_param
 
     @staticmethod
-    def chose_relevant_data(data: pd.DataFrame, rois_to_analyze=SUB_CORTEX_DICT, raw_params: List[str] = None,
+    def chose_relevant_data(data: pd.DataFrame, rois_to_analyze=constants.SUB_CORTEX_DICT, raw_params: List[str] = None,
                             params_to_work_with: List[str] = None) -> pd.DataFrame:
         """
         Chose only the data with relevant ROIs
@@ -345,7 +329,7 @@ class StatisticsWrapper:
         :return: None
         """
         data = pd.concat([data2, data1])
-        data = data.assign(Mature=np.where(data['Age'] >= AGE_THRESHOLD, name_group_b, name_group_a))
+        data = data.assign(Mature=np.where(data['Age'] >= constants.AGE_THRESHOLD, name_group_b, name_group_a))
 
         for param in params:
             sns.set(rc={'figure.figsize': (25, 25)})
@@ -520,13 +504,13 @@ class StatisticsWrapper:
                                                                  list(param_info_per_roi_per_subject2.iloc[0])[k],
                                                                  color=colors[k]))
                         plt.legend(all_scatter_plots, params, scatterpoints=1, ncol=3, fontsize=8)
-                        plt.title(f"{subject}\n info of {params} per {SUB_CORTEX_DICT[rois[i]]} \n and "
-                                  f"{SUB_CORTEX_DICT[rois[j]]}")
-                        plt.ylabel(SUB_CORTEX_DICT[rois[j]])
-                        plt.xlabel(SUB_CORTEX_DICT[rois[i]])
+                        plt.title(f"{subject}\n info of {params} per {constants.SUB_CORTEX_DICT[rois[i]]} \n and "
+                                  f"{constants.SUB_CORTEX_DICT[rois[j]]}")
+                        plt.ylabel(constants.SUB_CORTEX_DICT[rois[j]])
+                        plt.xlabel(constants.SUB_CORTEX_DICT[rois[i]])
                         if save_address:
                             plt.savefig(save_address_for_func + "/" +
-                                        f"cor_{SUB_CORTEX_DICT[rois[i]]}_and_{SUB_CORTEX_DICT[rois[j]]}.png")
+                                        f"cor_{constants.SUB_CORTEX_DICT[rois[i]]}_and_{constants.SUB_CORTEX_DICT[rois[j]]}.png")
                         plt.show()
 
     @staticmethod

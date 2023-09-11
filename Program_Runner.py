@@ -3,36 +3,10 @@ import seaborn as sns
 from data_handling.Data_Processor import DataProcessor
 import constants
 import os
-
-sns.set_theme(style="ticks", color_codes=True)
-
-# -------------------- PATHS -------------------- #
-from constants import SAVE_DATA_PATH
-
-# -------------------- File Names -------------------- #
-
-# -------------------- Folders ---------------------- #
-from constants import Z_SCORE_ON_AVG_ON_BRAIN_DIR, Z_SCORE_ON_BRAIN_DIR, NORMALIZE_BY_MEDIAN_DIR, \
-    MEANS_ON_BRAIN_DIR
-
-# -------------- Sub Folders - by ROIS ------------- #
-
-# -------------- Sub Folders - by Raw Data Type ------------- #
-from constants import RAW_DATA_DIR, RAW_DATA_ROBUST_SCALED_DIR, RAW_DATA_Z_SCORED_DIR
-
-# -------------- Type of Raw Data ------------- #
-from constants import RAW_DATA, Z_SCORE, ROBUST_SCALING, RAW_DATA_6_PARAMS
-
-# -------------------- Magic Number -------------------- #
-from constants import OLD, YOUNG, AGE_THRESHOLD
-
-# -------------------- Statistics Funcs to Run -------------------- #
-from constants import HIERARCHICAL_CLUSTERING_WITH_CORRELATIONS, SD_PER_PARAMETER, PLOT_DATA_PER_PARAM, \
-    HIERARCHICAL_CLUSTERING, ROIS_CORRELATIONS, PLOT_BRAIN_CLUSTERS
-
-# ------------------- Statistics funcs on processed data - adding normalizer/means ---------------------- #
 from statistics_methods.Statistics import StatisticsWrapper
 
+
+sns.set_theme(style="ticks", color_codes=True)
 
 # -------------------- Enums for statistical actions -------------------- #
 class Actions(enum.Enum):
@@ -42,18 +16,18 @@ class Actions(enum.Enum):
     robust_scaling = 4  # subtracting the median and dividing by the interquartile range
 
 
-RAW_DATA_NORMALIZER_OUTPUT_DIR = {RAW_DATA: RAW_DATA_DIR, Z_SCORE: RAW_DATA_Z_SCORED_DIR,
-                                  ROBUST_SCALING: RAW_DATA_ROBUST_SCALED_DIR, RAW_DATA_6_PARAMS: RAW_DATA_DIR}
+RAW_DATA_NORMALIZER_OUTPUT_DIR = {constants.RAW_DATA: constants.RAW_DATA_DIR, constants.Z_SCORE: constants.RAW_DATA_Z_SCORED_DIR,
+                                  constants.ROBUST_SCALING: constants.RAW_DATA_ROBUST_SCALED_DIR, constants.RAW_DATA_6_PARAMS: constants.RAW_DATA_DIR}
 
 ACTION_FUNCTION_DICT = {Actions.z_score: StatisticsWrapper.calc_z_score_per_subject,
                         Actions.z_score_means: StatisticsWrapper.calc_z_score_on_mean_per_subject2,
                         Actions.means_per_subject: StatisticsWrapper.calc_mean_per_subject_per_parameter_per_ROI,
                         Actions.robust_scaling: StatisticsWrapper.calc_mean_robust_scaling_per_subject_per_parameter_per_ROI}
 
-ACTION_SAVE_ADDRESS_DICT = {Actions.z_score: Z_SCORE_ON_BRAIN_DIR,
-                            Actions.z_score_means: Z_SCORE_ON_AVG_ON_BRAIN_DIR,
-                            Actions.means_per_subject: MEANS_ON_BRAIN_DIR,
-                            Actions.robust_scaling: NORMALIZE_BY_MEDIAN_DIR}
+ACTION_SAVE_ADDRESS_DICT = {Actions.z_score: constants.Z_SCORE_ON_BRAIN_DIR,
+                            Actions.z_score_means: constants.Z_SCORE_ON_AVG_ON_BRAIN_DIR,
+                            Actions.means_per_subject: constants.MEANS_ON_BRAIN_DIR,
+                            Actions.robust_scaling: constants.NORMALIZE_BY_MEDIAN_DIR}
 
 
 def get_save_address(output_path, raw_data_type, manipulation_on_data_name, dir_name):
@@ -96,23 +70,23 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
 
     # You can choose here which column you want ('Age' / 'Gender' / etc') and the threshold (AGE_THRESHOLD / 'M' / etc')
     # and the names of each group.
-    group_a_name, group_b_name, col_divider, threshold = YOUNG, OLD, 'Age', AGE_THRESHOLD
+    group_a_name, group_b_name, col_divider, threshold = constants.YOUNG, constants.OLD, 'Age', constants.AGE_THRESHOLD
     young_subjects, old_subjects = StatisticsWrapper.seperate_data_to_two_groups(chosen_data, col_divider, threshold)
 
     for func in funcs_to_run:
-        if func == PLOT_DATA_PER_PARAM:
+        if func == constants.PLOT_DATA_PER_PARAM:
             StatisticsWrapper.plot_data_per_param_per_roi_next_to_each_other(young_subjects, old_subjects,
                                                                              params_to_work_with,
                                                                              group_a_name, group_b_name,
                                                                              save_address, project_name)
 
-        elif func == SD_PER_PARAMETER:
+        elif func == constants.SD_PER_PARAMETER:
             StatisticsWrapper.computed_std_per_parameter(young_subjects, old_subjects, params_to_work_with,
                                                          list(ROIs_to_analyze.keys()), group_a_name, group_b_name,
                                                          save_address,
                                                          project_name=project_name)
 
-        elif func == HIERARCHICAL_CLUSTERING_WITH_CORRELATIONS:
+        elif func == constants.HIERARCHICAL_CLUSTERING_WITH_CORRELATIONS:
             StatisticsWrapper.calculate_correlation_per_data(chosen_data, params_to_work_with, ROIs_to_analyze, "ALL",
                                                              save_address, project_name=project_name)
             StatisticsWrapper.calculate_correlation_per_data(young_subjects, params_to_work_with, ROIs_to_analyze,
@@ -122,7 +96,7 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
                                                              group_b_name, save_address + "/" + group_b_name + "/",
                                                              project_name=project_name)
 
-        elif func == HIERARCHICAL_CLUSTERING:
+        elif func == constants.HIERARCHICAL_CLUSTERING:
             for linkage_metric in constants.LINKAGE_METRICS:
                 StatisticsWrapper.hierarchical_clustering(chosen_data, params_to_work_with, linkage_metric,
                                                           project_name, "all")
@@ -131,7 +105,7 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
                 StatisticsWrapper.hierarchical_clustering(old_subjects, params_to_work_with, linkage_metric,
                                                           project_name, group_b_name)
 
-        elif func == ROIS_CORRELATIONS:
+        elif func == constants.ROIS_CORRELATIONS:
             clusters_rois = StatisticsWrapper.hierarchical_clustering(chosen_data, params_to_work_with, 'complete',
                                                                       title="all")['dendrogram_data']['ivl']
             young_result = StatisticsWrapper.roi_correlations(young_subjects, params_to_work_with, clusters_rois,
@@ -142,7 +116,7 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
 
             StatisticsWrapper.plot_heatmap(old_result - young_result, 'differences of old and young', project_name)
 
-        elif func == PLOT_BRAIN_CLUSTERS:
+        elif func == constants.PLOT_BRAIN_CLUSTERS:
             for linkage_metric in constants.LINKAGE_METRICS:
                 young_dendrogram_data = \
                     StatisticsWrapper.hierarchical_clustering(young_subjects, params_to_work_with,
@@ -224,7 +198,7 @@ if __name__ == "__main__":
     pattern = Actions.means_per_subject
 
     # Change here the type of raw data you would like (RAW_DATA, Z_SCORE, ROBUST_SCALING)
-    raw_data_type = Z_SCORE
+    raw_data_type = constants.Z_SCORE
 
     # DONT CHANGE - from here get the raw data
     raw_data_path = constants.PATH_TO_CORTEX_4_PARAMS_Z
@@ -236,14 +210,14 @@ if __name__ == "__main__":
     project_name = 'CORTEX_8_params_38_subjects'
 
     # Change here the Statistics funcs to run
-    funcs_to_run = [ROIS_CORRELATIONS]
+    funcs_to_run = [constants.ROIS_CORRELATIONS]
 
     # Choose here the parameters to work with in the data
     data_params = constants.BASIC_4_PARAMS_WITH_SLOPES
     params_to_work_with = constants.BASIC_4_PARAMS_WITH_SLOPES
 
     # Change here the path to save the results to - default is SAVE_DATA_PATH:
-    output_path = SAVE_DATA_PATH
+    output_path = constants.SAVE_DATA_PATH
 
     # If you chose another ROIs - you can put them in another sub-dir inside the raw_data_type dir :)
     rois_output_dir = ""

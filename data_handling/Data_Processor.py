@@ -1,6 +1,6 @@
 import pandas as pd
 from functools import reduce
-from constants import SUBJECTS_INFO_PATH, SUB_CORTEX_DICT
+import constants
 
 
 def split_slash(x) -> str:
@@ -37,7 +37,7 @@ class DataProcessor:
     ...
     ...
     """
-    def __init__(self, path_to_data, roi_dict=SUB_CORTEX_DICT, wanted_rois=None):
+    def __init__(self, path_to_data, roi_dict=constants.SUB_CORTEX_DICT, wanted_rois=None):
         """
         Initialize a DataProcessor object
         :param path_to_data: path to the pickle's data
@@ -96,7 +96,7 @@ class DataProcessor:
         :return: updated df with all new columns
         """
         names_col = ['subjects', 'Age', 'Gender']
-        subject_info = pd.read_csv(SUBJECTS_INFO_PATH, names=names_col)
+        subject_info = pd.read_csv(constants.SUBJECTS_INFO_PATH, names=names_col)
         subject_info["subjects"] = subject_info["subjects"].apply(split_slash)
         subject_info["Gender"] = subject_info["Gender"].apply(delete_apostrophes)
         full_data = pd.merge(full_data, subject_info, on=['subjects'])
