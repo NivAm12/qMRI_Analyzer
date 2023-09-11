@@ -160,8 +160,6 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
                                                          chosen_rois_dict, title=f'old_with_{linkage_metric}')
 
 
-
-
 def run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_dict, params_to_work_with,
                 raw_params, project_name):
     """

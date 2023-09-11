@@ -5,8 +5,8 @@ import numpy as np
 import seaborn as sns
 import scipy.stats as stats
 import matplotlib.pyplot as plt
-from scipy.stats import pearsonr, spearmanr
-from typing import List, Dict, Any, Tuple
+from scipy.stats import pearsonr
+from typing import List, Any, Tuple
 import wandb
 from scipy.spatial.distance import pdist, squareform
 from scipy.cluster.hierarchy import linkage, dendrogram
@@ -17,23 +17,10 @@ from collections import Counter
 
 
 # -------------------- PATHS -------------------- #
-from constants import PATH_TO_RAW_DATA, SAVE_DATA_PATH, SUBJECTS_INFO_PATH, SAVE_DATA_OF_ALL_Z_SCORE_MEANS, \
-    SAVE_DATA_OF_ADULTS_Z_SCORE_MEANS, SAVE_DATA_OF_YOUNG_Z_SCORE_MEANS, PATH_TO_RAW_DATA_Z_SCORED, \
-    PATH_TO_RAW_DATA_ROBUST_SCALED
-
-# -------------------- File Names -------------------- #
-from constants import HIERARCHICAL_CLUSTERING_FILE
-
-# -------------------- Folders ---------------------- #
-from constants import Z_SCORE_ON_AVG_ON_BRAIN_DIR, Z_SCORE_ON_BRAIN_DIR, NORMALIZE_BY_MEDIAN_DIR, \
-    MEANS_ON_BRAIN_DIR, STD_OF_PARAMS_BRAIN_DIR
+from constants import PATH_TO_RAW_DATA, PATH_TO_RAW_DATA_Z_SCORED, PATH_TO_RAW_DATA_ROBUST_SCALED
 
 # -------------------- ROIs -------------------- #
-from constants import SUB_CORTEX_DICT, ROI_PUTAMEN_CAUDETE, ROI_PUTAMEN_THALAMUS, \
-    ROI_AMYGDALA_HIPPOCAMPUS, ROI_PALLIDUM_PUTAMEN_CAUDETE, ROI_ACCUM_HIPPO_AMYG
-
-# -------------- Sub Folders - by ROIS ------------- #
-from constants import PUTAMEN_CAUDETE_DIR, PALLIDUM_PUTAMEN_CAUDETE_DIR, AMYGDALA_HIPPOCAMPUS_DIR
+from constants import SUB_CORTEX_DICT
 
 # -------------- Sub Folders - by Raw Data Type ------------- #
 from constants import RAW_DATA_DIR, RAW_DATA_ROBUST_SCALED_DIR, RAW_DATA_Z_SCORED_DIR
@@ -41,11 +28,8 @@ from constants import RAW_DATA_DIR, RAW_DATA_ROBUST_SCALED_DIR, RAW_DATA_Z_SCORE
 # -------------- Type of Raw Data ------------- #
 from constants import RAW_DATA, Z_SCORE, ROBUST_SCALING
 
-# -------------------- MRI Physical Parameters -------------------- #
-from constants import PARAMETERS, PARAMETERS_W_D_TV_R1_AND_R2S
-
 # -------------------- Magic Number -------------------- #
-from constants import OLD, YOUNG, AGE_THRESHOLD
+from constants import AGE_THRESHOLD
 
 
 # -------------------- Enums for statistical actions -------------------- #
@@ -600,6 +584,10 @@ class StatisticsWrapper:
         correlations /= data.subjects.nunique()
         labels = [label[4:] for label in relevant_rois]  # remove prefix as 'ctx'
         correlations_df = pd.DataFrame(correlations, index=labels, columns=labels)
+
+        # reorder the dataframe to match the clustering order
+        correlations_df = correlations_df.reindex(rois)
+        correlations_df = correlations_df[rois]
 
         # plot the heatmap
         StatisticsWrapper.plot_heatmap(correlations_df, group_title, project_name)
