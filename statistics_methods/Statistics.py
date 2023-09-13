@@ -9,7 +9,7 @@ from scipy.stats import pearsonr
 from typing import List, Any, Tuple
 import wandb
 from scipy.spatial.distance import pdist, squareform
-from scipy.cluster.hierarchy import linkage, dendrogram
+from scipy.cluster.hierarchy import linkage, dendrogram, fcluster
 import nibabel as nib
 import constants
 import copy
@@ -529,27 +529,9 @@ class StatisticsWrapper:
 
         distances /= data.subjects.nunique()
         clusters = linkage(distances, method=linkage_metric)
-
-        plt.figure(figsize=(20, 10))
-        dendrogram_data = dendrogram(clusters, labels=np.array([label[4:] for label in relevant_rois]),
-                                     orientation='right', leaf_font_size=8)
-        plt.title(f'Hierarchical Clustering Dendrogram of {title} group with {linkage_metric}')
-        plt.xlabel('ROI')
-        plt.ylabel('Distance')
-
-        if project_name:
-            wandb_run = wandb.init(
-                project=project_name,
-                name=f'{title} hierarchical clustering {linkage_metric}',
-                config={
-                    'linkage_metric': linkage_metric
-                }
-            )
-
-            wandb_run.log({f'{title}': wandb.Image(plt)})
-            wandb_run.finish()
-
-        plt.close()
+        dendrogram_data = StatisticsWrapper.create_and_plot_dendrogram(clusters,
+                                                                       np.array([label[4:] for label in relevant_rois]),
+                                                                       title, linkage_metric, project_name)
 
         return {'clusters': clusters, 'dendrogram_data': dendrogram_data}
 
@@ -626,6 +608,31 @@ class StatisticsWrapper:
         plt.close()
 
     @staticmethod
+    def create_and_plot_dendrogram(clusters, labels, title, linkage_metric, project_name=None):
+        plt.figure(figsize=(20, 10))
+        dendrogram_data = dendrogram(clusters, labels=labels,
+                                     orientation='right', leaf_font_size=8)
+        plt.title(f'Hierarchical Clustering Dendrogram of {title} group with {linkage_metric}')
+        plt.ylabel('ROI')
+        plt.xlabel('Distance')
+
+        if project_name:
+            wandb_run = wandb.init(
+                project=project_name,
+                name=f'{title} hierarchical clustering {linkage_metric}',
+                config={
+                    'linkage_metric': linkage_metric
+                }
+            )
+
+            wandb_run.log({f'{title}': wandb.Image(plt)})
+            wandb_run.finish()
+
+        # plt.close()
+
+        return dendrogram_data
+
+    @staticmethod
     def create_clusters_color_list(color_list: list):
         color_new_list = []
         clusters_counter = Counter(color_list)
@@ -637,5 +644,6 @@ class StatisticsWrapper:
             color_new_list.append(counter_values.index(color))
 
         return color_new_list
+
 
 
