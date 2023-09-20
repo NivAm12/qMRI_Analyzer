@@ -5,8 +5,8 @@ import constants
 import os
 from statistics_methods.Statistics import StatisticsWrapper
 
-
 sns.set_theme(style="ticks", color_codes=True)
+
 
 # -------------------- Enums for statistical actions -------------------- #
 class Actions(enum.Enum):
@@ -16,8 +16,10 @@ class Actions(enum.Enum):
     robust_scaling = 4  # subtracting the median and dividing by the interquartile range
 
 
-RAW_DATA_NORMALIZER_OUTPUT_DIR = {constants.RAW_DATA: constants.RAW_DATA_DIR, constants.Z_SCORE: constants.RAW_DATA_Z_SCORED_DIR,
-                                  constants.ROBUST_SCALING: constants.RAW_DATA_ROBUST_SCALED_DIR, constants.RAW_DATA_6_PARAMS: constants.RAW_DATA_DIR}
+RAW_DATA_NORMALIZER_OUTPUT_DIR = {constants.RAW_DATA: constants.RAW_DATA_DIR,
+                                  constants.Z_SCORE: constants.RAW_DATA_Z_SCORED_DIR,
+                                  constants.ROBUST_SCALING: constants.RAW_DATA_ROBUST_SCALED_DIR,
+                                  constants.RAW_DATA_6_PARAMS: constants.RAW_DATA_DIR}
 
 ACTION_FUNCTION_DICT = {Actions.z_score: StatisticsWrapper.calc_z_score_per_subject,
                         Actions.z_score_means: StatisticsWrapper.calc_z_score_on_mean_per_subject2,
@@ -117,21 +119,24 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
             StatisticsWrapper.plot_heatmap(old_result - young_result, 'differences of old and young', project_name)
 
         elif func == constants.PLOT_BRAIN_CLUSTERS:
-            for linkage_metric in constants.LINKAGE_METRICS:
-                young_dendrogram_data = \
-                    StatisticsWrapper.hierarchical_clustering(young_subjects, params_to_work_with,
-                                                              linkage_metric=linkage_metric,
-                                                              title="young")['dendrogram_data']
+            # for linkage_metric in constants.LINKAGE_METRICS:
+            linkage_metric = 'complete'
+            young_dendrogram_data = \
+                StatisticsWrapper.hierarchical_clustering(young_subjects, params_to_work_with,
+                                                          linkage_metric=linkage_metric,
+                                                          title="young")
 
-                old_dendrogram_data = \
-                    StatisticsWrapper.hierarchical_clustering(old_subjects, params_to_work_with,
-                                                              linkage_metric=linkage_metric,
-                                                              title="old")['dendrogram_data']
+            old_dendrogram_data = \
+                StatisticsWrapper.hierarchical_clustering(old_subjects, params_to_work_with,
+                                                          linkage_metric=linkage_metric,
+                                                          title="old")
 
-                StatisticsWrapper.plot_clusters_on_brain(young_dendrogram_data, chosen_data.iloc[0].subjects,
-                                                         chosen_rois_dict, title=f'young_with_{linkage_metric}')
-                StatisticsWrapper.plot_clusters_on_brain(old_dendrogram_data, chosen_data.iloc[0].subjects,
-                                                         chosen_rois_dict, title=f'old_with_{linkage_metric}')
+            StatisticsWrapper.plot_clusters_on_brain(young_dendrogram_data['clusters'], chosen_data.iloc[0].subjects,
+                                                     chosen_rois_dict, distance_to_cluster=8,
+                                                     title=f'young_with_{linkage_metric}')
+            StatisticsWrapper.plot_clusters_on_brain(old_dendrogram_data['clusters'], chosen_data.iloc[0].subjects,
+                                                     chosen_rois_dict, distance_to_cluster=8,
+                                                     title=f'old_with_{linkage_metric}')
 
 
 def run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_dict, params_to_work_with,
@@ -210,7 +215,7 @@ if __name__ == "__main__":
     project_name = 'CORTEX_8_params_38_subjects'
 
     # Change here the Statistics funcs to run
-    funcs_to_run = [constants.ROIS_CORRELATIONS]
+    funcs_to_run = [constants.PLOT_BRAIN_CLUSTERS]
 
     # Choose here the parameters to work with in the data
     data_params = constants.BASIC_4_PARAMS_WITH_SLOPES

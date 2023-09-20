@@ -261,14 +261,14 @@ class StatisticsWrapper:
         plt.ylabel(f"{info_name}")
         plt.xlabel("ROIs")
 
-        if not os.path.exists(save_address + f"/{info_name} /"):
-            os.makedirs(save_address + f"/{info_name} /")
+        # if not os.path.exists(save_address + f"/{info_name} /"):
+        #     os.makedirs(save_address + f"/{info_name} /")
 
-        plt.savefig(save_address + f"/{info_name} /" + f"{param}_distribution" + '.png')
+        # plt.savefig(save_address + f"/{info_name} /" + f"{param}_distribution" + '.png')
         plt.show()
 
     @staticmethod
-    def computed_std_per_parameter(data1, data2, parameters, ROIS, name_group_a, name_group_b, save_address,
+    def computed_std_per_parameter(data1, data2, parameters, ROIS, name_group_a, name_group_b, save_address=None,
                                    visualize=False, project_name=None):
         """
         Computes SD per parameter per ROI for young and adults.
@@ -316,8 +316,8 @@ class StatisticsWrapper:
                 wandb_run.finish()
 
     @staticmethod
-    def plot_data_per_param_per_roi_next_to_each_other(data1, data2, params, name_group_a, name_group_b, save_address,
-                                                       project_name):
+    def plot_data_per_param_per_roi_next_to_each_other(data1, data2, params, name_group_a, name_group_b, save_address=None,
+                                                       project_name=None):
         """
         Plot data per parameter per roi next to each other - group a near group b
         :param data1: data of group a
@@ -356,6 +356,7 @@ class StatisticsWrapper:
             # if not os.path.exists(save_address + "/distribution/"):
             #     os.makedirs(save_address + "/distribution/")
             # plt.savefig(save_address + "/distribution/" + f"{col_name}_distribution" + '.png')
+            plt.title(f'{param} values')
             plt.show()
 
             # StatisticsWrapper.plot_data_per_parameter_for_rois(data1, data2, "", YOUNG, OLD)
@@ -561,9 +562,9 @@ class StatisticsWrapper:
         return correlations_df
 
     @staticmethod
-    def plot_clusters_on_brain(dendrogram_data: dict, example_subject: str, rois: dict, title: str,
-                               project_name: str = None):
-        rois_values = {f'{v[4:]}': k for k, v in rois.items()}
+    def plot_clusters_on_brain(clusters: np.ndarray, example_subject: str, rois: dict, title: str,
+                               distance_to_cluster: float, project_name: str = None):
+        rois_values = list(rois.keys())
         data_path = os.path.join(constants.ANALYSIS_DIR, example_subject)
         seg_path = os.path.join(data_path, os.listdir(data_path)[0], constants.BASIC_SEG)
         brain_path = os.path.join(data_path, os.listdir(data_path)[0], constants.MAP_TV)
@@ -575,15 +576,15 @@ class StatisticsWrapper:
         cluster_map = copy.deepcopy(seg_file_data)
 
         # paint each roi with his cluster color
-        roi_values_as_other_type = np.array(list(rois_values.values()), dtype=seg_file_data.dtype)
+        roi_values_as_other_type = np.array(list(rois_values), dtype=seg_file_data.dtype)
         remove_mask = np.logical_not(np.isin(seg_file_data, roi_values_as_other_type))
-        color_list = StatisticsWrapper.create_clusters_color_list(dendrogram_data['color_list'])
+        color_list = StatisticsWrapper.create_clusters_color_list(clusters, distance_to_cluster)
 
-        for roi, cluster in zip(dendrogram_data['ivl'], color_list):
-            roi_mask = np.where(seg_file_data == rois_values[roi])
+        for roi, cluster in zip(rois_values, color_list):
+            roi_mask = np.where(seg_file_data == roi)
             cluster_map[roi_mask] = constants.COLOR_LIST[cluster]
 
-        # save the map
+        # save and show the map
         cluster_map[remove_mask] = 0
         cluster_map = nib.Nifti1Image(cluster_map, seg_file.affine)
         nib.save(cluster_map, save_path)
@@ -628,19 +629,21 @@ class StatisticsWrapper:
             wandb_run.log({f'{title}': wandb.Image(plt)})
             wandb_run.finish()
 
-        # plt.close()
+        plt.close()
 
         return dendrogram_data
 
     @staticmethod
-    def create_clusters_color_list(color_list: list):
+    def create_clusters_color_list(clusters, distance):
         color_new_list = []
-        clusters_counter = Counter(color_list)
+        clusters_map = fcluster(clusters, distance, 'distance')
+        clusters_counter = Counter(clusters_map)
+
         # Sort the dictionary items by their values in descending order
         counter_values = sorted(clusters_counter.items(), key=lambda x: x[1], reverse=True)
         counter_values = [item[0] for item in counter_values]
 
-        for color in color_list:
+        for color in clusters_map:
             color_new_list.append(counter_values.index(color))
 
         return color_new_list
