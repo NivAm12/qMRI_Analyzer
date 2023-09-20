@@ -14,6 +14,7 @@ import nibabel as nib
 import constants
 import copy
 from collections import Counter
+from plots import PlotsManager
 
 
 # -------------------- Enums for statistical actions -------------------- #
@@ -25,10 +26,12 @@ class Actions(enum.Enum):
 
 
 # -------------- Dictionaries of raw_data_type to their input path and output Dir ------------- #
-RAW_DATA_NORMALIZER_PATH = {constants.RAW_DATA: constants.PATH_TO_RAW_DATA, constants.Z_SCORE: constants.PATH_TO_RAW_DATA_Z_SCORED,
+RAW_DATA_NORMALIZER_PATH = {constants.RAW_DATA: constants.PATH_TO_RAW_DATA,
+                            constants.Z_SCORE: constants.PATH_TO_RAW_DATA_Z_SCORED,
                             constants.ROBUST_SCALING: constants.PATH_TO_RAW_DATA_ROBUST_SCALED}
 
-RAW_DATA_NORMALIZER_OUTPUT_DIR = {constants.RAW_DATA: constants.RAW_DATA_DIR, constants.Z_SCORE: constants.RAW_DATA_Z_SCORED_DIR,
+RAW_DATA_NORMALIZER_OUTPUT_DIR = {constants.RAW_DATA: constants.RAW_DATA_DIR,
+                                  constants.Z_SCORE: constants.RAW_DATA_Z_SCORED_DIR,
                                   constants.ROBUST_SCALING: constants.RAW_DATA_ROBUST_SCALED_DIR}
 
 sns.set_theme(style="ticks", color_codes=True)
@@ -316,7 +319,8 @@ class StatisticsWrapper:
                 wandb_run.finish()
 
     @staticmethod
-    def plot_data_per_param_per_roi_next_to_each_other(data1, data2, params, name_group_a, name_group_b, save_address=None,
+    def plot_data_per_param_per_roi_next_to_each_other(data1, data2, params, name_group_a, name_group_b,
+                                                       save_address=None,
                                                        project_name=None):
         """
         Plot data per parameter per roi next to each other - group a near group b
@@ -530,9 +534,9 @@ class StatisticsWrapper:
 
         distances /= data.subjects.nunique()
         clusters = linkage(distances, method=linkage_metric)
-        dendrogram_data = StatisticsWrapper.create_and_plot_dendrogram(clusters,
-                                                                       np.array([label[4:] for label in relevant_rois]),
-                                                                       title, linkage_metric, project_name)
+        dendrogram_data = PlotsManager.create_and_plot_dendrogram(clusters,
+                                                                  np.array([label[4:] for label in relevant_rois]),
+                                                                  title, linkage_metric, project_name)
 
         return {'clusters': clusters, 'dendrogram_data': dendrogram_data}
 
@@ -557,7 +561,7 @@ class StatisticsWrapper:
         correlations_df = correlations_df[rois]
 
         # plot the heatmap
-        StatisticsWrapper.plot_heatmap(correlations_df, group_title, project_name)
+        PlotsManager.plot_heatmap(correlations_df, group_title, project_name)
 
         return correlations_df
 
@@ -578,75 +582,15 @@ class StatisticsWrapper:
         # paint each roi with his cluster color
         roi_values_as_other_type = np.array(list(rois_values), dtype=seg_file_data.dtype)
         remove_mask = np.logical_not(np.isin(seg_file_data, roi_values_as_other_type))
-        color_list = StatisticsWrapper.create_clusters_color_list(clusters, distance_to_cluster)
+        color_list = PlotsManager.create_clusters_color_list(clusters, distance_to_cluster)
 
-        for roi, cluster in zip(rois_values, color_list):
+        for roi, cluster_color in zip(rois_values, color_list):
             roi_mask = np.where(seg_file_data == roi)
-            cluster_map[roi_mask] = constants.COLOR_LIST[cluster]
+            # cluster_map[roi_mask] = constants.COLOR_LIST[cluster_color]
+            cluster_map[roi_mask] = cluster_color
 
         # save and show the map
         cluster_map[remove_mask] = 0
         cluster_map = nib.Nifti1Image(cluster_map, seg_file.affine)
         nib.save(cluster_map, save_path)
-        os.system(f'freeview -v {brain_path} {save_path}:colormap=lut &')
-
-    @staticmethod
-    def plot_heatmap(data: pd.DataFrame, group_title: str, project_name: str):
-        sns.set(font_scale=0.5)
-        plt.figure(figsize=(20, 10))
-        cluster_map = sns.heatmap(data, linewidth=.5, cmap='coolwarm')
-        plt.title(f'Correlations of {group_title} group')
-
-        if project_name:
-            wandb_run = wandb.init(
-                project=project_name,
-                name=f'{group_title} Correlations'
-            )
-
-            wandb_run.log({f'{group_title}': wandb.Image(plt)})
-            wandb_run.finish()
-
-        plt.close()
-
-    @staticmethod
-    def create_and_plot_dendrogram(clusters, labels, title, linkage_metric, project_name=None):
-        plt.figure(figsize=(20, 10))
-        dendrogram_data = dendrogram(clusters, labels=labels,
-                                     orientation='right', leaf_font_size=8)
-        plt.title(f'Hierarchical Clustering Dendrogram of {title} group with {linkage_metric}')
-        plt.ylabel('ROI')
-        plt.xlabel('Distance')
-
-        if project_name:
-            wandb_run = wandb.init(
-                project=project_name,
-                name=f'{title} hierarchical clustering {linkage_metric}',
-                config={
-                    'linkage_metric': linkage_metric
-                }
-            )
-
-            wandb_run.log({f'{title}': wandb.Image(plt)})
-            wandb_run.finish()
-
-        plt.close()
-
-        return dendrogram_data
-
-    @staticmethod
-    def create_clusters_color_list(clusters, distance):
-        color_new_list = []
-        clusters_map = fcluster(clusters, distance, 'distance')
-        clusters_counter = Counter(clusters_map)
-
-        # Sort the dictionary items by their values in descending order
-        counter_values = sorted(clusters_counter.items(), key=lambda x: x[1], reverse=True)
-        counter_values = [item[0] for item in counter_values]
-
-        for color in clusters_map:
-            color_new_list.append(counter_values.index(color))
-
-        return color_new_list
-
-
-
+        os.system(f'freeview -v {brain_path} {save_path}:colormap=lut {seg_path}:colormap=lut:opacity=0 &')

@@ -47,7 +47,7 @@ PLOT_DATA_PER_ROI_PER_SUBJET_WITH_ALL_PARAMS = 'PLOT_DATA_PER_ROI_PER_SUBJET_WIT
 HIERARCHICAL_CLUSTERING = 'hierarchical_clustering'
 ROIS_CORRELATIONS = 'rois_correlations'
 PLOT_BRAIN_CLUSTERS = 'plot_brain_clusters'
-LINKAGE_METRICS = ['single', 'complete', 'average', 'ward', 'median']
+LINKAGE_METRICS = ['complete', 'average', 'ward', 'median']
 
 # -------------------- Folders Output ---------------------- #
 Z_SCORE_ON_AVG_ON_BRAIN_DIR = "default_z_score_on_average_of_params/"
