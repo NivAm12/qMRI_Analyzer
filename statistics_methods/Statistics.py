@@ -14,7 +14,7 @@ import nibabel as nib
 import constants
 import copy
 from collections import Counter
-from plots import PlotsManager
+from .plots import PlotsManager
 
 
 # -------------------- Enums for statistical actions -------------------- #
@@ -594,3 +594,19 @@ class StatisticsWrapper:
         cluster_map = nib.Nifti1Image(cluster_map, seg_file.affine)
         nib.save(cluster_map, save_path)
         os.system(f'freeview -v {brain_path} {save_path}:colormap=lut {seg_path}:colormap=lut:opacity=0 &')
+
+    @staticmethod
+    def check_rois_symmetric_parts_distances_by_param(data: pd.DataFrame, params: list):
+        subjects = data.groupby('subjects')
+        relevant_rois = list(data.ROI_name.unique())
+        distances = np.zeros((len(relevant_rois),
+                              len(relevant_rois)))
+
+        for subject_name, subject_df in subjects:
+            df = subject_df[params]
+            dist = pdist(df, metric='euclidean')
+            distance_matrix = pd.DataFrame(squareform(dist), index=relevant_rois, columns=relevant_rois)
+            distances += distance_matrix.to_numpy()
+
+        distances /= data.subjects.nunique()
+        pass
