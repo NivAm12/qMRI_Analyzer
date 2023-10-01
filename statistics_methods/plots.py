@@ -25,8 +25,10 @@ class PlotsManager:
 
             wandb_run.log({f'{group_title}': wandb.Image(plt)})
             wandb_run.finish()
+            plt.close()
+        else:
+            plt.show()
 
-        plt.close()
 
     @staticmethod
     def create_and_plot_dendrogram(clusters, labels, title, linkage_metric, project_name=None):
@@ -48,8 +50,10 @@ class PlotsManager:
 
             wandb_run.log({f'{title}': wandb.Image(plt)})
             wandb_run.finish()
+            plt.close()
 
-        plt.close()
+        else:
+            plt.show()
 
         return dendrogram_data
 

@@ -322,3 +322,5 @@ COLOR_LIST = {
     2: 1024,
     3: 26
 }
+
+WANDB_ENTITY = os.getenv('WANDB_ENTITY')

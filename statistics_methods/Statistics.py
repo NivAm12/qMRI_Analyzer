@@ -90,13 +90,13 @@ class StatisticsWrapper:
     @staticmethod
     def calc_mean_per_subject_per_parameter_per_ROI(subjects_raw_data, params):
         """
-        calculates means per subject per parameter per ROI.
+        calculates the median per subject per parameter per ROI.
         :param subjects_raw_data: given data
         :param params: given relevant params to analyze.
         :return: the data after being manipulated to means
         """
         mean_per_subject_per_roi_per_param = subjects_raw_data.copy()
-        mean_per_subject_per_roi_per_param[params] = mean_per_subject_per_roi_per_param[params].applymap(np.mean)
+        mean_per_subject_per_roi_per_param[params] = mean_per_subject_per_roi_per_param[params].applymap(np.median)
         return mean_per_subject_per_roi_per_param
 
     @staticmethod
