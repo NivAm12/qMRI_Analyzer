@@ -32,6 +32,7 @@ SAVE_DATA_OF_ALL_Z_SCORE_MEANS = os.getenv("SAVE_DATA_OF_ALL_Z_SCORE_MEANS")
 
 # ---------------- Paths to subject data ----------------- #
 ANALYSIS_DIR = os.getenv('ANALYSIS_DIR')
+OLDER_ANALYSIS_DIR = os.getenv('OLDER_ANALYSIS_DIR')
 ANALYSIS_DIR_Par = os.getenv('ANALYSIS_DIR_Par')
 CLUSTERING_PATH = os.getenv('CLUSTERING_PATH')
 
@@ -304,6 +305,7 @@ T2 = 't2'
 
 # qMRI parameter's maps
 MAP_T2 = os.getenv("MAP_T2")
+MAP_T2_TRANSFORMED = os.getenv('MAP_T2_TRANSFORMED')
 MAP_DIFFUSION = os.getenv("MAP_DIFFUSION")
 MAP_R1 = os.getenv("MAP_R1")
 MAP_TV = os.getenv("MAP_TV")
