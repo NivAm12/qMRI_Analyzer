@@ -2,11 +2,12 @@ import pandas as pd
 import numpy as np
 import nibabel as nib
 from scipy import stats
-import os
+import os, sys
 import glob
 from re import search
 from sklearn.preprocessing import RobustScaler
 from sklearn.linear_model import LinearRegression
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import constants
 
 
@@ -134,7 +135,10 @@ class DataReader:
         self.subject_names = sub_names
 
         if self.derivative_params:
-            self.add_derivative_params_to_data()
+            try:
+                self.add_derivative_params_to_data()
+            except RuntimeWarning as err:
+                print('here')    
 
         self.data_extracted = True
 
@@ -189,8 +193,6 @@ class DataReader:
 
             if param_file_to_use is None or seg_file_to_use is None:
                 return -1, -1
-
-            # os.system(f'freeview -v {param_file_to_use} {seg_file_to_use}:colormap=lut &')
 
             seg = nib.load(seg_file_to_use).get_fdata()
             seg_dict[param_name] = seg
@@ -307,6 +309,7 @@ class DataReader:
         reg = LinearRegression().fit(X, y)
         coeffs = reg.coef_.tolist() * len(params)
         all_X_values = np.array(params)[:, 0].reshape(-1, 1)
+
         return np.array(coeffs).reshape(1, -1)[0], reg.predict(all_X_values).reshape(1, -1)[0]
         # todo: 1) check sum for each bucket + make avergae and than to all averages do linear regression
         # todo: 2) add another column which contain all values per the function we discovered by the informartion
@@ -335,11 +338,12 @@ class DataReader:
                             self.all_subjects_raw_data[subject_index][
                                 f'D{param_to_derive}-{second_param_to_derive}-values'][roi] = \
                             self.derive_param_with_another_param(params_as_x_y)
+                        # TODO: remove the predict values
 
 
 if __name__ == "__main__":
     # The input dir containing all data of the subjects after MRI screening
-    analysis_dir = '/ems/elsc-labs/mezer-a/Mezer-Lab/analysis/HUJI/HUJI_PD_Unified/'
+    analysis_dir = constants.ANALYSIS_DIR
 
     # Can be changed - list of all ROIs' numbers from the segmentation
     rois = list(constants.ROI_CORTEX.keys())
@@ -353,11 +357,11 @@ if __name__ == "__main__":
     # full path to the map of the parameter and the full path to the compatible segmentation
     params = {
         constants.R1: (constants.MAP_R1, constants.BASIC_SEG),
-        constants.R2S: (constants.MAP_R2S, constants.BASIC_SEG),
-        constants.MT: (constants.MAP_MT, constants.BASIC_SEG),
+        # constants.R2S: (constants.MAP_R2S, constants.BASIC_SEG),
+        # constants.MT: (constants.MAP_MT, constants.BASIC_SEG),
         constants.TV: (constants.MAP_TV, constants.BASIC_SEG),
-        # T2: (MAP_T2, SEG_T2),
-        # DIFFUSION: (MAP_DIFFUSION, SEG_DIFFUSION)
+        # constants.T2: (constants.MAP_T2_TRANSFORMED, constants.BASIC_SEG),
+        # constants.DIFFUSION_MD: (constants.MAP_DIFFUSION_MD_TRANSFORMED, constants.BASIC_SEG)
     }
 
     # Can be changed - add more sort of normalizer and fit to it the compatible name to the file
@@ -365,10 +369,12 @@ if __name__ == "__main__":
                             constants.ROBUST_SCALING: FILE_NAME_DMEDIAN}
 
     # ---- Here You Can Change the sort of normalizer ---- #
-    choose_normalizer = constants.Z_SCORE
+    choose_normalizer = None
 
     # ---- Here you can change the derivative_dict
-    derivative_dict = {constants.TV: [constants.R1, constants.R2S]}
+    # derivative_dict = {constants.TV: [constants.R1, constants.R2S, constants.MT, constants.T2]}
+    derivative_dict = {constants.TV: [constants.R1]}
+    # derivative_dict = None
 
     # ---- Here You Can Change
     range_for_tv_default = np.linspace(0.00, 0.4, 36)
@@ -378,7 +384,7 @@ if __name__ == "__main__":
     reader.extract_data()
     print(f'NUmber of subjects: {len(reader.all_subjects_raw_data)}')
 
-    if not os.path.exists(save_address):
-        os.mkdir(save_address)
+    # if not os.path.exists(save_address):
+    #     os.mkdir(save_address)
 
-    reader.save_in_pickle_raw_data(save_address + normalizer_file_name[choose_normalizer])
+    # reader.save_in_pickle_raw_data(save_address + normalizer_file_name[choose_normalizer])

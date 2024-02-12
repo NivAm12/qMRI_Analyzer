@@ -1,4 +1,5 @@
-import os, sys
+import os
+import sys
 import subprocess
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import constants
@@ -20,11 +21,11 @@ def linear_register_maps(analysis_dir, ref_map_name, in_map_name, output_folder,
 
         out_mat = os.path.join(sub_path[0], output_folder, f'{output_file_name}.mat')
 
-        calcCmd = f'flirt -in {in_file} -ref {ref_file} -out {output_file} -omat {out_mat} -dof 6'
-        subprocess.run(calcCmd, shell=True)
+        calc_cmd = f'flirt -in {in_file} -ref {ref_file} -out {output_file} -omat {out_mat} -dof 6'
+        subprocess.run(calc_cmd, shell=True)
 
-        applyCmd = f'flirt -in {in_file} -ref {ref_file} -out {output_file} -init {out_mat} -applyxfm'
-        subprocess.run(applyCmd, shell=True)
+        apply_cmd = f'flirt -in {in_file} -ref {ref_file} -out {output_file} -init {out_mat} -applyxfm'
+        subprocess.run(apply_cmd, shell=True)
 
 
 if __name__ == "__main__":
