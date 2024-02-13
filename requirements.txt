@@ -14,3 +14,4 @@ xgboost==1.7.5
 brainspace==0.1.10
 python-dotenv==1.0.0
 ipykernel==6.25.2
+nilearn==0.10.3

@@ -12,10 +12,10 @@ import constants
 
 
 # ------------- File Names -------------------#
-FILE_NAME_PURE_RAW_DATA = "raw_data3"
+FILE_NAME_PURE_RAW_DATA = "raw_data"
 FILE_NAME_Z_SCORE_AVG = "raw_data_z_score_avg"
-FILE_NAME_Z_SCORE_ON_BRAIN = "raw_data_z_score_on_brain3"
-FILE_NAME_DMEDIAN = "raw_data_robust_scaling3"
+FILE_NAME_Z_SCORE_ON_BRAIN = "raw_data_z_score_on_brain"
+FILE_NAME_DMEDIAN = "raw_data_robust_scaling"
 
 
 def HUJI_subjects_preprocess(analysisDir):
@@ -252,7 +252,6 @@ class DataReader:
             # remove nans
             mea_masked = mea_masked[~np.isnan(mea_masked)]
 
-            # TODO fix the shapes
             if how_to_normalize is None:
                 non_zeroes = np.where(mea_masked > 0)
             else:
@@ -260,7 +259,7 @@ class DataReader:
 
             # remove empty roi
             if not np.any(mea_masked):
-                continue
+                print(f'roi {roi} is empty')
 
             sub_measure[roi] = mea_masked[non_zeroes]
 
@@ -294,24 +293,26 @@ class DataReader:
         :return:
         """
         sorted_tup = np.array(sorted(params))
-        buckets = np.split(sorted_tup, np.bincount(np.digitize(sorted_tup[:, 0], self.bin_data)).cumsum())
-        del_idx = []
+        params_length = len(params)
 
-        for i in range(len(buckets)):
-            if len(buckets[i]) < 0.04 * len(params):
-                del_idx.append(i)
+        buckets = np.split(sorted_tup, np.bincount(np.digitize(sorted_tup[:, 0], self.bin_data)).cumsum())
+        del_idx = [i for i, bucket in enumerate(buckets) if len(bucket) < 0.04 * params_length]
+
+        # Remove buckets using del_idx in reverse order to avoid index issues
+        for i in reversed(del_idx):
+            del buckets[i]
 
         avg_points_bucket = list(map(lambda x: np.array([np.mean(x[:, 0]), np.mean(x[:, 1])]), buckets))
-        avg_points_bucket = np.delete(avg_points_bucket, del_idx, axis=0)
 
-        X = np.array(avg_points_bucket)[:, 0].reshape(-1, 1)
+        x = np.array(avg_points_bucket)[:, 0].reshape(-1, 1)
         y = np.array(avg_points_bucket)[:, 1].reshape(-1, 1)
-        reg = LinearRegression().fit(X, y)
+        reg = LinearRegression().fit(x, y)
         coeffs = reg.coef_.tolist() * len(params)
-        all_X_values = np.array(params)[:, 0].reshape(-1, 1)
 
-        return np.array(coeffs).reshape(1, -1)[0], reg.predict(all_X_values).reshape(1, -1)[0]
-        # todo: 1) check sum for each bucket + make avergae and than to all averages do linear regression
+        # all_X_values = np.array(params)[:, 0].reshape(-1, 1)
+
+        return np.array(coeffs).reshape(1, -1)[0]
+        # , reg.predict(all_X_values).reshape(1, -1)[0]
         # todo: 2) add another column which contain all values per the function we discovered by the informartion
 
     def add_derivative_params_to_data(self):
@@ -334,11 +335,10 @@ class DataReader:
                         params_as_x_y = np.array([param1_data[:min_len], param2_data[:min_len]]).T.tolist()
 
                         self.all_subjects_raw_data[subject_index][f'Slope-{param_to_derive}-{second_param_to_derive}'][
-                            roi], \
-                            self.all_subjects_raw_data[subject_index][
-                                f'D{param_to_derive}-{second_param_to_derive}-values'][roi] = \
+                            roi] = \
                             self.derive_param_with_another_param(params_as_x_y)
-                        # TODO: remove the predict values
+                        # self.all_subjects_raw_data[subject_index][
+                        #                                 f'D{param_to_derive}-{second_param_to_derive}-values'][roi]
 
 
 if __name__ == "__main__":
@@ -351,17 +351,19 @@ if __name__ == "__main__":
     # Can be changed - this is the save address for the output
     save_address = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
                                   '/corr_by_means/' \
-                                  '2023_analysis/ROI_CORTEX_4_params/'
+                                  '2023_analysis/ROI_CORTEX_all_params/'
 
     # Can be changed - using other params - make sure to add another parameter as a name, and tuple of the
     # full path to the map of the parameter and the full path to the compatible segmentation
     params = {
         constants.R1: (constants.MAP_R1, constants.BASIC_SEG),
-        # constants.R2S: (constants.MAP_R2S, constants.BASIC_SEG),
-        # constants.MT: (constants.MAP_MT, constants.BASIC_SEG),
+        constants.R2S: (constants.MAP_R2S, constants.BASIC_SEG),
+        constants.MT: (constants.MAP_MT, constants.BASIC_SEG),
         constants.TV: (constants.MAP_TV, constants.BASIC_SEG),
-        # constants.T2: (constants.MAP_T2_TRANSFORMED, constants.BASIC_SEG),
-        # constants.DIFFUSION_MD: (constants.MAP_DIFFUSION_MD_TRANSFORMED, constants.BASIC_SEG)
+        constants.T2: (constants.MAP_T2_TRANSFORMED, constants.BASIC_SEG),
+        constants.DIFFUSION_MD: (constants.MAP_DIFFUSION_MD_TRANSFORMED, constants.BASIC_SEG),
+        constants.DIFFUSION_FA: (constants.MAP_DIFFUSION_FA_TRANSFORMED, constants.BASIC_SEG)
+
     }
 
     # Can be changed - add more sort of normalizer and fit to it the compatible name to the file
@@ -372,8 +374,8 @@ if __name__ == "__main__":
     choose_normalizer = None
 
     # ---- Here you can change the derivative_dict
-    # derivative_dict = {constants.TV: [constants.R1, constants.R2S, constants.MT, constants.T2]}
-    derivative_dict = {constants.TV: [constants.R1]}
+    derivative_dict = {constants.TV: [constants.R1, constants.R2S, constants.MT, constants.T2,
+                                      constants.DIFFUSION_MD, constants.DIFFUSION_FA]}
     # derivative_dict = None
 
     # ---- Here You Can Change
@@ -384,7 +386,7 @@ if __name__ == "__main__":
     reader.extract_data()
     print(f'NUmber of subjects: {len(reader.all_subjects_raw_data)}')
 
-    # if not os.path.exists(save_address):
-    #     os.mkdir(save_address)
+    if not os.path.exists(save_address):
+        os.mkdir(save_address)
 
-    # reader.save_in_pickle_raw_data(save_address + normalizer_file_name[choose_normalizer])
+    reader.save_in_pickle_raw_data(save_address + normalizer_file_name[choose_normalizer])

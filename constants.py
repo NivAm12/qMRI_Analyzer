@@ -301,6 +301,7 @@ R2S = 'r2s'
 MT = 'mt'
 TV = 'tv'
 DIFFUSION_MD = 'diffusion_md'
+DIFFUSION_FA = 'diffusion_fa'
 T2 = 't2'
 
 # qMRI parameter's maps
@@ -308,6 +309,7 @@ MAP_T2 = os.getenv("MAP_T2")
 MAP_T2_TRANSFORMED = os.getenv('MAP_T2_TRANSFORMED')
 MAP_DIFFUSION = os.getenv("MAP_DIFFUSION")
 MAP_DIFFUSION_MD_TRANSFORMED = os.getenv('MAP_DIFFUSION_MD_TRANSFORMED')
+MAP_DIFFUSION_FA_TRANSFORMED = os.getenv('MAP_DIFFUSION_FA_TRANSFORMED')
 MAP_R1 = os.getenv("MAP_R1")
 MAP_TV = os.getenv("MAP_TV")
 MAP_MT = os.getenv("MAP_MT")
