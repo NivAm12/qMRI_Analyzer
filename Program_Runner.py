@@ -12,7 +12,7 @@ sns.set_theme(style="ticks", color_codes=True)
 class Actions(enum.Enum):
     z_score = 1  # Z Score on data - per subject, per parameter, per ROI
     z_score_means = 2  # Z Score on means of all subjects, per parameters, per its ROI
-    means_per_subject = 3  # Means on each Subject, per its ROI (per parameter)
+    median_per_subject = 3  # Median on each Subject, per its ROI (per parameter)
     robust_scaling = 4  # subtracting the median and dividing by the interquartile range
 
 
@@ -23,12 +23,12 @@ RAW_DATA_NORMALIZER_OUTPUT_DIR = {constants.RAW_DATA: constants.RAW_DATA_DIR,
 
 ACTION_FUNCTION_DICT = {Actions.z_score: StatisticsWrapper.calc_z_score_per_subject,
                         Actions.z_score_means: StatisticsWrapper.calc_z_score_on_mean_per_subject2,
-                        Actions.means_per_subject: StatisticsWrapper.calc_mean_per_subject_per_parameter_per_ROI,
+                        Actions.median_per_subject: StatisticsWrapper.calc_mean_per_subject_per_parameter_per_ROI,
                         Actions.robust_scaling: StatisticsWrapper.calc_mean_robust_scaling_per_subject_per_parameter_per_ROI}
 
 ACTION_SAVE_ADDRESS_DICT = {Actions.z_score: constants.Z_SCORE_ON_BRAIN_DIR,
                             Actions.z_score_means: constants.Z_SCORE_ON_AVG_ON_BRAIN_DIR,
-                            Actions.means_per_subject: constants.MEANS_ON_BRAIN_DIR,
+                            Actions.median_per_subject: constants.MEANS_ON_BRAIN_DIR,
                             Actions.robust_scaling: constants.NORMALIZE_BY_MEDIAN_DIR}
 
 
@@ -90,22 +90,28 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
 
         elif func == constants.HIERARCHICAL_CLUSTERING_WITH_CORRELATIONS:
             StatisticsWrapper.calculate_correlation_per_data(chosen_data, params_to_work_with, ROIs_to_analyze, "ALL",
-                                                             save_address, project_name=project_name)
-            StatisticsWrapper.calculate_correlation_per_data(young_subjects, params_to_work_with, ROIs_to_analyze,
-                                                             group_a_name, save_address + "/" + group_a_name + "/",
-                                                             project_name=project_name)
-            StatisticsWrapper.calculate_correlation_per_data(old_subjects, params_to_work_with, ROIs_to_analyze,
-                                                             group_b_name, save_address + "/" + group_b_name + "/",
-                                                             project_name=project_name)
+                                                             save_address)
+            # StatisticsWrapper.calculate_correlation_per_data(young_subjects, params_to_work_with, ROIs_to_analyze,
+            #                                                  group_a_name, save_address + "/" + group_a_name + "/",
+            #                                                  project_name=project_name)
+            # StatisticsWrapper.calculate_correlation_per_data(old_subjects, params_to_work_with, ROIs_to_analyze,
+            #                                                  group_b_name, save_address + "/" + group_b_name + "/",
+            #                                                  project_name=project_name)
 
         elif func == constants.HIERARCHICAL_CLUSTERING:
-            for linkage_metric in constants.LINKAGE_METRICS:
-                StatisticsWrapper.hierarchical_clustering(chosen_data, params_to_work_with, linkage_metric,
-                                                          project_name, "all")
-                StatisticsWrapper.hierarchical_clustering(young_subjects, params_to_work_with, linkage_metric,
-                                                          project_name, group_a_name)
-                StatisticsWrapper.hierarchical_clustering(old_subjects, params_to_work_with, linkage_metric,
-                                                          project_name, group_b_name)
+            # for linkage_metric in constants.LINKAGE_METRICS:
+            #     StatisticsWrapper.hierarchical_clustering(chosen_data, params_to_work_with, linkage_metric,
+            #                                               project_name, "all")
+            #     StatisticsWrapper.hierarchical_clustering(young_subjects, params_to_work_with, linkage_metric,
+            #                                               project_name, group_a_name)
+            #     StatisticsWrapper.hierarchical_clustering(old_subjects, params_to_work_with, linkage_metric,
+            #                                               project_name, group_b_name)
+            StatisticsWrapper.hierarchical_clustering(chosen_data, params_to_work_with, 'complete',
+                                                      project_name, "all")
+            StatisticsWrapper.hierarchical_clustering(young_subjects, params_to_work_with, 'complete',
+                                                      project_name, group_a_name)
+            StatisticsWrapper.hierarchical_clustering(old_subjects, params_to_work_with, 'complete',
+                                                      project_name, group_b_name)
 
         elif func == constants.ROIS_CORRELATIONS:
             clusters_rois = StatisticsWrapper.hierarchical_clustering(chosen_data, params_to_work_with, 'complete',
@@ -132,11 +138,11 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
                                                           title="old")
 
             StatisticsWrapper.plot_clusters_on_brain(young_dendrogram_data['clusters'], chosen_data.iloc[0].subjects,
-                                                     chosen_rois_dict, distance_to_cluster=8,
-                                                     title=f'young_with_{linkage_metric}')
+                                                     chosen_rois_dict, distance_to_cluster=6,
+                                                     title=f'young_with_{linkage_metric}', project_name=project_name)
             StatisticsWrapper.plot_clusters_on_brain(old_dendrogram_data['clusters'], chosen_data.iloc[0].subjects,
-                                                     chosen_rois_dict, distance_to_cluster=8,
-                                                     title=f'old_with_{linkage_metric}')
+                                                     chosen_rois_dict, distance_to_cluster=6,
+                                                     title=f'old_with_{linkage_metric}', project_name=project_name)
 
 
 def run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_dict, params_to_work_with,
@@ -200,26 +206,27 @@ if __name__ == "__main__":
     :return: None
     """
     # Change here the action to go on the raw data (look at actions options)
-    pattern = Actions.means_per_subject
+    pattern = Actions.median_per_subject
 
     # Change here the type of raw data you would like (RAW_DATA, Z_SCORE, ROBUST_SCALING)
     raw_data_type = constants.Z_SCORE
 
-    # DONT CHANGE - from here get the raw data
-    raw_data_path = constants.PATH_TO_CORTEX_4_PARAMS_Z
+    # get the raw data
+    raw_data_path = constants.PATH_TO_CORTEX_all_params_z_score
 
     # Change Here the rois you would like to work with
     chosen_rois_dict = constants.ROI_CORTEX
 
     # wandb
-    project_name = 'CORTEX_8_params_38_subjects'
+    # project_name = 'CORTEX_4_params_no_slopes_38_subjects'
+    project_name = None
 
     # Change here the Statistics funcs to run
-    funcs_to_run = [constants.PLOT_BRAIN_CLUSTERS]
+    funcs_to_run = [constants.HIERARCHICAL_CLUSTERING]
 
     # Choose here the parameters to work with in the data
-    data_params = constants.BASIC_4_PARAMS_WITH_SLOPES
-    params_to_work_with = constants.BASIC_4_PARAMS_WITH_SLOPES
+    data_params = constants.ALL_PARAMS_WITH_SLOPES
+    params_to_work_with = constants.ALL_PARAMS_WITH_SLOPES
 
     # Change here the path to save the results to - default is SAVE_DATA_PATH:
     output_path = constants.SAVE_DATA_PATH
@@ -235,6 +242,6 @@ if __name__ == "__main__":
                                     rois_output_dir)
 
     # Run the Program
-    os.environ['WANDB_ENTITY'] = 'nivamos704'
+    os.environ['WANDB_ENTITY'] = constants.WANDB_ENTITY
     run_program(pattern, raw_data_path, save_address, funcs_to_run, chosen_rois_dict, params_to_work_with, data_params,
                 project_name)

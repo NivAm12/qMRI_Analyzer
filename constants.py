@@ -22,6 +22,8 @@ PATH_TO_PUTAMEN_THALAMUS_6_params = os.getenv("PATH_TO_PUTAMEN_THALAMUS_6_params
 PATH_TO_PALLIDUM_PUTAMEN_CAUDETE_6_params = os.getenv("PATH_TO_PALLIDUM_PUTAMEN_CAUDETE_6_params")
 PATH_TO_AMYGDALA_HIPPOCAMPUS_6_params = os.getenv("PATH_TO_AMYGDALA_HIPPOCAMPUS_6_params")
 PATH_TO_ACCUM_HIPPO_AMYG_6_params = os.getenv("PATH_TO_ACCUM_HIPPO_AMYG_6_params")
+PATH_TO_CORTEX_all_params_z_score = os.getenv('PATH_TO_CORTEX_all_params_z_score')
+PATH_TO_CORTEX_all_params_raw = os.getenv('PATH_TO_CORTEX_all_params_raw')
 SUBJECTS_INFO_PATH = os.getenv("SUBJECTS_INFO_PATH")
 
 # ---------------- Paths to output data ----------------- #
@@ -266,6 +268,10 @@ DICT_NUM_TO_ROIS = {1: SUB_CORTEX_DICT,
 # -------------------- MRI Physical Parameters -------------------- #
 BASIC_4_PARAMS = ["r1", "tv", "r2s", "mt"]
 BASIC_4_PARAMS_WITH_SLOPES = ["r1", "tv", "r2s", "mt", "Slope-tv-r1", "Slope-tv-r2s", "Dtv-r1-values", "Dtv-r2s-values"]
+ALL_PARAMS_WITH_SLOPES = ["r1", "tv", "r2s", "mt", "t2", "diffusion_md", "diffusion_fa",
+                          "Slope-tv-r1", "Slope-tv-r2s", "Slope-tv-mt", "Slope-tv-t2", "Slope-tv-diffusion_md",
+                          "Slope-tv-diffusion_fa"]
+
 PARAMETERS = ["r1", "tv", "r2s", "mt", "t2", "diffusion"]
 PARAMETERS_W_D_TV_R1_AND_R2S = ["r1", "tv", "r2s", "mt", "t2", "diffusion", "Slope-tv-r1", "Slope-tv-r2s",
                                 "Dtv-r1-values", "Dtv-r2s-values"]

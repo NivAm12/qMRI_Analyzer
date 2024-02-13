@@ -324,8 +324,8 @@ class DataReader:
             for subject_index in range(len(self.all_subjects_raw_data)):
                 for second_param_to_derive in self.derivative_params[param_to_derive]:
                     self.all_subjects_raw_data[subject_index][f'Slope-{param_to_derive}-{second_param_to_derive}'] = {}
-                    self.all_subjects_raw_data[subject_index][
-                        f'D{param_to_derive}-{second_param_to_derive}-values'] = {}
+                    # self.all_subjects_raw_data[subject_index][
+                    #     f'D{param_to_derive}-{second_param_to_derive}-values'] = {}
 
                     for roi in self.rois:
                         param1_data = self.all_subjects_raw_data[subject_index][param_to_derive][roi]
@@ -371,7 +371,7 @@ if __name__ == "__main__":
                             constants.ROBUST_SCALING: FILE_NAME_DMEDIAN}
 
     # ---- Here You Can Change the sort of normalizer ---- #
-    choose_normalizer = None
+    choose_normalizer = constants.Z_SCORE
 
     # ---- Here you can change the derivative_dict
     derivative_dict = {constants.TV: [constants.R1, constants.R2S, constants.MT, constants.T2,
