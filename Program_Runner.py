@@ -3,7 +3,7 @@ import seaborn as sns
 from data_handling.Data_Processor import DataProcessor
 import constants
 import os
-from statistics_methods.Statistics import StatisticsWrapper
+from statistics_methods.Statistics import StatisticsWrapper, PlotsManager
 
 sns.set_theme(style="ticks", color_codes=True)
 
@@ -91,12 +91,12 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
         elif func == constants.HIERARCHICAL_CLUSTERING_WITH_CORRELATIONS:
             StatisticsWrapper.calculate_correlation_per_data(chosen_data, params_to_work_with, ROIs_to_analyze, "ALL",
                                                              save_address)
-            # StatisticsWrapper.calculate_correlation_per_data(young_subjects, params_to_work_with, ROIs_to_analyze,
-            #                                                  group_a_name, save_address + "/" + group_a_name + "/",
-            #                                                  project_name=project_name)
-            # StatisticsWrapper.calculate_correlation_per_data(old_subjects, params_to_work_with, ROIs_to_analyze,
-            #                                                  group_b_name, save_address + "/" + group_b_name + "/",
-            #                                                  project_name=project_name)
+            StatisticsWrapper.calculate_correlation_per_data(young_subjects, params_to_work_with, ROIs_to_analyze,
+                                                             group_a_name, save_address + "/" + group_a_name + "/",
+                                                             project_name=project_name)
+            StatisticsWrapper.calculate_correlation_per_data(old_subjects, params_to_work_with, ROIs_to_analyze,
+                                                             group_b_name, save_address + "/" + group_b_name + "/",
+                                                             project_name=project_name)
 
         elif func == constants.HIERARCHICAL_CLUSTERING:
             # for linkage_metric in constants.LINKAGE_METRICS:
@@ -122,7 +122,7 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
             old_result = StatisticsWrapper.roi_correlations(old_subjects, params_to_work_with, clusters_rois, 'old',
                                                             project_name)
 
-            StatisticsWrapper.plot_heatmap(old_result - young_result, 'differences of old and young', project_name)
+            PlotsManager.plot_heatmap(old_result - young_result, 'differences of old and young', project_name)
 
         elif func == constants.PLOT_BRAIN_CLUSTERS:
             # for linkage_metric in constants.LINKAGE_METRICS:
@@ -138,10 +138,10 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
                                                           title="old")
 
             StatisticsWrapper.plot_clusters_on_brain(young_dendrogram_data['clusters'], chosen_data.iloc[0].subjects,
-                                                     chosen_rois_dict, distance_to_cluster=6,
+                                                     chosen_rois_dict, distance_to_cluster=4,
                                                      title=f'young_with_{linkage_metric}', project_name=project_name)
             StatisticsWrapper.plot_clusters_on_brain(old_dendrogram_data['clusters'], chosen_data.iloc[0].subjects,
-                                                     chosen_rois_dict, distance_to_cluster=6,
+                                                     chosen_rois_dict, distance_to_cluster=4,
                                                      title=f'old_with_{linkage_metric}', project_name=project_name)
 
 
@@ -218,11 +218,11 @@ if __name__ == "__main__":
     chosen_rois_dict = constants.ROI_CORTEX
 
     # wandb
-    # project_name = 'CORTEX_4_params_no_slopes_38_subjects'
-    project_name = None
+    project_name = 'CORTEX_all_params_36_subjects'
+    # project_name = None
 
     # Change here the Statistics funcs to run
-    funcs_to_run = [constants.HIERARCHICAL_CLUSTERING]
+    funcs_to_run = [constants.PLOT_BRAIN_CLUSTERS]
 
     # Choose here the parameters to work with in the data
     data_params = constants.ALL_PARAMS_WITH_SLOPES

@@ -268,9 +268,9 @@ DICT_NUM_TO_ROIS = {1: SUB_CORTEX_DICT,
 # -------------------- MRI Physical Parameters -------------------- #
 BASIC_4_PARAMS = ["r1", "tv", "r2s", "mt"]
 BASIC_4_PARAMS_WITH_SLOPES = ["r1", "tv", "r2s", "mt", "Slope-tv-r1", "Slope-tv-r2s", "Dtv-r1-values", "Dtv-r2s-values"]
-ALL_PARAMS_WITH_SLOPES = ["r1", "tv", "r2s", "mt", "t2", "diffusion_md", "diffusion_fa",
-                          "Slope-tv-r1", "Slope-tv-r2s", "Slope-tv-mt", "Slope-tv-t2", "Slope-tv-diffusion_md",
-                          "Slope-tv-diffusion_fa"]
+ALL_PARAMS_WITH_SLOPES = ["r1", "tv", "r2s", "mt", "t2", "diffusion_fa", "diffusion_md",
+                          "Slope-tv-r1", "Slope-tv-r2s", "Slope-tv-mt", "Slope-tv-t2",
+                          "Slope-tv-diffusion_fa", "Slope-tv-diffusion_md", "Slope-r2s-r1"]
 
 PARAMETERS = ["r1", "tv", "r2s", "mt", "t2", "diffusion"]
 PARAMETERS_W_D_TV_R1_AND_R2S = ["r1", "tv", "r2s", "mt", "t2", "diffusion", "Slope-tv-r1", "Slope-tv-r2s",
@@ -280,7 +280,7 @@ PARAMS_OF_SLOPES = ["Slope-tv-r1", "Slope-tv-r2s", "Dtv-r1-values", "Dtv-r2s-val
 # -------------------- Groups Dividers Consts -------------------- #
 OLD = "OLD"
 YOUNG = "YOUNG"
-AGE_THRESHOLD = 40
+AGE_THRESHOLD = 55
 
 # -------------------- Enums for statistical actions -------------------- #
 class Actions(enum.Enum):
@@ -314,6 +314,8 @@ T2 = 't2'
 MAP_T2 = os.getenv("MAP_T2")
 MAP_T2_TRANSFORMED = os.getenv('MAP_T2_TRANSFORMED')
 MAP_DIFFUSION = os.getenv("MAP_DIFFUSION")
+MAP_DIFFUSION_FA = os.getenv('MAP_DIFFUSION_FA')
+MAP_DIFFUSION_MD = os.getenv('MAP_DIFFUSION_MD')
 MAP_DIFFUSION_MD_TRANSFORMED = os.getenv('MAP_DIFFUSION_MD_TRANSFORMED')
 MAP_DIFFUSION_FA_TRANSFORMED = os.getenv('MAP_DIFFUSION_FA_TRANSFORMED')
 MAP_R1 = os.getenv("MAP_R1")

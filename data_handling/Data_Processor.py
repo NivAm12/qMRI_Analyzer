@@ -84,9 +84,11 @@ class DataProcessor:
                                                                                  by=['subjects', "ROI"])]
         # Concatenate all df creates for each parameter
         full_data = reduce(lambda left, right: pd.merge(left, right, on=['subjects', 'ROI']), df_to_concate)
-        #if only some ROIs are relevant - drop all the other rois
+
+        # if only some ROIs are relevant - drop all the other rois
         if self.wanted_rois:
             full_data.drop(full_data[~full_data["ROI"].isin(list(self.wanted_rois.keys()))].index, inplace=True)
+
         return full_data
 
     def _add_columns(self, full_data):
@@ -102,7 +104,6 @@ class DataProcessor:
         full_data = pd.merge(full_data, subject_info, on=['subjects'])
         full_data['ROI_name'] = full_data['ROI'].apply(lambda x: self.roi_dict[x])
         return full_data
-
 
     def create_data_frame_with_rois(self, data) -> pd.DataFrame:
         """

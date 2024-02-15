@@ -104,7 +104,7 @@ class DataReader:
         self.rois = np.array(rois)
         self.qmri_params = qmri_params
         self.choose_normalize = choose_normalize
-        self.derivative_params = derivative_params  # All derivative params represented as {param: [list of param to derviate with]}
+        self.derivative_params = derivative_params
 
         self.bin_data = np.linspace(0.00, 0.4, 36) if bin_data is None else bin_data
         self.all_subjects_raw_data = []  # This is a list where each cell in the list represents a subject, in each
@@ -360,10 +360,9 @@ if __name__ == "__main__":
         constants.R2S: (constants.MAP_R2S, constants.BASIC_SEG),
         constants.MT: (constants.MAP_MT, constants.BASIC_SEG),
         constants.TV: (constants.MAP_TV, constants.BASIC_SEG),
-        constants.T2: (constants.MAP_T2_TRANSFORMED, constants.BASIC_SEG),
-        constants.DIFFUSION_MD: (constants.MAP_DIFFUSION_MD_TRANSFORMED, constants.BASIC_SEG),
-        constants.DIFFUSION_FA: (constants.MAP_DIFFUSION_FA_TRANSFORMED, constants.BASIC_SEG)
-
+        constants.T2: (constants.MAP_T2, constants.SEG_T2),
+        constants.DIFFUSION_FA: (constants.MAP_DIFFUSION_FA, constants.SEG_DIFFUSION),
+        constants.DIFFUSION_MD: (constants.MAP_DIFFUSION_MD, constants.SEG_DIFFUSION),
     }
 
     # Can be changed - add more sort of normalizer and fit to it the compatible name to the file
@@ -375,8 +374,7 @@ if __name__ == "__main__":
 
     # ---- Here you can change the derivative_dict
     derivative_dict = {constants.TV: [constants.R1, constants.R2S, constants.MT, constants.T2,
-                                      constants.DIFFUSION_MD, constants.DIFFUSION_FA]}
-    # derivative_dict = None
+                                      constants.DIFFUSION_FA, constants.DIFFUSION_MD], constants.R2S: [constants.R1]}
 
     # ---- Here You Can Change
     range_for_tv_default = np.linspace(0.00, 0.4, 36)
