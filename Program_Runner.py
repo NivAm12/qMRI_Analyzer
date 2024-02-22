@@ -73,7 +73,10 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
     # You can choose here which column you want ('Age' / 'Gender' / etc') and the threshold (AGE_THRESHOLD / 'M' / etc')
     # and the names of each group.
     group_a_name, group_b_name, col_divider, threshold = constants.YOUNG, constants.OLD, 'Age', constants.AGE_THRESHOLD
+
     young_subjects, old_subjects = StatisticsWrapper.seperate_data_to_two_groups(chosen_data, col_divider, threshold)
+
+    linkage_metric = 'complete'
 
     for func in funcs_to_run:
         if func == constants.PLOT_DATA_PER_PARAM:
@@ -99,22 +102,15 @@ def analyse_data(subjects_raw_data, statistics_func, save_address, funcs_to_run,
                                                              project_name=project_name)
 
         elif func == constants.HIERARCHICAL_CLUSTERING:
-            # for linkage_metric in constants.LINKAGE_METRICS:
-            #     StatisticsWrapper.hierarchical_clustering(chosen_data, params_to_work_with, linkage_metric,
-            #                                               project_name, "all")
-            #     StatisticsWrapper.hierarchical_clustering(young_subjects, params_to_work_with, linkage_metric,
-            #                                               project_name, group_a_name)
-            #     StatisticsWrapper.hierarchical_clustering(old_subjects, params_to_work_with, linkage_metric,
-            #                                               project_name, group_b_name)
-            StatisticsWrapper.hierarchical_clustering(chosen_data, params_to_work_with, 'complete',
+            StatisticsWrapper.hierarchical_clustering(chosen_data, params_to_work_with, linkage_metric,
                                                       project_name, "all")
-            StatisticsWrapper.hierarchical_clustering(young_subjects, params_to_work_with, 'complete',
+            StatisticsWrapper.hierarchical_clustering(young_subjects, params_to_work_with, linkage_metric,
                                                       project_name, group_a_name)
-            StatisticsWrapper.hierarchical_clustering(old_subjects, params_to_work_with, 'complete',
+            StatisticsWrapper.hierarchical_clustering(old_subjects, params_to_work_with, linkage_metric,
                                                       project_name, group_b_name)
 
         elif func == constants.ROIS_CORRELATIONS:
-            clusters_rois = StatisticsWrapper.hierarchical_clustering(chosen_data, params_to_work_with, 'complete',
+            clusters_rois = StatisticsWrapper.hierarchical_clustering(chosen_data, params_to_work_with, linkage_metric,
                                                                       title="all")['dendrogram_data']['ivl']
             young_result = StatisticsWrapper.roi_correlations(young_subjects, params_to_work_with, clusters_rois,
                                                               'young',
@@ -212,17 +208,17 @@ if __name__ == "__main__":
     raw_data_type = constants.Z_SCORE
 
     # get the raw data
-    raw_data_path = constants.PATH_TO_CORTEX_all_params_z_score
+    raw_data_path = constants.PATH_TO_CORTEX_all_params_raw
 
     # Change Here the rois you would like to work with
     chosen_rois_dict = constants.ROI_CORTEX
 
     # wandb
-    project_name = 'CORTEX_all_params_36_subjects'
-    # project_name = None
+    # project_name = 'CORTEX_all_params_36_subjects'
+    project_name = None
 
     # Change here the Statistics funcs to run
-    funcs_to_run = [constants.PLOT_BRAIN_CLUSTERS]
+    funcs_to_run = [constants.ROIS_CORRELATIONS]
 
     # Choose here the parameters to work with in the data
     data_params = constants.ALL_PARAMS_WITH_SLOPES

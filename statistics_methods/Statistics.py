@@ -336,34 +336,26 @@ class StatisticsWrapper:
         data = data.assign(Mature=np.where(data['Age'] >= constants.AGE_THRESHOLD, name_group_b, name_group_a))
 
         for param in params:
-            sns.set(rc={'figure.figsize': (25, 25)})
+            if "Slope" in param:
+                continue
 
-            sns.boxplot(x="ROI", y=param, data=data, showmeans=True, hue='Mature', width=0.3,
+            sns.set(rc={'figure.figsize': (25, 25)})
+            sns.boxplot(x="ROI", y=param, data=data, showmeans=True, hue='Mature', width=0.5,
                         meanprops={"marker": "o", "markerfacecolor": "white", "markeredgecolor": "black",
                                    "markersize": "3"})
 
-            # if project_name:
-            #     wandb_run = wandb.init(
-            #         project=project_name,
-            #         name=f'{param}boxplot'
-            #     )
-            #
-            #     wandb_run.log({f'{param}': wandb.Image(plt)})
-            #     wandb_run.finish()
-            #     plt.close()
+            if project_name:
+                wandb_run = wandb.init(
+                    project=project_name,
+                    name=f'{param}boxplot'
+                )
 
-            # plt.ylim(range_y_values)
-            # plt.ylabel(col_name)
-            # plt.xlabel("ROI")
-            # plt.suptitle(f"{col_name} per ROI for all subjects")
-
-            # if not os.path.exists(save_address + "/distribution/"):
-            #     os.makedirs(save_address + "/distribution/")
-            # plt.savefig(save_address + "/distribution/" + f"{col_name}_distribution" + '.png')
-            plt.title(f'{param} values')
-            plt.show()
-
-            # StatisticsWrapper.plot_data_per_parameter_for_rois(data1, data2, "", YOUNG, OLD)
+                wandb_run.log({f'{param}': wandb.Image(plt)})
+                wandb_run.finish()
+                plt.close()
+            
+            plt.close()
+            StatisticsWrapper.plot_data_per_parameter_for_rois(data1, data2, "", YOUNG, OLD)
 
     @staticmethod
     def plot_data_per_parameter_for_rois(data1, data2, description_data, compare_val1, compare_val2, wanted_dict=None):
@@ -542,14 +534,14 @@ class StatisticsWrapper:
 
     @staticmethod
     def roi_correlations(data: pd.DataFrame, params_to_work_with: list, rois: list,
-                         group_title: str = None, project_name: str = None):
+                         group_title: str = None, project_name: str = None, method="pearson"):
         subjects = data.groupby('subjects')
         relevant_rois = list(data.ROI_name.unique())
         correlations = np.zeros((len(relevant_rois),
                                  len(relevant_rois)))
 
         for subject_name, subject_df in subjects:
-            df_corr = subject_df[params_to_work_with].T.corr()
+            df_corr = subject_df[params_to_work_with].T.corr(method=method)
             correlations += df_corr.to_numpy()
 
         correlations /= data.subjects.nunique()

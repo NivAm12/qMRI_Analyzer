@@ -24,6 +24,8 @@ PATH_TO_AMYGDALA_HIPPOCAMPUS_6_params = os.getenv("PATH_TO_AMYGDALA_HIPPOCAMPUS_
 PATH_TO_ACCUM_HIPPO_AMYG_6_params = os.getenv("PATH_TO_ACCUM_HIPPO_AMYG_6_params")
 PATH_TO_CORTEX_all_params_z_score = os.getenv('PATH_TO_CORTEX_all_params_z_score')
 PATH_TO_CORTEX_all_params_raw = os.getenv('PATH_TO_CORTEX_all_params_raw')
+PATH_TO_SUB_CORTEX_all_params_z_score = os.getenv('PATH_TO_SUB_CORTEX_all_params_z_score')
+PATH_TO_SUB_CORTEX_all_params_raw = os.getenv('PATH_TO_SUB_CORTEX_all_params_raw')
 SUBJECTS_INFO_PATH = os.getenv("SUBJECTS_INFO_PATH")
 
 # ---------------- Paths to output data ----------------- #
@@ -106,11 +108,11 @@ ROI_CORTEX = {
     1014: 'ctx-lh-medialorbitofrontal',
     1015: 'ctx-lh-middletemporal',
     1016: 'ctx-lh-parahippocampal',
-    1017: 'ctx-lh-paracentral',
+    # 1017: 'ctx-lh-paracentral',
     1018: 'ctx-lh-parsopercularis',
     1019: 'ctx-lh-parsorbitalis',
     1020: 'ctx-lh-parstriangularis',
-    1021: 'ctx-lh-pericalcarine',
+    # 1021: 'ctx-lh-pericalcarine',
     1022: 'ctx-lh-postcentral',
     1023: 'ctx-lh-posteriorcingulate',
     1024: 'ctx-lh-precentral',
@@ -118,10 +120,10 @@ ROI_CORTEX = {
     1026: 'ctx-lh-rostralanteriorcingulate',
     1027: 'ctx-lh-rostralmiddlefrontal',
     1028: 'ctx-lh-superiorfrontal',
-    1029: 'ctx-lh-superiorparietal',
+    # 1029: 'ctx-lh-superiorparietal',
     1030: 'ctx-lh-superiortemporal',
     1031: 'ctx-lh-supramarginal',
-    1034: 'ctx-lh-transversetemporal',
+    # 1034: 'ctx-lh-transversetemporal',
     1035: 'ctx-lh-insula',
     2002: 'ctx-rh-caudalanteriorcingulate',
     2003: 'ctx-rh-caudalmiddlefrontal',
@@ -136,11 +138,11 @@ ROI_CORTEX = {
     2014: 'ctx-rh-medialorbitofrontal',
     2015: 'ctx-rh-middletemporal',
     2016: 'ctx-rh-parahippocampal',
-    2017: 'ctx-rh-paracentral',
+    # 2017: 'ctx-rh-paracentral',
     2018: 'ctx-rh-parsopercularis',
     2019: 'ctx-rh-parsorbitalis',
     2020: 'ctx-rh-parstriangularis',
-    2021: 'ctx-rh-pericalcarine',
+    # 2021: 'ctx-rh-pericalcarine',
     2022: 'ctx-rh-postcentral',
     2023: 'ctx-rh-posteriorcingulate',
     2024: 'ctx-rh-precentral',
@@ -148,10 +150,10 @@ ROI_CORTEX = {
     2026: 'ctx-rh-rostralanteriorcingulate',
     2027: 'ctx-rh-rostralmiddlefrontal',
     2028: 'ctx-rh-superiorfrontal',
-    2029: 'ctx-rh-superiorparietal',
+    # 2029: 'ctx-rh-superiorparietal',
     2030: 'ctx-rh-superiortemporal',
     2031: 'ctx-rh-supramarginal',
-    2034: 'ctx-rh-transversetemporal',
+    # 2034: 'ctx-rh-transversetemporal',
     2035: 'ctx-rh-insula'
 }
 
