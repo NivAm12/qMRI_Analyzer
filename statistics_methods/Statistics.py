@@ -233,12 +233,16 @@ class StatisticsWrapper:
             if col_name == 'subjects' or col_name == 'ROI' or col_name == 'Age' \
                     or col_name == "Gender" or col_name == "ROI_name":
                 continue
+            num_of_significance = 0
             for area in wanted_dict.keys():
                 results = stats.ttest_ind(a=data1[col_name][data1[compare_column] == area].to_numpy(),
                                           b=data2[col_name][data2[compare_column] == area].to_numpy())
-                if results.pvalue <= 0.05:
-                    print(f"T_Test for {col_name} between {data1_name} and {data2_name} in {wanted_dict[area]}",
-                          results)
+                significance = results.pvalue <= 0.05
+                print(f"T_Test for {col_name} between {data1_name} and {data2_name} in {wanted_dict[area]} significance:{significance}, results: {results}")
+
+                if significance:
+                    num_of_significance += 1
+            print(f'param {col_name} number of significance differences: {num_of_significance}')    
 
     @staticmethod
     def plot_values_of_two_groups_per_roi(ROIs, info_per_ROI_per_param1: List[int], info_per_ROI_per_param2: List[int],

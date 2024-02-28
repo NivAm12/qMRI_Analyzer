@@ -208,17 +208,17 @@ if __name__ == "__main__":
     raw_data_type = constants.Z_SCORE
 
     # get the raw data
-    raw_data_path = constants.PATH_TO_CORTEX_all_params_raw
+    raw_data_path = constants.PATH_TO_CORTEX_all_params_z_score
 
     # Change Here the rois you would like to work with
     chosen_rois_dict = constants.ROI_CORTEX
 
     # wandb
-    # project_name = 'CORTEX_all_params_36_subjects'
-    project_name = None
+    project_name = 'CORTEX_all_params_36_subjects'
+    # project_name = None
 
     # Change here the Statistics funcs to run
-    funcs_to_run = [constants.ROIS_CORRELATIONS]
+    funcs_to_run = [constants.HIERARCHICAL_CLUSTERING]
 
     # Choose here the parameters to work with in the data
     data_params = constants.ALL_PARAMS_WITH_SLOPES

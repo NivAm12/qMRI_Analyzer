@@ -270,6 +270,7 @@ DICT_NUM_TO_ROIS = {1: SUB_CORTEX_DICT,
 # -------------------- MRI Physical Parameters -------------------- #
 BASIC_4_PARAMS = ["r1", "tv", "r2s", "mt"]
 BASIC_4_PARAMS_WITH_SLOPES = ["r1", "tv", "r2s", "mt", "Slope-tv-r1", "Slope-tv-r2s", "Dtv-r1-values", "Dtv-r2s-values"]
+ALL_PARAMS = ["r1", "tv", "r2s", "mt", "t2", "diffusion_fa", "diffusion_md"]
 ALL_PARAMS_WITH_SLOPES = ["r1", "tv", "r2s", "mt", "t2", "diffusion_fa", "diffusion_md",
                           "Slope-tv-r1", "Slope-tv-r2s", "Slope-tv-mt", "Slope-tv-t2",
                           "Slope-tv-diffusion_fa", "Slope-tv-diffusion_md", "Slope-r2s-r1"]
