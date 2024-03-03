@@ -116,3 +116,52 @@ class DataProcessor:
         full_data = self._edit_all_columns_of_parameters(data)
         full_data = self._add_columns(full_data)
         return full_data
+        
+    @staticmethod   
+    def extract_outliers(data, param, chosen_rois_dict):
+        outliers = {}
+        threshold = 3
+
+        for roi_value, roi_name in chosen_rois_dict.items():
+            roi_to_check_data = data[data.ROI == roi_value]
+            Q1 = roi_to_check_data[param].quantile(0.25)
+            Q3 = roi_to_check_data[param].quantile(0.75)
+            IQR = Q3 - Q1
+
+
+            outliers_df = roi_to_check_data[(roi_to_check_data[param] < Q1 - threshold * IQR) | (roi_to_check_data[param] > Q3 + threshold * IQR)]
+
+            if outliers_df.subjects.values.size > 0:
+                outliers[roi_value] = outliers_df.subjects.tolist()
+
+        return outliers
+    
+    @staticmethod
+    def outliers_counter(data, params_to_work_with):
+        outliers_counter = {}
+
+        for param in params_to_work_with:
+            subjects_outliers_counter = {}
+            outliers = DataProcessor.extract_outliers(data, param)
+
+            for roi, roi_outliers in outliers.items():
+                    for outlier in roi_outliers:
+                        if outlier in subjects_outliers_counter:
+                            subjects_outliers_counter[outlier] += 1
+                            outliers_counter[outlier] += 1
+                        else:
+                            subjects_outliers_counter[outlier]  = 1
+                            if outlier not in outliers_counter:
+                                outliers_counter[outlier] = 1
+
+            subjects_outliers_counter = dict(sorted(subjects_outliers_counter.items(), key=lambda item: item[1], reverse=True))
+            # print(f'{param} outliers: {outliers}')
+            # print(f'{param} outliers counter: {subjects_outliers_counter}')
+            # print(f'{param} outliers counter: {outliers_counter}')
+            # print('----------------------------------------------------------')
+
+        outliers_counter = dict(sorted(outliers_counter.items(), key=lambda item: item[1], reverse=True))
+        print(f'outliers counter: {outliers_counter}')
+
+        # data = data[~data.subjects.isin(['H047_DC', 'H054_AE', 'H037_YB', 'H036_EV'])]
+        data.subjects.nunique()

@@ -13,8 +13,8 @@ from scipy.cluster.hierarchy import linkage, dendrogram, fcluster
 import nibabel as nib
 import constants
 import copy
-from collections import Counter
 from .plots import PlotsManager
+from sklearn.linear_model import LinearRegression
 
 
 # -------------------- Enums for statistical actions -------------------- #
@@ -215,10 +215,10 @@ class StatisticsWrapper:
         else:
             group_a = data[data[separating_column] == threshold]
             group_b = data[data[separating_column] != threshold]
-        return group_a, group_b
-
+        return group_a, group_b  
+   
     @staticmethod
-    def t_test_per_parameter_per_area(data1, data2, wanted_dict, compare_column, data1_name, data2_name):
+    def t_test_per_parameter_per_area(data1, data2, rois, compare_column, params):
         """
         Calculates T-Test for each parameter per area between data1 and data2 and print them
         :param data1: df to compare with data2
@@ -229,20 +229,17 @@ class StatisticsWrapper:
         :param data2_name:
         :return: None
         """
-        for col_name in data1.columns:
-            if col_name == 'subjects' or col_name == 'ROI' or col_name == 'Age' \
-                    or col_name == "Gender" or col_name == "ROI_name":
-                continue
+        for param in params:
             num_of_significance = 0
-            for area in wanted_dict.keys():
-                results = stats.ttest_ind(a=data1[col_name][data1[compare_column] == area].to_numpy(),
-                                          b=data2[col_name][data2[compare_column] == area].to_numpy())
+            for area in rois.keys():
+                results = stats.ttest_ind(a=data1[param][data1[compare_column] == area].to_numpy(),
+                                            b=data2[param][data2[compare_column] == area].to_numpy())
                 significance = results.pvalue <= 0.05
-                print(f"T_Test for {col_name} between {data1_name} and {data2_name} in {wanted_dict[area]} significance:{significance}, results: {results}")
+                # print(f"T_Test for {param} {rois[area]} significance:{significance}, results: {results}")
 
                 if significance:
                     num_of_significance += 1
-            print(f'param {col_name} number of significance differences: {num_of_significance}')    
+            print(f'param {param} number of areas with significance differences: {num_of_significance}') 
 
     @staticmethod
     def plot_values_of_two_groups_per_roi(ROIs, info_per_ROI_per_param1: List[int], info_per_ROI_per_param2: List[int],
@@ -606,3 +603,45 @@ class StatisticsWrapper:
 
         distances /= data.subjects.nunique()
         pass
+
+    @staticmethod
+    def calculate_cv_for_subjects(data_groups, group_by_param, params, x_axis, use_reg=False, fig_size=(20, 8), connect_scatter=False):
+        for param in params:
+            # if 'Slope' in param:
+            #     continue
+            plt.figure(figsize=fig_size)
+
+            for data, color, label in data_groups:
+                # Calculate CV params
+                means = data.groupby(group_by_param)[[param, x_axis]].mean()
+                stds = data.groupby(group_by_param)[param].std()
+                cv = (stds / means[param])
+
+                if use_reg:
+                    model = LinearRegression()
+                    model.fit(np.array(means[x_axis]).reshape(-1, 1), np.array(cv).reshape(-1, 1))
+                    # Get the slope and intercept
+                    slope = model.coef_[0]
+                    intercept = model.intercept_
+                    x_fit = np.linspace(min(means[x_axis]), max(means[x_axis]), 100) 
+                    x_axis_to_use = means[x_axis]
+                else:
+                    x_axis_to_use = [str(int(i)) for i in means[x_axis]]
+
+                cv_data = pd.DataFrame({
+                    'CV': cv,
+                    x_axis: x_axis_to_use
+                })
+
+                # Create the plot
+                plt.scatter(cv_data[x_axis], cv_data['CV'], color=color, label=label, s=50, alpha=0.7)
+                if connect_scatter:
+                    plt.plot(cv_data[x_axis], cv_data['CV'])
+                if use_reg:
+                    plt.plot(x_fit, slope * x_fit + intercept, color='red')
+                plt.xlabel(x_axis)
+                plt.ylabel('CV')
+
+            plt.title(f'{param}')
+            plt.grid(True)
+            plt.legend()
