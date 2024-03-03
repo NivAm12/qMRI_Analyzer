@@ -97,7 +97,6 @@ ROI_CORTEX = {
     1002: 'ctx-lh-caudalanteriorcingulate',
     1003: 'ctx-lh-caudalmiddlefrontal',
     1005: 'ctx-lh-cuneus',
-    1006: 'ctx-lh-entorhinal',
     1007: 'ctx-lh-fusiform',
     1008: 'ctx-lh-inferiorparietal',
     1009: 'ctx-lh-inferiortemporal',
