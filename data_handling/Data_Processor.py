@@ -120,7 +120,7 @@ class DataProcessor:
     @staticmethod   
     def extract_outliers(data, param, chosen_rois_dict):
         outliers = {}
-        threshold = 3
+        threshold = 1.5
 
         for roi_value, roi_name in chosen_rois_dict.items():
             roi_to_check_data = data[data.ROI == roi_value]
@@ -137,12 +137,12 @@ class DataProcessor:
         return outliers
     
     @staticmethod
-    def outliers_counter(data, params_to_work_with):
+    def outliers_counter(data, params_to_work_with, chosen_rois_dict):
         outliers_counter = {}
 
         for param in params_to_work_with:
             subjects_outliers_counter = {}
-            outliers = DataProcessor.extract_outliers(data, param)
+            outliers = DataProcessor.extract_outliers(data, param, chosen_rois_dict)
 
             for roi, roi_outliers in outliers.items():
                     for outlier in roi_outliers:
