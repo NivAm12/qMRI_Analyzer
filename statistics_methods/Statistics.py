@@ -339,8 +339,8 @@ class StatisticsWrapper:
         for param in params:
             if "Slope" in param:
                 continue
-
-            sns.set(rc={'figure.figsize': (25, 25)})
+            
+            plt.figure(figsize=(15, 15))
             sns.boxplot(x="ROI", y=param, data=data, showmeans=True, hue='Mature', width=0.5,
                         meanprops={"marker": "o", "markerfacecolor": "white", "markeredgecolor": "black",
                                    "markersize": "3"})
@@ -355,8 +355,8 @@ class StatisticsWrapper:
                 wandb_run.finish()
                 plt.close()
             
-            plt.close()
-            StatisticsWrapper.plot_data_per_parameter_for_rois(data1, data2, "", YOUNG, OLD)
+            # plt.close()
+            # StatisticsWrapper.plot_data_per_parameter_for_rois(data1, data2, "", name_group_a, name_group_b)
 
     @staticmethod
     def plot_data_per_parameter_for_rois(data1, data2, description_data, compare_val1, compare_val2, wanted_dict=None):
