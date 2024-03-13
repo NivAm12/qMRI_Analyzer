@@ -259,6 +259,15 @@ ROI_RIGTH_CORTEX = {
     2035: 'ctx-rh-insula'
 }
 
+LOBES = {
+    'frontal': ['ctx-lh-caudalmiddlefrontal', 'ctx-lh-lateralorbitofrontal', 'ctx-lh-medialorbitofrontal', 'ctx-lh-parsopercularis', 'ctx-lh-parsorbitalis', 'ctx-lh-parstriangularis', 'ctx-lh-precentral', 'ctx-lh-rostralmiddlefrontal', 'ctx-lh-superiorfrontal', 'ctx-rh-caudalmiddlefrontal', 'ctx-rh-lateralorbitofrontal', 'ctx-rh-medialorbitofrontal', 'ctx-rh-parsopercularis', 'ctx-rh-parsorbitalis', 'ctx-rh-parstriangularis', 'ctx-rh-precentral', 'ctx-rh-rostralmiddlefrontal', 'ctx-rh-superiorfrontal'],
+    'parietal': ['ctx-lh-inferiorparietal', 'ctx-lh-superiorparietal', 'ctx-lh-postcentral', 'ctx-lh-precuneus', 'ctx-lh-supramarginal',  'ctx-rh-inferiorparietal', 'ctx-rh-superiorparietal', 'ctx-rh-postcentral', 'ctx-rh-precuneus', 'ctx-rh-supramarginal'],
+    'temporal': ['ctx-lh-fusiform', 'ctx-lh-inferiortemporal', 'ctx-lh-middletemporal', 'ctx-lh-parahippocampal', 'ctx-lh-superiortemporal', 'ctx-lh-insula', 'ctx-rh-fusiform', 'ctx-rh-inferiortemporal', 'ctx-rh-middletemporal', 'ctx-rh-parahippocampal', 'ctx-rh-superiortemporal', 'ctx-rh-insula'],
+    'occipital': ['ctx-lh-cuneus', 'ctx-lh-lateraloccipital', 'ctx-lh-lingual', 'ctx-lh-pericalcarine', 'ctx-rh-cuneus', 'ctx-rh-lateraloccipital', 'ctx-rh-lingual', 'ctx-rh-pericalcarine'],
+    'cingulate': ['ctx-lh-caudalanteriorcingulate', 'ctx-lh-isthmuscingulate', 'ctx-lh-posteriorcingulate', 'ctx-lh-rostralanteriorcingulate', 'ctx-rh-caudalanteriorcingulate', 'ctx-rh-isthmuscingulate', 'ctx-rh-posteriorcingulate', 'ctx-rh-rostralanteriorcingulate'],
+    # 'insula': ['ctx-lh-insula', 'ctx-rh-insula']
+}
+
 DICT_NUM_TO_ROIS = {1: SUB_CORTEX_DICT,
                     2: ROI_PUTAMEN_THALAMUS,
                     3: ROI_PALLIDUM_PUTAMEN_CAUDETE,

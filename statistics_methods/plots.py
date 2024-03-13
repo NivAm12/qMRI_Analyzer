@@ -11,19 +11,19 @@ from collections import Counter
 
 class PlotsManager:
     @staticmethod
-    def plot_heatmap(data: pd.DataFrame, group_title: str, project_name: str):
+    def plot_heatmap(data: pd.DataFrame, title: str, project_name: str):
         sns.set(font_scale=0.5)
         plt.figure(figsize=(20, 10))
         cluster_map = sns.heatmap(data, linewidth=.5, cmap='coolwarm')
-        plt.title(f'Correlations of {group_title} group')
+        plt.title(f'Correlations of {title} group')
 
         if project_name:
             wandb_run = wandb.init(
                 project=project_name,
-                name=f'{group_title} Correlations'
+                name=f'{title}'
             )
 
-            wandb_run.log({f'{group_title}': wandb.Image(plt)})
+            wandb_run.log({f'{title}': wandb.Image(plt)})
             wandb_run.finish()
             plt.close()
         else:
