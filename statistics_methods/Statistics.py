@@ -586,6 +586,48 @@ class StatisticsWrapper:
         PlotsManager.plot_heatmap(correlations_df, title, project_name)
 
         return correlations_df
+    
+    @staticmethod
+    def roi_correlations_by_age_by_each_roi(data: pd.DataFrame, params_to_work_with: list,
+                            title: str = None, project_name: str = None, method="pearson"):
+        subjects = data.groupby('subjects')
+        relevant_rois = list(data.ROI_name.unique())
+        labels = [label[4:] for label in relevant_rois]  # remove prefix as 'ctx'
+
+        num_rois = len(labels)
+        fig, axes = plt.subplots(num_rois, 1, figsize=(10, 6*num_rois))
+
+        for roi_index, roi in enumerate(labels):
+            age_values = []
+            correlation_values = []
+            for subject_name, subject_df in subjects:
+                df_corr = subject_df[params_to_work_with].T.corr(method=method)
+                df_corr.index = labels
+                df_corr.columns = labels
+                df_corr['corr_mean'] = df_corr.apply(np.mean, axis=1)
+                age_values.append(subject_df.Age.iloc[0])
+                correlation_values.append(df_corr.loc[roi]['corr_mean'])
+
+            ax = axes[roi_index]
+            ax.scatter(age_values, correlation_values)
+
+            # Perform linear regression to get slope (m) and intercept (b)
+            m, b = np.polyfit(age_values, correlation_values, 1)  # degree 1 for linear regression
+
+            # Generate x values for the regression line
+            x_line = np.linspace(min(age_values), max(age_values), 100)
+
+            # Calculate y values for the regression line using the equation y = mx + b
+            y_line = m * x_line + b
+
+            # Plot the regression line on the scatter plot
+            ax.plot(x_line, y_line, color='red')  # adjust color as desired
+
+            ax.set_title(f'ROI: {roi}')
+            ax.set_xlabel('Age')
+            ax.set_ylabel('Mean Correlation')
+
+        plt.show()
 
     @staticmethod
     def plot_clusters_on_brain(clusters: np.ndarray, example_subject: str, rois: dict, title: str,
