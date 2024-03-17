@@ -559,6 +559,35 @@ class StatisticsWrapper:
         return correlations_df
 
     @staticmethod
+    def roi_correlations_std(data: pd.DataFrame, params_to_work_with: list, rois: list,
+                         title: str = None, project_name: str = None, method="pearson"):
+        subjects = data.groupby('subjects')
+        relevant_rois = list(data.ROI_name.unique())
+        correlations_matrices = []
+
+        for subject_name, subject_df in subjects:
+            df_corr = subject_df[params_to_work_with].T.corr(method=method)
+            correlations_matrices.append(df_corr.to_numpy())
+
+        # Combine matrices into a single array along a new axis
+        combined_matrix = np.stack(correlations_matrices, axis=0)
+
+        # Calculate standard deviation along the first axis (across all matrices)
+        std_matrix = np.std(combined_matrix, axis=0)
+
+        labels = [label[4:] for label in relevant_rois]  # remove prefix as 'ctx'
+        correlations_df = pd.DataFrame(std_matrix, index=labels, columns=labels)
+
+        # reorder the dataframe to match the clustering order
+        correlations_df = correlations_df.reindex(rois)
+        correlations_df = correlations_df[rois]
+
+        # plot the heatmap
+        PlotsManager.plot_heatmap(correlations_df, title, project_name)
+
+        return correlations_df
+
+    @staticmethod
     def plot_clusters_on_brain(clusters: np.ndarray, example_subject: str, rois: dict, title: str,
                                distance_to_cluster: float, project_name: str = None):
         rois_values = list(rois.keys())

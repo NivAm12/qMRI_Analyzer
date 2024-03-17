@@ -24,6 +24,7 @@ PATH_TO_AMYGDALA_HIPPOCAMPUS_6_params = os.getenv("PATH_TO_AMYGDALA_HIPPOCAMPUS_
 PATH_TO_ACCUM_HIPPO_AMYG_6_params = os.getenv("PATH_TO_ACCUM_HIPPO_AMYG_6_params")
 PATH_TO_CORTEX_all_params_z_score = os.getenv('PATH_TO_CORTEX_all_params_z_score')
 PATH_TO_CORTEX_all_params_raw = os.getenv('PATH_TO_CORTEX_all_params_raw')
+PATH_TO_CORTEX_all_params_robust = os.getenv('PATH_TO_CORTEX_all_params_robust')
 PATH_TO_SUB_CORTEX_all_params_z_score = os.getenv('PATH_TO_SUB_CORTEX_all_params_z_score')
 PATH_TO_SUB_CORTEX_all_params_raw = os.getenv('PATH_TO_SUB_CORTEX_all_params_raw')
 SUBJECTS_INFO_PATH = os.getenv("SUBJECTS_INFO_PATH")

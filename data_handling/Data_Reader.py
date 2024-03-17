@@ -370,11 +370,13 @@ if __name__ == "__main__":
                             constants.ROBUST_SCALING: FILE_NAME_DMEDIAN}
 
     # ---- Here You Can Change the sort of normalizer ---- #
-    choose_normalizer = constants.Z_SCORE
+    choose_normalizer = constants.ROBUST_SCALING
 
     # ---- Here you can change the derivative_dict
-    derivative_dict = {constants.TV: [constants.R1, constants.R2S, constants.MT, constants.T2,
-                                      constants.DIFFUSION_FA, constants.DIFFUSION_MD], constants.R2S: [constants.R1]}
+    # derivative_dict = {constants.TV: [constants.R1, constants.R2S, constants.MT, constants.T2,
+    #                                   constants.DIFFUSION_FA, constants.DIFFUSION_MD], constants.R2S: [constants.R1]}
+    
+    derivative_dict = None
 
     # ---- Here You Can Change
     range_for_tv_default = np.linspace(0.00, 0.4, 36)

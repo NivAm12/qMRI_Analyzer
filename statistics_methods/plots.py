@@ -15,7 +15,7 @@ class PlotsManager:
         sns.set(font_scale=0.5)
         plt.figure(figsize=(20, 10))
         cluster_map = sns.heatmap(data, linewidth=.5, cmap='coolwarm')
-        plt.title(f'Correlations of {title} group')
+        plt.title(f'{title}')
 
         if project_name:
             wandb_run = wandb.init(
