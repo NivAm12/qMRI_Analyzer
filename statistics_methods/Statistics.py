@@ -5,7 +5,7 @@ import numpy as np
 import seaborn as sns
 import scipy.stats as stats
 import matplotlib.pyplot as plt
-from scipy.stats import pearsonr
+from scipy.stats import pearsonr, f
 from typing import List, Any, Tuple
 import wandb
 from scipy.spatial.distance import pdist, squareform
@@ -15,6 +15,7 @@ import constants
 import copy
 from .plots import PlotsManager
 from sklearn.linear_model import LinearRegression
+from itertools import combinations
 
 
 # -------------------- Enums for statistical actions -------------------- #
@@ -716,3 +717,43 @@ class StatisticsWrapper:
             plt.title(f'{param}')
             plt.grid(True)
             plt.legend()
+
+    @staticmethod
+    def calculate_cv_f_test(data, group_by_param, params, x_axis):
+        f_test_params = {}
+
+        for param in params:
+            # Calculate CV params
+            means = data.groupby(group_by_param)[[param, x_axis]].mean()
+            stds = data.groupby(group_by_param)[param].std()
+            cv = (stds / means[param])
+            model = LinearRegression()
+            x = np.array(means[x_axis]).reshape(-1, 1)
+            y = np.array(cv).reshape(-1, 1)
+            model.fit(x, y)
+
+            # Calculate the residual sum of squares (RSS) for each model
+            rss = np.sum((y - model.predict(x)) ** 2)    
+            f_test_params[param] = {
+                "rss": rss,
+                "df": len(y) - 2
+            }
+
+        # check the f-test for each two models
+        for (param1, param1_values), (param2, param2_values) in combinations(f_test_params.items(), 2):
+            # Compute the F-statistic
+            # F = ((param1_values['rss'] - param2_values['rss']) / (param2_values['p'] - param1_values['p'])) / \
+            #       (param2_values['rss'] / param2_values['df'])
+            F = (param1_values['rss'] - param2_values['rss']) 
+
+            # Determine the critical value of the F-statistic
+            alpha = 0.05  # Significance level
+            critical_value = f.ppf(1 - alpha, param1_values['df'], param2_values['df'])
+
+            # Make a decision
+            if F > critical_value:
+                print(f"Models: {param1}, {param2}: Reject the null hypothesis. The models are significantly different.")
+            else:
+                print(f"Models: {param1}, {param2}:Fail to reject the null hypothesis. The models are not significantly different.")
+                
+

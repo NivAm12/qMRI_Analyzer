@@ -346,12 +346,12 @@ if __name__ == "__main__":
     analysis_dir = constants.ANALYSIS_DIR
 
     # Can be changed - list of all ROIs' numbers from the segmentation
-    rois = list(constants.ROI_CORTEX.keys())
+    rois = list(constants.SUB_CORTEX_DICT.keys())
 
     # Can be changed - this is the save address for the output
     save_address = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
                                   '/corr_by_means/' \
-                                  '2023_analysis/ROI_CORTEX_all_params/'
+                                  '2023_analysis/SUB_CORTEX_all_params/'
 
     # Can be changed - using other params - make sure to add another parameter as a name, and tuple of the
     # full path to the map of the parameter and the full path to the compatible segmentation
@@ -370,7 +370,7 @@ if __name__ == "__main__":
                             constants.ROBUST_SCALING: FILE_NAME_DMEDIAN}
 
     # ---- Here You Can Change the sort of normalizer ---- #
-    choose_normalizer = constants.ROBUST_SCALING
+    choose_normalizer = constants.Z_SCORE
 
     # ---- Here you can change the derivative_dict
     # derivative_dict = {constants.TV: [constants.R1, constants.R2S, constants.MT, constants.T2,
