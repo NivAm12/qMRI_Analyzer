@@ -343,10 +343,10 @@ class StatisticsWrapper:
             if "Slope" in param:
                 continue
             
-            plt.figure(figsize=(15, 15))
+            plt.figure(figsize=(18, 8))
             sns.boxplot(x="ROI", y=param, data=data, showmeans=True, hue='Mature', width=0.5,
                         meanprops={"marker": "o", "markerfacecolor": "white", "markeredgecolor": "black",
-                                   "markersize": "3"})
+                                   "markersize": "3"}).set_title(param)
 
             if project_name:
                 wandb_run = wandb.init(
