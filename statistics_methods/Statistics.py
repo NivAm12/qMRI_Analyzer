@@ -16,6 +16,8 @@ import copy
 from .plots import PlotsManager
 from sklearn.linear_model import LinearRegression
 from itertools import combinations
+from sklearn.metrics import r2_score
+import statsmodels.api as sm
 
 
 # -------------------- Enums for statistical actions -------------------- #
@@ -471,7 +473,7 @@ class StatisticsWrapper:
             plt.close()
 
     @staticmethod
-    def plot_values_per_parameter_per_roi(data, params, rois, save_address):
+    def plot_values_per_parameter_per_roi(data, params, rois, save_address=None):
         """
         This function gets the data frame's data, parametersm rois and shows for each roi all the values
         per parameter ->
@@ -483,8 +485,8 @@ class StatisticsWrapper:
         :param save_address: save address for graphs
         :return:
         """
-        save_address_for_func = os.path.join(save_address, "Visual_Corr")
         if save_address:
+            save_address_for_func = os.path.join(save_address, "Visual_Corr")
             if not os.path.exists(save_address_for_func):
                 os.makedirs(save_address_for_func)
         colors = ['blue', 'red', 'yellow', 'green', 'black', 'gray', 'pink', 'silver', 'orange', 'gold']
@@ -502,15 +504,15 @@ class StatisticsWrapper:
                             all_scatter_plots.append(plt.scatter(list(param_info_per_roi_per_subject.iloc[0])[k],
                                                                  list(param_info_per_roi_per_subject2.iloc[0])[k],
                                                                  color=colors[k]))
-                        plt.legend(all_scatter_plots, params, scatterpoints=1, ncol=3, fontsize=8)
-                        plt.title(f"{subject}\n info of {params} per {constants.SUB_CORTEX_DICT[rois[i]]} \n and "
-                                  f"{constants.SUB_CORTEX_DICT[rois[j]]}")
-                        plt.ylabel(constants.SUB_CORTEX_DICT[rois[j]])
-                        plt.xlabel(constants.SUB_CORTEX_DICT[rois[i]])
-                        if save_address:
-                            plt.savefig(save_address_for_func + "/" +
-                                        f"cor_{constants.SUB_CORTEX_DICT[rois[i]]}_and_{constants.SUB_CORTEX_DICT[rois[j]]}.png")
-                        plt.show()
+                        # plt.legend(all_scatter_plots, params, scatterpoints=1, ncol=3, fontsize=8)
+                        # plt.title(f"{subject}\n info of {params} per {constants.SUB_CORTEX_DICT[rois[i]]} \n and "
+                        #           f"{constants.SUB_CORTEX_DICT[rois[j]]}")
+                        # plt.ylabel(constants.SUB_CORTEX_DICT[rois[j]])
+                        # plt.xlabel(constants.SUB_CORTEX_DICT[rois[i]])
+                        # if save_address:
+                        #     plt.savefig(save_address_for_func + "/" +
+                        #                 f"cor_{constants.SUB_CORTEX_DICT[rois[i]]}_and_{constants.SUB_CORTEX_DICT[rois[j]]}.png")
+                        # plt.show()
 
     @staticmethod
     def hierarchical_clustering(data: pd.DataFrame, params_to_work_with: list, linkage_metric: str,
@@ -691,12 +693,16 @@ class StatisticsWrapper:
 
                 if use_reg:
                     model = LinearRegression()
-                    model.fit(np.array(means[x_axis]).reshape(-1, 1), np.array(cv).reshape(-1, 1))
+                    x = np.array(means[x_axis]).reshape(-1, 1)
+                    y = np.array(cv).reshape(-1, 1)
+                    model.fit(x, y)
                     # Get the slope and intercept
                     slope = model.coef_[0]
                     intercept = model.intercept_
                     x_fit = np.linspace(min(means[x_axis]), max(means[x_axis]), 100) 
                     x_axis_to_use = means[x_axis]
+                    # Get R-squared score
+                    r2 = r2_score(y, model.predict(x))
                 else:
                     x_axis_to_use = [str(int(i)) for i in means[x_axis]]
 
@@ -710,50 +716,70 @@ class StatisticsWrapper:
                 if connect_scatter:
                     plt.plot(cv_data[x_axis], cv_data['CV'])
                 if use_reg:
+                    plt.annotate(f'R2: {r2}', (min(means[x_axis]) * 0.9, max(cv_data['CV'])), fontsize=10)
                     plt.plot(x_fit, slope * x_fit + intercept, color='red')
                 plt.xlabel(x_axis)
                 plt.ylabel('CV')
+                
 
             plt.title(f'{param}')
             plt.grid(True)
             plt.legend()
 
     @staticmethod
-    def calculate_cv_f_test(data, group_by_param, params, x_axis):
+    def calculate_cv_f_test(data_groups, group_by_param, params, x_axis):
         f_test_params = {}
-
         for param in params:
-            # Calculate CV params
-            means = data.groupby(group_by_param)[[param, x_axis]].mean()
-            stds = data.groupby(group_by_param)[param].std()
-            cv = (stds / means[param])
-            model = LinearRegression()
-            x = np.array(means[x_axis]).reshape(-1, 1)
-            y = np.array(cv).reshape(-1, 1)
-            model.fit(x, y)
+            plt.figure(figsize=(12, 8))
+            f_test_params[param] = {}
+            for index, (data, group_name) in enumerate(data_groups):
+                # Calculate CV params
+                means = data.groupby(group_by_param)[[param, x_axis]].mean()
+                stds = data.groupby(group_by_param)[param].std()
+                cv = (stds / means[param])
+                model = LinearRegression()
+                x = np.array(means[x_axis]).reshape(-1, 1)
+                y = np.array(cv).reshape(-1, 1)
+                model.fit(x, y)
 
-            # Calculate the residual sum of squares (RSS) for each model
-            rss = np.sum((y - model.predict(x)) ** 2)    
-            f_test_params[param] = {
-                "rss": rss,
-                "df": len(y) - 2
-            }
+                # Get the slope and intercept
+                slope = model.coef_[0]
+                intercept = model.intercept_
+                x_fit = np.linspace(min(means[x_axis]), max(means[x_axis]), 100) 
+
+                # plot the regression
+                plt.subplot(1, len(data_groups), index + 1)
+                plt.scatter(means[x_axis], cv, s=50, alpha=0.7)
+                plt.plot(x_fit, slope * x_fit + intercept, color='red')
+                plt.title(f"{group_name} {param}")
+                plt.xlabel(x_axis)
+                plt.ylabel('CV')
+
+                # Calculate the residual sum of squares (RSS) for each model
+                rss = np.sum((y - model.predict(x)) ** 2)    
+                f_test_params[param][group_name] = {
+                    "rss": rss,
+                    "df": len(y) - 2
+                }
 
         # check the f-test for each two models
-        for (param1, param1_values), (param2, param2_values) in combinations(f_test_params.items(), 2):
+        for param, param_values in f_test_params.items():
+            group1_name, group1_params = list(param_values.items())[0]
+            group2_name, group2_params = list(param_values.items())[1]
+
             # Compute the F-statistic
             # F = ((param1_values['rss'] - param2_values['rss']) / (param2_values['p'] - param1_values['p'])) / \
             #       (param2_values['rss'] / param2_values['df'])
-            F = (param1_values['rss'] - param2_values['rss']) 
+            F = (group1_params['rss'] / group2_params['rss']) 
 
             # Determine the critical value of the F-statistic
             alpha = 0.05  # Significance level
-            critical_value = f.ppf(1 - alpha, param1_values['df'], param2_values['df'])
+            critical_value = f.ppf(1 - alpha, group1_params['df'], group2_params['df'])
 
             # Make a decision
             if F > critical_value:
-                print(f"Models: {param1}, {param2}: Reject the null hypothesis. The models are significantly different.")
+                print(f"Param {param}. Groups: {group1_name}, {group2_name}: Reject the null hypothesis. The models are significantly different.")
             else:
-                print(f"Models: {param1}, {param2}:Fail to reject the null hypothesis. The models are not significantly different.")
+                print(f"Param {param}. Groups: {group1_name}, {group2_name}: Fail to reject the null hypothesis. The models are not significantly different.")
                 
 
