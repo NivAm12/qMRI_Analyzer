@@ -91,7 +91,7 @@ class StatisticsWrapper:
         return std_per_subject_per_roi_per_param
 
     @staticmethod
-    def calc_mean_per_subject_per_parameter_per_ROI(subjects_raw_data, params):
+    def calc_median_per_subject_per_parameter_per_ROI(subjects_raw_data, params):
         """
         calculates the median per subject per parameter per ROI.
         :param subjects_raw_data: given data

@@ -283,6 +283,8 @@ ALL_PARAMS = ["r1", "tv", "r2s", "mt", "t2", "diffusion_fa", "diffusion_md"]
 ALL_PARAMS_WITH_SLOPES = ["r1", "tv", "r2s", "mt", "t2", "diffusion_fa", "diffusion_md",
                           "Slope-tv-r1", "Slope-tv-r2s", "Slope-tv-mt", "Slope-tv-t2",
                           "Slope-tv-diffusion_fa", "Slope-tv-diffusion_md", "Slope-r2s-r1"]
+SLOPES = ["Slope-tv-r1", "Slope-tv-r2s", "Slope-tv-mt", "Slope-tv-t2",
+                          "Slope-tv-diffusion_fa", "Slope-tv-diffusion_md", "Slope-r2s-r1"]
 
 PARAMETERS = ["r1", "tv", "r2s", "mt", "t2", "diffusion"]
 PARAMETERS_W_D_TV_R1_AND_R2S = ["r1", "tv", "r2s", "mt", "t2", "diffusion", "Slope-tv-r1", "Slope-tv-r2s",
