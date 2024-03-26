@@ -591,6 +591,30 @@ class StatisticsWrapper:
         return correlations_df
     
     @staticmethod
+    def roi_correlations_determinant_by_age(data: pd.DataFrame, params_to_work_with: list, method="pearson"):
+        subjects = data.groupby('subjects')
+        corr_dt = []
+        ages = []
+
+        for _, subject_df in subjects:
+            df_corr = subject_df[params_to_work_with].T.corr(method=method).to_numpy()
+            corr_dt.append(np.linalg.slogdet(df_corr)[1])
+            ages.append(subject_df['Age'].iloc[0])
+
+        plt.scatter(ages, corr_dt)
+
+        # Perform linear regression
+        m, b = np.polyfit(ages, corr_dt, 1)  # degree 1 for linear regression
+        x_line = np.linspace(min(ages), max(ages), 100)
+        y_line = m * x_line + b
+
+        # Plot the regression line on the scatter plot
+        plt.plot(x_line, y_line, color='red')
+        plt.title(f'Determinant of correlation')
+        plt.xlabel('Age')
+        plt.ylabel('Determinant')
+
+    @staticmethod
     def roi_correlations_by_age_by_each_roi(data: pd.DataFrame, params_to_work_with: list,
                             title: str = None, project_name: str = None, method="pearson"):
         subjects = data.groupby('subjects')
@@ -727,40 +751,42 @@ class StatisticsWrapper:
             plt.legend()
 
     @staticmethod
-    def calculate_cv_f_test(data_groups, group_by_param, params, x_axis):
+    def calculate_cv_f_test(data, group_by_param, params, x_axis):
         f_test_params = {}
         for param in params:
-            plt.figure(figsize=(12, 8))
             f_test_params[param] = {}
-            for index, (data, group_name) in enumerate(data_groups):
-                # Calculate CV params
-                means = data.groupby(group_by_param)[[param, x_axis]].mean()
-                stds = data.groupby(group_by_param)[param].std()
-                cv = (stds / means[param])
-                model = LinearRegression()
-                x = np.array(means[x_axis]).reshape(-1, 1)
-                y = np.array(cv).reshape(-1, 1)
-                model.fit(x, y)
+            # Calculate CV params
+            means = data.groupby(group_by_param)[[param, x_axis]].mean()
+            stds = data.groupby(group_by_param)[param].std()
+            cv = (stds / means[param])
 
-                # Get the slope and intercept
-                slope = model.coef_[0]
-                intercept = model.intercept_
-                x_fit = np.linspace(min(means[x_axis]), max(means[x_axis]), 100) 
+            # split to two models
+            simple_model = LinearRegression()
+            x1 = np.array(means[param]).reshape(-1, 1)
+            y1 = np.array(cv).reshape(-1, 1)
+            simple_model.fit(x1, y1)
 
-                # plot the regression
-                plt.subplot(1, len(data_groups), index + 1)
-                plt.scatter(means[x_axis], cv, s=50, alpha=0.7)
-                plt.plot(x_fit, slope * x_fit + intercept, color='red')
-                plt.title(f"{group_name} {param}")
-                plt.xlabel(x_axis)
-                plt.ylabel('CV')
+            complex_model = LinearRegression()
+            x2 = np.array(means)
+            y2 = np.array(cv).reshape(-1, 1)
+            complex_model.fit(x2, y2)
 
-                # Calculate the residual sum of squares (RSS) for each model
-                rss = np.sum((y - model.predict(x)) ** 2)    
-                f_test_params[param][group_name] = {
-                    "rss": rss,
-                    "df": len(y) - 2
-                }
+            # Calculate the residual sum of squares (RSS) for each model
+            rss1 = np.sum((y1 - simple_model.predict(x1)) ** 2)    
+            rss2 = np.sum((y2 - complex_model.predict(x2)) ** 2)   
+
+            f_test_params[param] = {
+                "simple_model": {
+                    "rss": rss1,
+                    "p": 1,
+                    "df": len(y1) - 2
+                },
+                "complex_model": {
+                    "rss": rss2,
+                    "p": 2,
+                    "df": len(y2) - 3
+                },
+            }
 
         # check the f-test for each two models
         for param, param_values in f_test_params.items():
@@ -768,18 +794,19 @@ class StatisticsWrapper:
             group2_name, group2_params = list(param_values.items())[1]
 
             # Compute the F-statistic
-            # F = ((param1_values['rss'] - param2_values['rss']) / (param2_values['p'] - param1_values['p'])) / \
-            #       (param2_values['rss'] / param2_values['df'])
-            F = (group1_params['rss'] / group2_params['rss']) 
+            f_statistic = ((group1_params['rss'] - group2_params['rss']) / (group2_params['p'] - group1_params['p'])) / \
+                  (group2_params['rss'] / group2_params['df'])
+            # F = (group1_params['rss'] / group2_params['rss']) 
 
             # Determine the critical value of the F-statistic
             alpha = 0.05  # Significance level
-            critical_value = f.ppf(1 - alpha, group1_params['df'], group2_params['df'])
+            # critical_value = f.ppf(1 - alpha, group1_params['df'], group2_params['df'])
+            p_value = f.sf(f_statistic, group2_params['p'] - group1_params['p'], group2_params['df'])
 
             # Make a decision
-            if F > critical_value:
-                print(f"Param {param}. Groups: {group1_name}, {group2_name}: Reject the null hypothesis. The models are significantly different.")
+            if p_value < alpha:
+                print(f"Param {param} - Reject the null hypothesis: {group2_name} is significantly better than {group1_name}")
             else:
-                print(f"Param {param}. Groups: {group1_name}, {group2_name}: Fail to reject the null hypothesis. The models are not significantly different.")
+                print(f"Param {param} - Fail to reject the null hypothesis: No significant difference between {group1_name} and {group2_name}")
                 
 
