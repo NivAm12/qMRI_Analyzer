@@ -7,6 +7,8 @@ import wandb
 from scipy.cluster.hierarchy import linkage, dendrogram, fcluster
 import constants
 from collections import Counter
+import nibabel as nib
+import copy
 
 
 class PlotsManager:
@@ -133,3 +135,32 @@ class PlotsManager:
                             plt.savefig(save_address_for_func + "/" +
                                         f"cor_{constants.SUB_CORTEX_DICT[rois[i]]}_and_{constants.SUB_CORTEX_DICT[rois[j]]}.png")
                         plt.show()
+
+    @staticmethod
+    def plot_colors_on_brain(example_subject: str, rois_color: pd.Series, rois_dict: dict,
+                              title: str, color_type: str):
+        rois_values = list(rois_dict.keys())
+        flipped_roi_dict = {value: key for key, value in rois_dict.items()}
+        data_path = os.path.join(constants.ANALYSIS_DIR, example_subject)
+        seg_path = os.path.join(data_path, os.listdir(data_path)[0], constants.BASIC_SEG)
+        brain_path = os.path.join(data_path, os.listdir(data_path)[0], constants.MAP_TV)
+        save_path = os.path.join(constants.CLUSTERING_PATH, f'lut_{title}.nii.gz')
+
+        # read the map
+        seg_file = nib.load(seg_path)
+        seg_file_data = seg_file.get_fdata()
+        cluster_map = copy.deepcopy(seg_file_data)
+
+        # paint each roi with his cluster color
+        roi_values_as_other_type = np.array(list(rois_values), dtype=seg_file_data.dtype)
+        remove_mask = np.logical_not(np.isin(seg_file_data, roi_values_as_other_type))
+
+        for roi, roi_color in rois_color.items():
+            roi_mask = np.where(seg_file_data == flipped_roi_dict[roi])
+            cluster_map[roi_mask] = roi_color
+
+        # save and show the map
+        cluster_map[remove_mask] = -1.5
+        cluster_map = nib.Nifti1Image(cluster_map, seg_file.affine)
+        nib.save(cluster_map, save_path)
+        os.system(f'freeview -v {brain_path} {save_path}:colormap={color_type}')

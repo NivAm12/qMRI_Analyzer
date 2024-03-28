@@ -531,7 +531,7 @@ class StatisticsWrapper:
         distances /= data.subjects.nunique()
         clusters = linkage(distances, method=linkage_metric)
         dendrogram_data = PlotsManager.create_and_plot_dendrogram(clusters,
-                                                                  np.array([label[4:] for label in relevant_rois]),
+                                                                  relevant_rois,
                                                                   title, linkage_metric, project_name)
 
         return {'clusters': clusters, 'dendrogram_data': dendrogram_data}
@@ -549,8 +549,8 @@ class StatisticsWrapper:
             correlations += df_corr.to_numpy()
 
         correlations /= data.subjects.nunique()
-        labels = [label[4:] for label in relevant_rois]  # remove prefix as 'ctx'
-        correlations_df = pd.DataFrame(correlations, index=labels, columns=labels)
+        # labels = [label[4:] for label in relevant_rois]  # remove prefix as 'ctx'
+        correlations_df = pd.DataFrame(correlations, index=relevant_rois, columns=relevant_rois)
 
         # reorder the dataframe to match the clustering order
         correlations_df = correlations_df.reindex(rois)
@@ -578,8 +578,8 @@ class StatisticsWrapper:
         # Calculate standard deviation along the first axis (across all matrices)
         std_matrix = np.std(combined_matrix, axis=0)
 
-        labels = [label[4:] for label in relevant_rois]  # remove prefix as 'ctx'
-        correlations_df = pd.DataFrame(std_matrix, index=labels, columns=labels)
+        # labels = [label[4:] for label in relevant_rois]  # remove prefix as 'ctx'
+        correlations_df = pd.DataFrame(std_matrix, index=relevant_rois, columns=relevant_rois)
 
         # reorder the dataframe to match the clustering order
         correlations_df = correlations_df.reindex(rois)
@@ -589,30 +589,6 @@ class StatisticsWrapper:
         PlotsManager.plot_heatmap(correlations_df, title, project_name)
 
         return correlations_df
-    
-    @staticmethod
-    def roi_correlations_determinant_by_age(data: pd.DataFrame, params_to_work_with: list, method="pearson"):
-        subjects = data.groupby('subjects')
-        corr_dt = []
-        ages = []
-
-        for _, subject_df in subjects:
-            df_corr = subject_df[params_to_work_with].T.corr(method=method).to_numpy()
-            corr_dt.append(np.linalg.slogdet(df_corr)[1])
-            ages.append(subject_df['Age'].iloc[0])
-
-        plt.scatter(ages, corr_dt)
-
-        # Perform linear regression
-        m, b = np.polyfit(ages, corr_dt, 1)  # degree 1 for linear regression
-        x_line = np.linspace(min(ages), max(ages), 100)
-        y_line = m * x_line + b
-
-        # Plot the regression line on the scatter plot
-        plt.plot(x_line, y_line, color='red')
-        plt.title(f'Determinant of correlation')
-        plt.xlabel('Age')
-        plt.ylabel('Determinant')
 
     @staticmethod
     def roi_correlations_by_age_by_each_roi(data: pd.DataFrame, params_to_work_with: list,
@@ -655,36 +631,6 @@ class StatisticsWrapper:
             ax.set_ylabel('Mean Correlation')
 
         plt.show()
-
-    @staticmethod
-    def plot_clusters_on_brain(clusters: np.ndarray, example_subject: str, rois: dict, title: str,
-                               distance_to_cluster: float, project_name: str = None):
-        rois_values = list(rois.keys())
-        data_path = os.path.join(constants.ANALYSIS_DIR, example_subject)
-        seg_path = os.path.join(data_path, os.listdir(data_path)[0], constants.BASIC_SEG)
-        brain_path = os.path.join(data_path, os.listdir(data_path)[0], constants.MAP_TV)
-        save_path = os.path.join(constants.CLUSTERING_PATH, f'clusters_data_{title}.nii.gz')
-
-        # read the map
-        seg_file = nib.load(seg_path)
-        seg_file_data = seg_file.get_fdata()
-        cluster_map = copy.deepcopy(seg_file_data)
-
-        # paint each roi with his cluster color
-        roi_values_as_other_type = np.array(list(rois_values), dtype=seg_file_data.dtype)
-        remove_mask = np.logical_not(np.isin(seg_file_data, roi_values_as_other_type))
-        color_list = PlotsManager.create_clusters_color_list(clusters, distance_to_cluster)
-
-        for roi, cluster_color in zip(rois_values, color_list):
-            roi_mask = np.where(seg_file_data == roi)
-            # cluster_map[roi_mask] = constants.COLOR_LIST[cluster_color]
-            cluster_map[roi_mask] = cluster_color
-
-        # save and show the map
-        cluster_map[remove_mask] = 0
-        cluster_map = nib.Nifti1Image(cluster_map, seg_file.affine)
-        nib.save(cluster_map, save_path)
-        os.system(f'freeview -v {brain_path} {save_path}:colormap=lut {seg_path}:colormap=lut:opacity=0 &')
 
     @staticmethod
     def check_rois_symmetric_parts_distances_by_param(data: pd.DataFrame, params: list):
