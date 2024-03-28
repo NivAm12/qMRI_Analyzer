@@ -9,6 +9,7 @@ import constants
 from collections import Counter
 import nibabel as nib
 import copy
+import scipy.ndimage as ndi
 
 
 class PlotsManager:
@@ -149,7 +150,8 @@ class PlotsManager:
         # read the map
         seg_file = nib.load(seg_path)
         seg_file_data = seg_file.get_fdata()
-        cluster_map = copy.deepcopy(seg_file_data)
+        brain_file_data = nib.load(brain_path).get_fdata()
+        color_map = copy.deepcopy(seg_file_data)
 
         # paint each roi with his cluster color
         roi_values_as_other_type = np.array(list(rois_values), dtype=seg_file_data.dtype)
@@ -157,10 +159,17 @@ class PlotsManager:
 
         for roi, roi_color in rois_color.items():
             roi_mask = np.where(seg_file_data == flipped_roi_dict[roi])
-            cluster_map[roi_mask] = roi_color
+            color_map[roi_mask] = roi_color
 
         # save and show the map
-        cluster_map[remove_mask] = -1.5
-        cluster_map = nib.Nifti1Image(cluster_map, seg_file.affine)
-        nib.save(cluster_map, save_path)
-        os.system(f'freeview -v {brain_path} {save_path}:colormap={color_type}')
+        tr = min(rois_color)
+        color_map[remove_mask] = -2
+        color_map = nib.Nifti1Image(color_map, seg_file.affine)
+
+        # nib.save(color_map, save_path)
+        # os.system(f'freeview -v {brain_path} {save_path}:colormap={color_type}')
+        plt.figure(figsize = (5, 5))
+        plt.grid(False)
+        slice = 150
+        plt.imshow(ndi.rotate(brain_file_data[slice], 90), cmap='gray')
+        plt.imshow(ndi.rotate(color_map.get_fdata()[slice], 90), cmap='hot', alpha=0.5, vmin=-1)
