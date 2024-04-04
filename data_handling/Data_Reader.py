@@ -18,14 +18,14 @@ FILE_NAME_Z_SCORE_ON_BRAIN = "raw_data_z_score_on_brain"
 FILE_NAME_DMEDIAN = "raw_data_robust_scaling"
 
 
-def HUJI_subjects_preprocess(analysisDir):
+def HUJI_subjects_preprocess(analysisDir, sub_subjects_prefix):
     """
     # Description: preprocesses HUJI subjects by the consensus in the lab
     :param analysisDir: A path to the dir from which the data will be taken
     :return: np array shape: (num_of_subjects after preprocess, 1)
     """
     subject_names = os.listdir(analysisDir)
-    subject_names = [i for i in subject_names if (search('H\d\d_[A-Z][A-Z]', i) or search('H\d\d\d_[A-Z][A-Z]', i))]
+    subject_names = [i for i in subject_names if (search(f'{sub_subjects_prefix}\d\d_[A-Z][A-Z]', i) or search(f'{sub_subjects_prefix}\d\d\d_[A-Z][A-Z]', i))]
     subject_names.sort()
     subject_names = np.array(subject_names)
     subject_names = subject_names.reshape(-1, 1)
@@ -88,7 +88,7 @@ class DataReader:
     NOTICE: Derivative funcs still isn't accurate enough.
     """
 
-    def __init__(self, analysis_dir, rois, qmri_params, choose_normalize, derivative_params=None, bin_data=None):
+    def __init__(self, analysis_dir, rois, qmri_params, choose_normalize, derivative_params=None, bin_data=None, analysis_dir_prefix='H'):
         """
         Initialize a DataReader object
         :param analysis_dir: path to the MRI scanning the will enable to collect all the relevant data.
@@ -98,8 +98,9 @@ class DataReader:
         :param derivative_params: dictionary where the key is a param name, and values are all the other params that
                together we derive them, for example - {TV: [R1,R2s]}.
         :param bin_data: the range divided to bins for the algorithm for the derivative
+        :param analysis_dir_prefix: prefix to select a group in the analysis dir
         """
-        subject_names_processed = HUJI_subjects_preprocess(analysis_dir)
+        subject_names_processed = HUJI_subjects_preprocess(analysis_dir, analysis_dir_prefix)
         self.subject_paths, self.subject_names = get_subject_paths(analysis_dir, subject_names_processed)
         self.rois = np.array(rois)
         self.qmri_params = qmri_params
@@ -344,14 +345,15 @@ class DataReader:
 if __name__ == "__main__":
     # The input dir containing all data of the subjects after MRI screening
     analysis_dir = constants.ANALYSIS_DIR
+    analysis_dir_prefix = 'PD'
 
     # Can be changed - list of all ROIs' numbers from the segmentation
-    rois = list(constants.SUB_CORTEX_DICT.keys())
+    rois = list(constants.ROI_CORTEX.keys())
 
     # Can be changed - this is the save address for the output
     save_address = '/ems/elsc-labs/mezer-a/Mezer-Lab/projects/code/Covariance_Aging/saved_versions' \
                                   '/corr_by_means/' \
-                                  '2023_analysis/SUB_CORTEX_all_params/'
+                                  '2023_analysis/PD_CORTEX_all_params/'
 
     # Can be changed - using other params - make sure to add another parameter as a name, and tuple of the
     # full path to the map of the parameter and the full path to the compatible segmentation
@@ -370,7 +372,8 @@ if __name__ == "__main__":
                             constants.ROBUST_SCALING: FILE_NAME_DMEDIAN}
 
     # ---- Here You Can Change the sort of normalizer ---- #
-    choose_normalizer = constants.Z_SCORE
+    # choose_normalizer = constants.Z_SCORE
+    choose_normalizer = None
 
     # ---- Here you can change the derivative_dict
     # derivative_dict = {constants.TV: [constants.R1, constants.R2S, constants.MT, constants.T2,
@@ -382,7 +385,7 @@ if __name__ == "__main__":
     range_for_tv_default = np.linspace(0.00, 0.4, 36)
 
     # ---- RUN the Reader
-    reader = DataReader(analysis_dir, rois, params, choose_normalizer, derivative_dict, range_for_tv_default)
+    reader = DataReader(analysis_dir, rois, params, choose_normalizer, derivative_dict, range_for_tv_default, analysis_dir_prefix)
     reader.extract_data()
     print(f'NUmber of subjects: {len(reader.all_subjects_raw_data)}')
 

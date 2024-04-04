@@ -163,13 +163,14 @@ class PlotsManager:
 
         # save and show the map
         tr = min(rois_color)
-        color_map[remove_mask] = -2
+        color_map[remove_mask] = -4
         color_map = nib.Nifti1Image(color_map, seg_file.affine)
 
-        # nib.save(color_map, save_path)
-        # os.system(f'freeview -v {brain_path} {save_path}:colormap={color_type}')
-        plt.figure(figsize = (5, 5))
-        plt.grid(False)
-        slice = 150
-        plt.imshow(ndi.rotate(brain_file_data[slice], 90), cmap='gray')
-        plt.imshow(ndi.rotate(color_map.get_fdata()[slice], 90), cmap='hot', alpha=0.5, vmin=-1)
+        nib.save(color_map, save_path)
+        os.system(f'freeview -v {brain_path} {save_path}:colormap={color_type}')
+        # plt.figure(figsize = (5, 5))
+        # plt.grid(False)
+
+        # slice = 100
+        # plt.imshow(ndi.rotate(brain_file_data[slice], 90), cmap='gray')
+        # plt.imshow(ndi.rotate(color_map.get_fdata()[slice], 90), cmap='hot', alpha=0.5, vmin=-1)
