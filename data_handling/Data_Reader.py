@@ -133,7 +133,7 @@ class DataReader:
                 sub_names.append(self.subject_names[name_idx][
                             0])  # save names of subjects that have all the data relevant for analysis
                 self.all_subjects_raw_data.append((params_info))
-                
+ 
             name_idx += 1
 
         self.subject_names = sub_names
@@ -290,9 +290,10 @@ class DataReader:
             self._add_only_voxels_from_rois(measures, seg_dict, param_name, sub_measure, self.choose_normalize)
             if sub_measure:
                 subject_params[param_name] = sub_measure
-                return subject_params
             else:
                 return None
+            
+        return subject_params
 
     def derive_param_with_another_param(self, params):
         """
@@ -379,8 +380,8 @@ if __name__ == "__main__":
                             constants.ROBUST_SCALING: FILE_NAME_DMEDIAN}
 
     # ---- Here You Can Change the sort of normalizer ---- #
-    choose_normalizer = constants.Z_SCORE
-    # choose_normalizer = None
+    # choose_normalizer = constants.Z_SCORE
+    choose_normalizer = None
 
     # ---- Here you can change the derivative_dict
     # derivative_dict = {constants.TV: [constants.R1, constants.R2S, constants.MT, constants.T2,
@@ -396,7 +397,7 @@ if __name__ == "__main__":
     reader.extract_data()
     print(f'NUmber of subjects: {len(reader.all_subjects_raw_data)}')
 
-    if not os.path.exists(save_address):
-        os.mkdir(save_address)
+    # if not os.path.exists(save_address):
+    #     os.mkdir(save_address)
 
-    reader.save_in_pickle_raw_data(save_address + normalizer_file_name[choose_normalizer])
+    # reader.save_in_pickle_raw_data(save_address + normalizer_file_name[choose_normalizer])
