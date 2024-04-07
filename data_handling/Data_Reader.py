@@ -128,10 +128,13 @@ class DataReader:
                 name_idx += 1
                 continue
 
-            sub_names.append(self.subject_names[name_idx][
-                                 0])  # save names of subjects that have all the data relevant for analysis
+            params_info = self.add_all_info_of_param_per_subject(measures, seg_dict)
+            if params_info:
+                sub_names.append(self.subject_names[name_idx][
+                            0])  # save names of subjects that have all the data relevant for analysis
+                self.all_subjects_raw_data.append((params_info))
+                
             name_idx += 1
-            self.all_subjects_raw_data.append((self.add_all_info_of_param_per_subject(measures, seg_dict)))
 
         self.subject_names = sub_names
 
@@ -261,8 +264,10 @@ class DataReader:
             # remove empty roi
             if not np.any(mea_masked):
                 print(f'roi {roi} is empty')
-
-            sub_measure[roi] = mea_masked[non_zeroes]
+                sub_measure = None
+                return
+            else:
+                sub_measure[roi] = mea_masked[non_zeroes]
 
     def add_all_info_of_param_per_subject(self, measures, seg_dict):
         """
@@ -283,9 +288,11 @@ class DataReader:
 
             # this will hold the all subject's measures for a specific measurement
             self._add_only_voxels_from_rois(measures, seg_dict, param_name, sub_measure, self.choose_normalize)
-            subject_params[param_name] = sub_measure
-
-        return subject_params
+            if sub_measure:
+                subject_params[param_name] = sub_measure
+                return subject_params
+            else:
+                return None
 
     def derive_param_with_another_param(self, params):
         """
@@ -372,8 +379,8 @@ if __name__ == "__main__":
                             constants.ROBUST_SCALING: FILE_NAME_DMEDIAN}
 
     # ---- Here You Can Change the sort of normalizer ---- #
-    # choose_normalizer = constants.Z_SCORE
-    choose_normalizer = None
+    choose_normalizer = constants.Z_SCORE
+    # choose_normalizer = None
 
     # ---- Here you can change the derivative_dict
     # derivative_dict = {constants.TV: [constants.R1, constants.R2S, constants.MT, constants.T2,

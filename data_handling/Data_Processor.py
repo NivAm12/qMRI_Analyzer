@@ -37,7 +37,7 @@ class DataProcessor:
     ...
     ...
     """
-    def __init__(self, path_to_data, roi_dict=constants.SUB_CORTEX_DICT, wanted_rois=None):
+    def __init__(self, path_to_data, roi_dict=constants.SUB_CORTEX_DICT, wanted_rois=None, names_col = ['subjects', 'Age', 'Gender']):
         """
         Initialize a DataProcessor object
         :param path_to_data: path to the pickle's data
@@ -46,6 +46,7 @@ class DataProcessor:
         """
         self.roi_dict = roi_dict
         self.wanted_rois = wanted_rois
+        self.names_col = names_col
         self.df = self.get_raw_data_of_all_relevant_subjects(path_to_data)
 
     def get_data_proccessed(self) -> pd.DataFrame:
@@ -97,8 +98,7 @@ class DataProcessor:
         :param full_data: given df of full data
         :return: updated df with all new columns
         """
-        names_col = ['subjects', 'Age', 'Gender']
-        subject_info = pd.read_csv(constants.SUBJECTS_INFO_PATH, names=names_col)
+        subject_info = pd.read_csv(constants.SUBJECTS_INFO_PATH, names=self.names_col, usecols=self.names_col)
         subject_info["subjects"] = subject_info["subjects"].apply(split_slash)
         subject_info["Gender"] = subject_info["Gender"].apply(delete_apostrophes)
         full_data = pd.merge(full_data, subject_info, on=['subjects'])
@@ -165,3 +165,7 @@ class DataProcessor:
 
         # data = data[~data.subjects.isin(['H047_DC', 'H054_AE', 'H037_YB', 'H036_EV'])]
         data.subjects.nunique()
+
+
+
+
