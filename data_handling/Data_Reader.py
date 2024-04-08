@@ -215,7 +215,7 @@ class DataReader:
         :param param_name: the parameter name.
         :return:
         """
-        roi_mask = np.where((np.isin(seg_dict[param_name], self.rois)) & (measures[param_name] > 0))
+        roi_mask = np.where((np.isin(seg_dict[param_name], self.rois)) & (measures[param_name] > 0) & (measures[param_name] != np.inf))
         measures[param_name][roi_mask] = stats.zscore(measures[param_name][roi_mask], nan_policy='omit')
 
     def normalize_raw_data_by_robust_scaling(self, measures, seg_dict, param_name) -> None:
@@ -380,8 +380,8 @@ if __name__ == "__main__":
                             constants.ROBUST_SCALING: FILE_NAME_DMEDIAN}
 
     # ---- Here You Can Change the sort of normalizer ---- #
-    # choose_normalizer = constants.Z_SCORE
-    choose_normalizer = None
+    choose_normalizer = constants.Z_SCORE
+    # choose_normalizer = None
 
     # ---- Here you can change the derivative_dict
     # derivative_dict = {constants.TV: [constants.R1, constants.R2S, constants.MT, constants.T2,
@@ -397,7 +397,7 @@ if __name__ == "__main__":
     reader.extract_data()
     print(f'NUmber of subjects: {len(reader.all_subjects_raw_data)}')
 
-    # if not os.path.exists(save_address):
-    #     os.mkdir(save_address)
+    if not os.path.exists(save_address):
+        os.mkdir(save_address)
 
-    # reader.save_in_pickle_raw_data(save_address + normalizer_file_name[choose_normalizer])
+    reader.save_in_pickle_raw_data(save_address + normalizer_file_name[choose_normalizer])
