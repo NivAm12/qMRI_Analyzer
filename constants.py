@@ -29,6 +29,8 @@ PATH_TO_SUB_CORTEX_all_params_z_score = os.getenv('PATH_TO_SUB_CORTEX_all_params
 PATH_TO_SUB_CORTEX_all_params_raw = os.getenv('PATH_TO_SUB_CORTEX_all_params_raw')
 PATH_TO_PD_CORTEX_all_params_raw = os.getenv('PATH_TO_PD_CORTEX_all_params_raw')
 PATH_TO_PD_CORTEX_all_params_z_score = os.getenv('PATH_TO_PD_CORTEX_all_params_z_score')
+PATH_TO_PD_SUB_CORTEX_all_params_raw = os.getenv('PATH_TO_PD_SUB_CORTEX_all_params_raw')
+PATH_TO_PD_SUB_CORTEX_all_params_z_score = os.getenv('PATH_TO_PD_SUB_CORTEX_all_params_z_score')
 SUBJECTS_INFO_PATH = os.getenv("SUBJECTS_INFO_PATH")
 
 # ---------------- Paths to output data ----------------- #
@@ -159,6 +161,36 @@ ROI_CORTEX = {
     2035: 'ctx-rh-insula'
 }
 
+ROI_SUBCORTEX = {
+    2: 'Left-Cerebral-White-Matter',
+    4: 'Left-Lateral-Ventricle',
+    5: 'Left-Inf-Lat-Vent',
+    7: 'Left-Cerebellum-White-Matter',
+    8: 'Left-Cerebellum-Cortex',
+    10: 'Left-Thalamus',
+    11: 'Left-Caudate',
+    12: 'Left-Putamen',
+    13: 'Left-Pallidum',
+    17: 'Left-Hippocampus',
+    18: 'Left-Amygdala',
+    26: 'Left-Accumbens-area',
+    28: 'Left-VentralDC',
+    31: 'Left-choroid-plexus',
+    41: 'Right-Cerebral-White-Matter',
+    43: 'Right-Lateral-Ventricle',
+    44: 'Right-Inf-Lat-Vent',
+    46: 'Right-Cerebellum-White-Matter',
+    47: 'Right-Cerebellum-Cortex',
+    49: 'Right-Thalamus',
+    50: 'Right-Caudate',
+    51: 'Right-Putamen',
+    52: 'Right-Pallidum',
+    53: 'Right-Hippocampus',
+    54: 'Right-Amygdala',
+    58: 'Right-Accumbens-area',
+    60: 'Right-VentralDC',
+    63: 'Right-choroid-plexus'
+}
 
 ROI_FRONTAL_CORTEX = {
     1003: 'ctx-lh-caudalmiddlefrontal',

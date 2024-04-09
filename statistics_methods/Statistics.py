@@ -18,6 +18,7 @@ from sklearn.linear_model import LinearRegression
 from itertools import combinations
 from sklearn.metrics import r2_score
 import statsmodels.api as sm
+from scipy.spatial import distance_matrix
 
 
 # -------------------- Enums for statistical actions -------------------- #
@@ -591,6 +592,74 @@ class StatisticsWrapper:
         return correlations_df
 
     @staticmethod
+    def roi_distances(data: pd.DataFrame, params_to_work_with: list, rois: list,
+                         title: str = None, project_name: str = None, norm_p=2):
+        subjects = data.groupby('subjects')
+        relevant_rois = list(data.ROI_name.unique())
+        distance_matrices = []
+
+        for subject_name, subject_df in subjects:
+            dist_matrix = distance_matrix(subject_df[params_to_work_with].values, subject_df[params_to_work_with].values, p=norm_p)
+            distance_matrices.append(dist_matrix)
+
+        # Calculate mean distance along the first axis (across all matrices)
+        mean_distance_matrix = np.mean(distance_matrices, axis=0)
+
+        # labels = [label[4:] for label in relevant_rois]  # remove prefix as 'ctx'
+        distance_df = pd.DataFrame(mean_distance_matrix, index=relevant_rois, columns=relevant_rois)
+
+        # reorder the dataframe to match the clustering order
+        distance_df = distance_df.reindex(rois)
+        distance_df = distance_df[rois]
+
+        # plot the heatmap
+        PlotsManager.plot_heatmap(distance_df, title, project_name)
+
+        return distance_df
+    
+    @staticmethod
+    def roi_distances_by_age(data: pd.DataFrame, params_to_work_with: list,
+                            title: str = None, project_name: str = None, method="pearson"):
+        subjects = data.groupby('subjects')
+        relevant_rois = list(data.ROI_name.unique())
+        labels = [label[4:] for label in relevant_rois]  # remove prefix as 'ctx'
+
+        num_rois = len(labels)
+        fig, axes = plt.subplots(num_rois, 1, figsize=(10, 6*num_rois))
+
+        for roi_index, roi in enumerate(labels):
+            age_values = []
+            correlation_values = []
+            for subject_name, subject_df in subjects:
+                dist_matrix = pd.DataFrame(distance_matrix(subject_df[params_to_work_with].values, subject_df[params_to_work_with].values))
+                dist_matrix.index = labels
+                dist_matrix.columns = labels
+                dist_matrix['dist_mean'] = dist_matrix.apply(np.mean, axis=1)
+                age_values.append(subject_df.Age.iloc[0])
+                correlation_values.append(dist_matrix.loc[roi]['dist_mean'])
+
+            ax = axes[roi_index]
+            ax.scatter(age_values, correlation_values)
+
+            # Perform linear regression to get slope (m) and intercept (b)
+            m, b = np.polyfit(age_values, correlation_values, 1)  # degree 1 for linear regression
+
+            # Generate x values for the regression line
+            x_line = np.linspace(min(age_values), max(age_values), 100)
+
+            # Calculate y values for the regression line using the equation y = mx + b
+            y_line = m * x_line + b
+
+            # Plot the regression line on the scatter plot
+            ax.plot(x_line, y_line, color='red')  # adjust color as desired
+
+            ax.set_title(f'ROI: {roi}')
+            ax.set_xlabel('Age')
+            ax.set_ylabel('Mean Distances')
+
+        plt.show()
+
+    @staticmethod
     def roi_correlations_by_age_by_each_roi(data: pd.DataFrame, params_to_work_with: list,
                             title: str = None, project_name: str = None, method="pearson"):
         subjects = data.groupby('subjects')
@@ -631,22 +700,6 @@ class StatisticsWrapper:
             ax.set_ylabel('Mean Correlation')
 
         plt.show()
-
-    @staticmethod
-    def check_rois_symmetric_parts_distances_by_param(data: pd.DataFrame, params: list):
-        subjects = data.groupby('subjects')
-        relevant_rois = list(data.ROI_name.unique())
-        distances = np.zeros((len(relevant_rois),
-                              len(relevant_rois)))
-
-        for subject_name, subject_df in subjects:
-            df = subject_df[params]
-            dist = pdist(df, metric='euclidean')
-            distance_matrix = pd.DataFrame(squareform(dist), index=relevant_rois, columns=relevant_rois)
-            distances += distance_matrix.to_numpy()
-
-        distances /= data.subjects.nunique()
-        pass
 
     @staticmethod
     def calculate_cv_for_subjects(data_groups, group_by_param, params, x_axis, use_reg=False, fig_size=(20, 8), connect_scatter=False):
