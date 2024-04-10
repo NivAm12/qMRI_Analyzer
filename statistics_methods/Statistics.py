@@ -619,7 +619,7 @@ class StatisticsWrapper:
     
     @staticmethod
     def roi_distances_by_age(data: pd.DataFrame, params_to_work_with: list,
-                            title: str = None, project_name: str = None, method="pearson"):
+                            project_name: str = None):
         subjects = data.groupby('subjects')
         relevant_rois = list(data.ROI_name.unique())
         labels = [label[4:] for label in relevant_rois]  # remove prefix as 'ctx'
