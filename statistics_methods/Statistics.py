@@ -19,6 +19,7 @@ from itertools import combinations
 from sklearn.metrics import r2_score
 import statsmodels.api as sm
 from scipy.spatial import distance_matrix
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 # -------------------- Enums for statistical actions -------------------- #
@@ -599,7 +600,7 @@ class StatisticsWrapper:
         distance_matrices = []
 
         for subject_name, subject_df in subjects:
-            dist_matrix = distance_matrix(subject_df[params_to_work_with].values, subject_df[params_to_work_with].values, p=norm_p)
+            dist_matrix = cosine_similarity(subject_df[params_to_work_with].values, subject_df[params_to_work_with].values)
             distance_matrices.append(dist_matrix)
 
         # Calculate mean distance along the first axis (across all matrices)
@@ -631,7 +632,7 @@ class StatisticsWrapper:
             age_values = []
             correlation_values = []
             for subject_name, subject_df in subjects:
-                dist_matrix = pd.DataFrame(distance_matrix(subject_df[params_to_work_with].values, subject_df[params_to_work_with].values))
+                dist_matrix = pd.DataFrame(cosine_similarity(subject_df[params_to_work_with].values, subject_df[params_to_work_with].values))
                 dist_matrix.index = labels
                 dist_matrix.columns = labels
                 dist_matrix['dist_mean'] = dist_matrix.apply(np.mean, axis=1)
