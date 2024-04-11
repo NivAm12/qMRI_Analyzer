@@ -594,13 +594,13 @@ class StatisticsWrapper:
 
     @staticmethod
     def roi_distances(data: pd.DataFrame, params_to_work_with: list, rois: list,
-                         title: str = None, project_name: str = None, norm_p=2):
+                         method, title: str = None, project_name: str = None):
         subjects = data.groupby('subjects')
         relevant_rois = list(data.ROI_name.unique())
         distance_matrices = []
 
         for subject_name, subject_df in subjects:
-            dist_matrix = cosine_similarity(subject_df[params_to_work_with].values, subject_df[params_to_work_with].values)
+            dist_matrix = method(subject_df[params_to_work_with].values, subject_df[params_to_work_with].values)
             distance_matrices.append(dist_matrix)
 
         # Calculate mean distance along the first axis (across all matrices)

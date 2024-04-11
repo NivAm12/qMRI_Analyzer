@@ -163,7 +163,6 @@ ROI_CORTEX = {
 
 ROI_SUBCORTEX = {
     2: 'Left-Cerebral-White-Matter',
-    4: 'Left-Lateral-Ventricle',
     7: 'Left-Cerebellum-White-Matter',
     8: 'Left-Cerebellum-Cortex',
     10: 'Left-Thalamus',
@@ -174,9 +173,7 @@ ROI_SUBCORTEX = {
     18: 'Left-Amygdala',
     26: 'Left-Accumbens-area',
     28: 'Left-VentralDC',
-    31: 'Left-choroid-plexus',
     41: 'Right-Cerebral-White-Matter',
-    43: 'Right-Lateral-Ventricle',
     46: 'Right-Cerebellum-White-Matter',
     47: 'Right-Cerebellum-Cortex',
     49: 'Right-Thalamus',
