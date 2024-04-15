@@ -705,10 +705,7 @@ class StatisticsWrapper:
     @staticmethod
     def calculate_cv_for_subjects(data_groups, group_by_param, params, x_axis, use_reg=False, fig_size=(20, 8), connect_scatter=False):
         for param in params:
-            # if 'Slope' in param:
-            #     continue
             plt.figure(figsize=fig_size)
-
             for data, color, label in data_groups:
                 # Calculate CV params
                 means = data.groupby(group_by_param)[[param, x_axis]].mean()
@@ -749,6 +746,33 @@ class StatisticsWrapper:
             plt.title(f'{param}')
             plt.grid(True)
             plt.legend()
+
+    @staticmethod
+    def calculate_cv_for_rois(data_groups, rois, params, fig_size=(20, 8)):
+        rois_labels = [str(roi) for roi in rois]
+        groups_rois_cv = {}
+
+        plt.figure(figsize=fig_size)
+        for data, color, label in data_groups:
+            rois_cv = []
+            for roi in rois:
+                roi_cv = 0 
+                for param in params:
+                    # Calculate CV params
+                    means = data[data['ROI'] == roi][param].mean()
+                    stds = data[data['ROI'] == roi][param].std()
+                    cv = (stds / means)
+                    roi_cv += cv
+
+                roi_cv /= len(params)
+                rois_cv.append(roi_cv)
+
+            groups_rois_cv[label] = rois_cv
+            plt.scatter(rois_labels, rois_cv, color=color, label=label) 
+        
+        for x, y1, y2 in zip(rois_labels, groups_rois_cv['young'], groups_rois_cv['old']):
+            plt.plot([x, x], [y1, y2], color='gray', linestyle='--')
+        plt.legend()
 
     @staticmethod
     def calculate_cv_f_test(data, group_by_param, params, x_axis):
