@@ -771,7 +771,12 @@ class StatisticsWrapper:
             plt.scatter(rois_labels, rois_cv, color=color, label=label) 
         
         for x, y1, y2 in zip(rois_labels, groups_rois_cv['young'], groups_rois_cv['old']):
+
             plt.plot([x, x], [y1, y2], color='gray', linestyle='--')
+
+        plt.title('Average CV of all parameters')    
+        plt.xlabel('ROI')
+        plt.ylabel('Average CV')    
         plt.legend()
 
     @staticmethod

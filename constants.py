@@ -38,6 +38,7 @@ SAVE_DATA_PATH = os.getenv("SAVE_DATA_PATH")
 SAVE_DATA_OF_ADULTS_Z_SCORE_MEANS = os.getenv("SAVE_DATA_OF_ADULTS_Z_SCORE_MEANS")
 SAVE_DATA_OF_YOUNG_Z_SCORE_MEANS = os.getenv("SAVE_DATA_OF_YOUNG_Z_SCORE_MEANS")
 SAVE_DATA_OF_ALL_Z_SCORE_MEANS = os.getenv("SAVE_DATA_OF_ALL_Z_SCORE_MEANS")
+SAVE_ADDRESS = os.getenv('SAVE_ADDRESS')
 
 # ---------------- Paths to subject data ----------------- #
 ANALYSIS_DIR = os.getenv('ANALYSIS_DIR')
@@ -162,9 +163,6 @@ ROI_CORTEX = {
 }
 
 ROI_SUBCORTEX = {
-    2: 'Left-Cerebral-White-Matter',
-    7: 'Left-Cerebellum-White-Matter',
-    8: 'Left-Cerebellum-Cortex',
     10: 'Left-Thalamus',
     11: 'Left-Caudate',
     12: 'Left-Putamen',
@@ -172,10 +170,6 @@ ROI_SUBCORTEX = {
     17: 'Left-Hippocampus',
     18: 'Left-Amygdala',
     26: 'Left-Accumbens-area',
-    28: 'Left-VentralDC',
-    41: 'Right-Cerebral-White-Matter',
-    46: 'Right-Cerebellum-White-Matter',
-    47: 'Right-Cerebellum-Cortex',
     49: 'Right-Thalamus',
     50: 'Right-Caudate',
     51: 'Right-Putamen',
@@ -183,8 +177,6 @@ ROI_SUBCORTEX = {
     53: 'Right-Hippocampus',
     54: 'Right-Amygdala',
     58: 'Right-Accumbens-area',
-    60: 'Right-VentralDC',
-    63: 'Right-choroid-plexus'
 }
 
 ROI_FRONTAL_CORTEX = {
