@@ -234,6 +234,8 @@ class StatisticsWrapper:
         :param data2_name:
         :return: None
         """
+        t_test_params = {}
+
         for param in params:
             num_of_significance = 0
             for area in rois.keys():
@@ -244,7 +246,15 @@ class StatisticsWrapper:
 
                 if significance:
                     num_of_significance += 1
-            print(f'param {param} number of areas with significance differences: {num_of_significance}') 
+
+            t_test_params[param] = num_of_significance        
+            print(f'param {param} number of areas with significance differences: {num_of_significance}')
+
+        plt.figure(figsize=(10, 4))
+        plt.title('T-test between young and old')
+        plt.bar(t_test_params.keys(), t_test_params.values()) 
+        plt.xlabel('Param')
+        plt.ylabel('ROIS with significance difference')
 
     @staticmethod
     def plot_values_of_two_groups_per_roi(ROIs, info_per_ROI_per_param1: List[int], info_per_ROI_per_param2: List[int],
