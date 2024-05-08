@@ -10,7 +10,8 @@ from collections import Counter
 import nibabel as nib
 import copy
 import scipy.ndimage as ndi
-
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 class PlotsManager:
     @staticmethod
@@ -174,3 +175,53 @@ class PlotsManager:
         # slice = 100
         # plt.imshow(ndi.rotate(brain_file_data[slice], 90), cmap='gray')
         # plt.imshow(ndi.rotate(color_map.get_fdata()[slice], 90), cmap='hot', alpha=0.5, vmin=-1)
+
+    @staticmethod
+    def plot_rois_polar(data1, data2, thetas, titles):
+        fig = make_subplots(rows=1, cols=2, subplot_titles=titles, specs=[[{"type": "polar"}, {"type": "polar"}]])
+
+        fig.add_trace(go.Scatterpolar(
+            r=data1[0]['r'],
+            theta=thetas,
+            fill='toself',
+            name=data1[0]['name']),
+            row=1, col=1)
+        fig.add_trace(go.Scatterpolar(
+            r=data1[1]['r'],
+            theta=thetas,
+            fill='toself',
+            name=data1[1]['name']),
+            row=1, col=1)
+        fig.add_trace(go.Scatterpolar(
+            r=data2[0]['r'],
+            theta=thetas,
+            fill='toself',
+            name=data2[0]['name']),
+            row=1, col=2)
+        fig.add_trace(go.Scatterpolar(
+            r=data2[1]['r'],
+            theta=thetas,
+            fill='toself',
+            name=data2[1]['name']),
+            row=1, col=2)
+
+        fig.update_layout(
+        polar=dict(
+            radialaxis=dict(
+            visible=True,
+            # range=[-1, 1]
+            )))
+        
+        fig.layout['polar'].update(dict(
+            radialaxis=dict(
+            visible=True,
+            range=[-1, 1]
+            )))
+        
+        fig.layout['polar2'].update(dict(
+            radialaxis=dict(
+            visible=True,
+            range=[-1, 1]
+            )))
+
+        fig.show()

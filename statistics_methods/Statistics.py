@@ -848,4 +848,16 @@ class StatisticsWrapper:
             else:
                 print(f"Param {param} - Fail to reject the null hypothesis: No significant difference between {group1_name} and {group2_name}")
                 
+    @staticmethod
+    def show_rois_differences_in_polar(subject1, subject2, roi1, roi2,  params, titles):
+        subject1_roi1 = subject1[subject1['ROI_name'] == roi1]
+        subject2_roi1 = subject2[subject2['ROI_name'] == roi1]
+        subject1_roi2 = subject1[subject1['ROI_name'] == roi2]
+        subject2_roi2 = subject2[subject2['ROI_name'] == roi2]
 
+        subject1_polar_data = [{'r': subject1_roi1[params].to_numpy()[0], 'name': roi1},
+                                {'r': subject1_roi2[params].to_numpy()[0], 'name': roi2}]
+        subject2_polar_data = [{'r': subject2_roi1[params].to_numpy()[0], 'name': roi1},
+                                {'r': subject2_roi2[params].to_numpy()[0], 'name': roi2}]
+        
+        PlotsManager.plot_rois_polar(subject1_polar_data, subject2_polar_data, params, titles)
