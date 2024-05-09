@@ -183,25 +183,33 @@ class PlotsManager:
         fig.add_trace(go.Scatterpolar(
             r=data1[0]['r'],
             theta=thetas,
+            opacity = 0.7,
             fill='toself',
+            fillcolor = 'red',
             name=data1[0]['name']),
             row=1, col=1)
         fig.add_trace(go.Scatterpolar(
             r=data1[1]['r'],
             theta=thetas,
+            opacity = 0.5,
             fill='toself',
+            fillcolor = 'blue',
             name=data1[1]['name']),
             row=1, col=1)
         fig.add_trace(go.Scatterpolar(
             r=data2[0]['r'],
             theta=thetas,
+            opacity = 0.7,
             fill='toself',
+            fillcolor = 'red',
             name=data2[0]['name']),
             row=1, col=2)
         fig.add_trace(go.Scatterpolar(
             r=data2[1]['r'],
             theta=thetas,
+            opacity = 0.5,
             fill='toself',
+            fillcolor = 'blue',
             name=data2[1]['name']),
             row=1, col=2)
         
