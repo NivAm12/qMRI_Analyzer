@@ -177,7 +177,7 @@ class PlotsManager:
         # plt.imshow(ndi.rotate(color_map.get_fdata()[slice], 90), cmap='hot', alpha=0.5, vmin=-1)
 
     @staticmethod
-    def plot_rois_polar(data1, data2, thetas, titles):
+    def plot_rois_polar(data1, data2, thetas, range, titles):
         fig = make_subplots(rows=1, cols=2, subplot_titles=titles, specs=[[{"type": "polar"}, {"type": "polar"}]])
 
         fig.add_trace(go.Scatterpolar(
@@ -204,24 +204,17 @@ class PlotsManager:
             fill='toself',
             name=data2[1]['name']),
             row=1, col=2)
-
-        fig.update_layout(
-        polar=dict(
-            radialaxis=dict(
-            visible=True,
-            # range=[-1, 1]
-            )))
         
         fig.layout['polar'].update(dict(
             radialaxis=dict(
             visible=True,
-            range=[-1, 1]
+            # range=range
             )))
         
         fig.layout['polar2'].update(dict(
             radialaxis=dict(
             visible=True,
-            range=[-1, 1]
+            # range=range
             )))
 
         fig.show()
