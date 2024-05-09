@@ -183,12 +183,13 @@ class PlotsManager:
         for col, polar_group in enumerate(data):
             for roi_group in polar_group:
                 for _, subject_roi in roi_group['group'].iterrows():
+                    r = subject_roi.to_numpy()
                     fig.add_trace(go.Scatterpolar(
                         r=subject_roi.to_numpy(),
                         theta=thetas,
-                        opacity = 0.7,
                         fill='toself',
-                        fillcolor=roi_group['color'],
+                        # fillcolor=roi_group['color'],
+                        line_color=roi_group['color'],
                         name=roi_group['name']),
                         row=1, col=col+1)
         
@@ -196,8 +197,7 @@ class PlotsManager:
             radialaxis=dict(
             visible=True,
             # range=range
-            )))
-        
+            )))        
         fig.layout['polar2'].update(dict(
             radialaxis=dict(
             visible=True,

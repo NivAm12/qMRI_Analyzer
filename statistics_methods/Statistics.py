@@ -860,7 +860,5 @@ class StatisticsWrapper:
 
         group1_polar_data = [{'group': group1_roi1, 'name': roi1, "color": 'red'}, {'group': group1_roi2, 'name': roi2, "color": 'blue'}]
         group2_polar_data = [{'group': group2_roi1, 'name': roi1, "color": 'red'}, {'group': group2_roi2, 'name': roi2, "color": 'blue'}]
-        # group2_polar_data = [{'r': group2_roi1[params].to_numpy(), 'name': roi1},
-        #                         {'r': group2_roi2[params].to_numpy(), 'name': roi2}]
         
         PlotsManager.plot_rois_polar([group1_polar_data, group2_polar_data], params, [min_value, max_value], titles)
