@@ -177,41 +177,20 @@ class PlotsManager:
         # plt.imshow(ndi.rotate(color_map.get_fdata()[slice], 90), cmap='hot', alpha=0.5, vmin=-1)
 
     @staticmethod
-    def plot_rois_polar(data1, data2, thetas, range, titles):
+    def plot_rois_polar(data, thetas, range, titles):
         fig = make_subplots(rows=1, cols=2, subplot_titles=titles, specs=[[{"type": "polar"}, {"type": "polar"}]])
 
-        fig.add_trace(go.Scatterpolar(
-            r=data1[0]['r'],
-            theta=thetas,
-            opacity = 0.7,
-            fill='toself',
-            fillcolor = 'red',
-            name=data1[0]['name']),
-            row=1, col=1)
-        fig.add_trace(go.Scatterpolar(
-            r=data1[1]['r'],
-            theta=thetas,
-            opacity = 0.5,
-            fill='toself',
-            fillcolor = 'blue',
-            name=data1[1]['name']),
-            row=1, col=1)
-        fig.add_trace(go.Scatterpolar(
-            r=data2[0]['r'],
-            theta=thetas,
-            opacity = 0.7,
-            fill='toself',
-            fillcolor = 'red',
-            name=data2[0]['name']),
-            row=1, col=2)
-        fig.add_trace(go.Scatterpolar(
-            r=data2[1]['r'],
-            theta=thetas,
-            opacity = 0.5,
-            fill='toself',
-            fillcolor = 'blue',
-            name=data2[1]['name']),
-            row=1, col=2)
+        for col, polar_group in enumerate(data):
+            for roi_group in polar_group:
+                for _, subject_roi in roi_group['group'].iterrows():
+                    fig.add_trace(go.Scatterpolar(
+                        r=subject_roi.to_numpy(),
+                        theta=thetas,
+                        opacity = 0.7,
+                        fill='toself',
+                        fillcolor=roi_group['color'],
+                        name=roi_group['name']),
+                        row=1, col=col+1)
         
         fig.layout['polar'].update(dict(
             radialaxis=dict(

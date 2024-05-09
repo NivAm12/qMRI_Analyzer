@@ -850,16 +850,17 @@ class StatisticsWrapper:
                 
     @staticmethod
     def show_rois_differences_in_polar(group1, group2, roi1, roi2,  params, titles):
-        group1_roi1 = group1[group1['ROI_name'] == roi1][params].mean()
-        group2_roi1 = group2[group2['ROI_name'] == roi1][params].mean()
-        group1_roi2 = group1[group1['ROI_name'] == roi2][params].mean()
-        group2_roi2 = group2[group2['ROI_name'] == roi2][params].mean()
+        group1_roi1 = pd.DataFrame([group1[group1['ROI_name'] == roi1][params].mean()])
+        group2_roi1 = pd.DataFrame([group2[group2['ROI_name'] == roi1][params].mean()])
+        group1_roi2 = pd.DataFrame([group1[group1['ROI_name'] == roi2][params].mean()])
+        group2_roi2 = pd.DataFrame([group2[group2['ROI_name'] == roi2][params].mean()])
 
         values = pd.concat([group1_roi1, group2_roi1, group1_roi2, group2_roi2])
-        max_value, min_value = values.max() + 0.1, values.min() - 0.1
-        group1_polar_data = [{'r': group1_roi1[params].to_numpy(), 'name': roi1},
-                                {'r': group1_roi2[params].to_numpy(), 'name': roi2}]
-        group2_polar_data = [{'r': group2_roi1[params].to_numpy(), 'name': roi1},
-                                {'r': group2_roi2[params].to_numpy(), 'name': roi2}]
+        max_value, min_value = values.max(), values.min()
+
+        group1_polar_data = [{'group': group1_roi1, 'name': roi1, "color": 'red'}, {'group': group1_roi2, 'name': roi2, "color": 'blue'}]
+        group2_polar_data = [{'group': group2_roi1, 'name': roi1, "color": 'red'}, {'group': group2_roi2, 'name': roi2, "color": 'blue'}]
+        # group2_polar_data = [{'r': group2_roi1[params].to_numpy(), 'name': roi1},
+        #                         {'r': group2_roi2[params].to_numpy(), 'name': roi2}]
         
-        PlotsManager.plot_rois_polar(group1_polar_data, group2_polar_data, params,[min_value, max_value], titles)
+        PlotsManager.plot_rois_polar([group1_polar_data, group2_polar_data], params, [min_value, max_value], titles)
