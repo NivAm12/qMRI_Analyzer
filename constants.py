@@ -170,6 +170,7 @@ ROI_SUBCORTEX = {
     17: 'Left-Hippocampus',
     18: 'Left-Amygdala',
     26: 'Left-Accumbens-area',
+    28: 'Left-VentralDC',
     49: 'Right-Thalamus',
     50: 'Right-Caudate',
     51: 'Right-Putamen',
@@ -177,6 +178,7 @@ ROI_SUBCORTEX = {
     53: 'Right-Hippocampus',
     54: 'Right-Amygdala',
     58: 'Right-Accumbens-area',
+    60: 'Left-VentralDC',
 }
 
 ROI_FRONTAL_CORTEX = {
@@ -280,6 +282,8 @@ ROI_RIGTH_CORTEX = {
     2034: 'ctx-rh-transversetemporal',
     2035: 'ctx-rh-insula'
 }
+
+
 
 LOBES = {
     'frontal': ['ctx-lh-caudalmiddlefrontal', 'ctx-lh-lateralorbitofrontal', 'ctx-lh-medialorbitofrontal', 'ctx-lh-parsopercularis', 'ctx-lh-parsorbitalis', 'ctx-lh-parstriangularis', 'ctx-lh-precentral', 'ctx-lh-rostralmiddlefrontal', 'ctx-lh-superiorfrontal', 'ctx-rh-caudalmiddlefrontal', 'ctx-rh-lateralorbitofrontal', 'ctx-rh-medialorbitofrontal', 'ctx-rh-parsopercularis', 'ctx-rh-parsorbitalis', 'ctx-rh-parstriangularis', 'ctx-rh-precentral', 'ctx-rh-rostralmiddlefrontal', 'ctx-rh-superiorfrontal'],
