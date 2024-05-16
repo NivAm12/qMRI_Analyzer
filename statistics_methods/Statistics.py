@@ -18,8 +18,9 @@ from sklearn.linear_model import LinearRegression
 from itertools import combinations
 from sklearn.metrics import r2_score
 import statsmodels.api as sm
-from scipy.spatial import distance_matrix
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.metrics import silhouette_score
+from sklearn.cluster import KMeans
 
 
 # -------------------- Enums for statistical actions -------------------- #
@@ -862,3 +863,5 @@ class StatisticsWrapper:
         group2_polar_data = [{'group': group2_roi1, 'name': roi1, "color": 'red'}, {'group': group2_roi2, 'name': roi2, "color": 'blue'}]
         
         PlotsManager.plot_rois_polar([group1_polar_data, group2_polar_data], params, [min_value, max_value], titles)
+        
+    
