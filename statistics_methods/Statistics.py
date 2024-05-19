@@ -90,7 +90,8 @@ class StatisticsWrapper:
         :return: the data after being manipulated to SD
         """
         std_per_subject_per_roi_per_param = subjects_raw_data.copy()
-        std_per_subject_per_roi_per_param[params] = std_per_subject_per_roi_per_param[params].applymap(np.std)
+        std_per_subject_per_roi_per_param[params] = std_per_subject_per_roi_per_param[params].applymap(
+            np.std)
         return std_per_subject_per_roi_per_param
 
     @staticmethod
@@ -102,7 +103,8 @@ class StatisticsWrapper:
         :return: the data after being manipulated to means
         """
         mean_per_subject_per_roi_per_param = subjects_raw_data.copy()
-        mean_per_subject_per_roi_per_param[params] = mean_per_subject_per_roi_per_param[params].applymap(np.median)
+        mean_per_subject_per_roi_per_param[params] = mean_per_subject_per_roi_per_param[params].applymap(
+            np.median)
         return mean_per_subject_per_roi_per_param
 
     @staticmethod
@@ -146,7 +148,8 @@ class StatisticsWrapper:
         :param params: given relevant params to analyze.
         :return:
         """
-        mean_per_subject_per_roi_per_param = StatisticsWrapper.calc_z_score_per_subject(subjects_raw_data, params)
+        mean_per_subject_per_roi_per_param = StatisticsWrapper.calc_z_score_per_subject(
+            subjects_raw_data, params)
 
         return StatisticsWrapper.calc_mean_per_subject_per_parameter_per_ROI(mean_per_subject_per_roi_per_param, params)
         # TODO apply zscore function on all means of all keys!
@@ -207,7 +210,7 @@ class StatisticsWrapper:
 
     @staticmethod
     def seperate_data_to_two_groups(data: pd.DataFrame, separating_column: str, threshold: Any) -> Tuple[
-        pd.DataFrame, pd.DataFrame]:
+            pd.DataFrame, pd.DataFrame]:
         """
         Seperating data into two groups according to
         :param data: given data
@@ -221,8 +224,8 @@ class StatisticsWrapper:
         else:
             group_a = data[data[separating_column] == threshold]
             group_b = data[data[separating_column] != threshold]
-        return group_a, group_b  
-   
+        return group_a, group_b
+
     @staticmethod
     def t_test_per_parameter_per_area(data1, data2, rois, compare_column, params):
         """
@@ -241,19 +244,20 @@ class StatisticsWrapper:
             num_of_significance = 0
             for area in rois.keys():
                 results = stats.ttest_ind(a=data1[param][data1[compare_column] == area].to_numpy(),
-                                            b=data2[param][data2[compare_column] == area].to_numpy())
+                                          b=data2[param][data2[compare_column] == area].to_numpy())
                 significance = results.pvalue <= 0.05
                 # print(f"T_Test for {param} {rois[area]} significance:{significance}, results: {results}")
 
                 if significance:
                     num_of_significance += 1
 
-            t_test_params[param] = num_of_significance        
-            print(f'param {param} number of areas with significance differences: {num_of_significance}')
+            t_test_params[param] = num_of_significance
+            print(
+                f'param {param} number of areas with significance differences: {num_of_significance}')
 
         plt.figure(figsize=(10, 4))
         plt.title('T-test between young and old')
-        plt.bar(t_test_params.keys(), t_test_params.values()) 
+        plt.bar(t_test_params.keys(), t_test_params.values())
         plt.xlabel('Param')
         plt.ylabel('ROIS with significance difference')
 
@@ -350,12 +354,13 @@ class StatisticsWrapper:
         :return: None
         """
         data = pd.concat([data2, data1])
-        data = data.assign(Mature=np.where(data['Age'] >= constants.AGE_THRESHOLD, name_group_b, name_group_a))
+        data = data.assign(Mature=np.where(
+            data['Age'] >= constants.AGE_THRESHOLD, name_group_b, name_group_a))
 
         for param in params:
             if "Slope" in param:
                 continue
-            
+
             plt.figure(figsize=(18, 8))
             sns.boxplot(x="ROI", y=param, data=data, showmeans=True, hue='Mature', width=0.5,
                         meanprops={"marker": "o", "markerfacecolor": "white", "markeredgecolor": "black",
@@ -370,7 +375,7 @@ class StatisticsWrapper:
                 wandb_run.log({f'{param}': wandb.Image(plt)})
                 wandb_run.finish()
                 plt.close()
-            
+
             # plt.close()
             # StatisticsWrapper.plot_data_per_parameter_for_rois(data1, data2, "", name_group_a, name_group_b)
 
@@ -392,7 +397,8 @@ class StatisticsWrapper:
                     or col_name == "Gender" or col_name == "ROI_name":
                 continue
             range_y_values = [
-                min(min(data1[col_name]), min(data2[col_name])) - min(min(data1[col_name]), min(data2[col_name])) / 100,
+                min(min(data1[col_name]), min(data2[col_name])) -
+                min(min(data1[col_name]), min(data2[col_name])) / 100,
                 max(max(data1[col_name]), max(data2[col_name])) + max(max(data1[col_name]), max(data2[col_name])) / 100]
             # todo: Try to box each ROI next to each other with different colors
             fig, axs = plt.subplots(1, 2)
@@ -405,7 +411,8 @@ class StatisticsWrapper:
                         meanprops={"marker": "o", "markerfacecolor": "white", "markeredgecolor": "black",
                                    "markersize": "3"}, ax=axs[1])
             axs[1].set_title("OLD")
-            plt.suptitle(f"{col_name} per ROI for all subjects {description_data}")
+            plt.suptitle(
+                f"{col_name} per ROI for all subjects {description_data}")
             plt.ylim(range_y_values)
             plt.tight_layout()
             plt.ylabel(col_name)
@@ -467,7 +474,8 @@ class StatisticsWrapper:
 
         for subject_name in df.subjects.unique():
             # Compute correlation only with the current subject between all rois with given parameters.
-            df_corr = df[df['subjects'] == subject_name][params_to_work_with].T.corr()
+            df_corr = df[df['subjects'] ==
+                         subject_name][params_to_work_with].T.corr()
             all_correlations += df_corr.to_numpy()
 
         all_correlations /= len(df.subjects.unique())
@@ -502,7 +510,8 @@ class StatisticsWrapper:
             save_address_for_func = os.path.join(save_address, "Visual_Corr")
             if not os.path.exists(save_address_for_func):
                 os.makedirs(save_address_for_func)
-        colors = ['blue', 'red', 'yellow', 'green', 'black', 'gray', 'pink', 'silver', 'orange', 'gold']
+        colors = ['blue', 'red', 'yellow', 'green', 'black',
+                  'gray', 'pink', 'silver', 'orange', 'gold']
         for subject in np.unique(data['subjects']):
             cur_data = data[data['subjects'] == subject]
             # Enough to check on certain subject but if want to check on all - you can change it
@@ -510,13 +519,16 @@ class StatisticsWrapper:
                 # plt.bar(ROIS,std_per_ROI_per_param)
                 for i in range(len(rois)):
                     for j in range(i + 1, len(rois)):
-                        param_info_per_roi_per_subject = cur_data[cur_data['ROI'] == rois[i]][params]
-                        param_info_per_roi_per_subject2 = cur_data[cur_data['ROI'] == rois[j]][params]
+                        param_info_per_roi_per_subject = cur_data[cur_data['ROI']
+                                                                  == rois[i]][params]
+                        param_info_per_roi_per_subject2 = cur_data[cur_data['ROI']
+                                                                   == rois[j]][params]
                         all_scatter_plots = []
                         for k in range(len(params)):
                             all_scatter_plots.append(plt.scatter(list(param_info_per_roi_per_subject.iloc[0])[k],
-                                                                 list(param_info_per_roi_per_subject2.iloc[0])[k],
-                                                                 color=colors[k]))
+                                                                 list(param_info_per_roi_per_subject2.iloc[0])[
+                                k],
+                                color=colors[k]))
                         # plt.legend(all_scatter_plots, params, scatterpoints=1, ncol=3, fontsize=8)
                         # plt.title(f"{subject}\n info of {params} per {constants.SUB_CORTEX_DICT[rois[i]]} \n and "
                         #           f"{constants.SUB_CORTEX_DICT[rois[j]]}")
@@ -538,7 +550,8 @@ class StatisticsWrapper:
         for subject_name, subject_df in subjects:
             df = subject_df[params_to_work_with]
             dist = pdist(df, metric='euclidean')
-            distance_matrix = pd.DataFrame(squareform(dist), index=relevant_rois, columns=relevant_rois)
+            distance_matrix = pd.DataFrame(squareform(
+                dist), index=relevant_rois, columns=relevant_rois)
             distances += distance_matrix.to_numpy()
 
         distances /= data.subjects.nunique()
@@ -563,7 +576,8 @@ class StatisticsWrapper:
 
         correlations /= data.subjects.nunique()
         # labels = [label[4:] for label in relevant_rois]  # remove prefix as 'ctx'
-        correlations_df = pd.DataFrame(correlations, index=relevant_rois, columns=relevant_rois)
+        correlations_df = pd.DataFrame(
+            correlations, index=relevant_rois, columns=relevant_rois)
 
         # reorder the dataframe to match the clustering order
         correlations_df = correlations_df.reindex(rois)
@@ -576,7 +590,7 @@ class StatisticsWrapper:
 
     @staticmethod
     def roi_correlations_std(data: pd.DataFrame, params_to_work_with: list, rois: list,
-                         title: str = None, project_name: str = None, method="pearson"):
+                             title: str = None, project_name: str = None, method="pearson"):
         subjects = data.groupby('subjects')
         relevant_rois = list(data.ROI_name.unique())
         correlations_matrices = []
@@ -592,7 +606,8 @@ class StatisticsWrapper:
         std_matrix = np.std(combined_matrix, axis=0)
 
         # labels = [label[4:] for label in relevant_rois]  # remove prefix as 'ctx'
-        correlations_df = pd.DataFrame(std_matrix, index=relevant_rois, columns=relevant_rois)
+        correlations_df = pd.DataFrame(
+            std_matrix, index=relevant_rois, columns=relevant_rois)
 
         # reorder the dataframe to match the clustering order
         correlations_df = correlations_df.reindex(rois)
@@ -605,20 +620,22 @@ class StatisticsWrapper:
 
     @staticmethod
     def roi_distances(data: pd.DataFrame, params_to_work_with: list, rois: list,
-                         method, title: str = None, project_name: str = None):
+                      method, title: str = None, project_name: str = None):
         subjects = data.groupby('subjects')
         relevant_rois = list(data.ROI_name.unique())
         distance_matrices = []
 
         for subject_name, subject_df in subjects:
-            dist_matrix = method(subject_df[params_to_work_with].values, subject_df[params_to_work_with].values)
+            dist_matrix = method(
+                subject_df[params_to_work_with].values, subject_df[params_to_work_with].values)
             distance_matrices.append(dist_matrix)
 
         # Calculate mean distance along the first axis (across all matrices)
         mean_distance_matrix = np.mean(distance_matrices, axis=0)
 
         # labels = [label[4:] for label in relevant_rois]  # remove prefix as 'ctx'
-        distance_df = pd.DataFrame(mean_distance_matrix, index=relevant_rois, columns=relevant_rois)
+        distance_df = pd.DataFrame(
+            mean_distance_matrix, index=relevant_rois, columns=relevant_rois)
 
         # reorder the dataframe to match the clustering order
         distance_df = distance_df.reindex(rois)
@@ -628,13 +645,14 @@ class StatisticsWrapper:
         PlotsManager.plot_heatmap(distance_df, title, project_name)
 
         return distance_df
-    
+
     @staticmethod
     def roi_distances_by_age(data: pd.DataFrame, params_to_work_with: list,
-                            project_name: str = None):
+                             project_name: str = None):
         subjects = data.groupby('subjects')
         relevant_rois = list(data.ROI_name.unique())
-        labels = [label[4:] for label in relevant_rois]  # remove prefix as 'ctx'
+        labels = [label[4:]
+                  for label in relevant_rois]  # remove prefix as 'ctx'
 
         num_rois = len(labels)
         fig, axes = plt.subplots(num_rois, 1, figsize=(10, 6*num_rois))
@@ -643,7 +661,8 @@ class StatisticsWrapper:
             age_values = []
             correlation_values = []
             for subject_name, subject_df in subjects:
-                dist_matrix = pd.DataFrame(cosine_similarity(subject_df[params_to_work_with].values, subject_df[params_to_work_with].values))
+                dist_matrix = pd.DataFrame(cosine_similarity(
+                    subject_df[params_to_work_with].values, subject_df[params_to_work_with].values))
                 dist_matrix.index = labels
                 dist_matrix.columns = labels
                 dist_matrix['dist_mean'] = dist_matrix.apply(np.mean, axis=1)
@@ -654,7 +673,8 @@ class StatisticsWrapper:
             ax.scatter(age_values, correlation_values)
 
             # Perform linear regression to get slope (m) and intercept (b)
-            m, b = np.polyfit(age_values, correlation_values, 1)  # degree 1 for linear regression
+            # degree 1 for linear regression
+            m, b = np.polyfit(age_values, correlation_values, 1)
 
             # Generate x values for the regression line
             x_line = np.linspace(min(age_values), max(age_values), 100)
@@ -673,10 +693,11 @@ class StatisticsWrapper:
 
     @staticmethod
     def roi_correlations_by_age_by_each_roi(data: pd.DataFrame, params_to_work_with: list,
-                            title: str = None, project_name: str = None, method="pearson"):
+                                            title: str = None, project_name: str = None, method="pearson"):
         subjects = data.groupby('subjects')
         relevant_rois = list(data.ROI_name.unique())
-        labels = [label[4:] for label in relevant_rois]  # remove prefix as 'ctx'
+        labels = [label[4:]
+                  for label in relevant_rois]  # remove prefix as 'ctx'
 
         num_rois = len(labels)
         fig, axes = plt.subplots(num_rois, 1, figsize=(10, 6*num_rois))
@@ -696,7 +717,8 @@ class StatisticsWrapper:
             ax.scatter(age_values, correlation_values)
 
             # Perform linear regression to get slope (m) and intercept (b)
-            m, b = np.polyfit(age_values, correlation_values, 1)  # degree 1 for linear regression
+            # degree 1 for linear regression
+            m, b = np.polyfit(age_values, correlation_values, 1)
 
             # Generate x values for the regression line
             x_line = np.linspace(min(age_values), max(age_values), 100)
@@ -731,7 +753,8 @@ class StatisticsWrapper:
                     # Get the slope and intercept
                     slope = model.coef_[0]
                     intercept = model.intercept_
-                    x_fit = np.linspace(min(means[x_axis]), max(means[x_axis]), 100) 
+                    x_fit = np.linspace(
+                        min(means[x_axis]), max(means[x_axis]), 100)
                     x_axis_to_use = means[x_axis]
                     # Get R-squared score
                     r2 = r2_score(y, model.predict(x))
@@ -744,15 +767,16 @@ class StatisticsWrapper:
                 })
 
                 # Create the plot
-                plt.scatter(cv_data[x_axis], cv_data['CV'], color=color, label=label, s=50, alpha=0.7)
+                plt.scatter(cv_data[x_axis], cv_data['CV'],
+                            color=color, label=label, s=50, alpha=0.7)
                 if connect_scatter:
                     plt.plot(cv_data[x_axis], cv_data['CV'])
                 if use_reg:
-                    plt.annotate(f'R2: {r2}', (min(means[x_axis]) * 0.9, max(cv_data['CV'])), fontsize=10)
+                    plt.annotate(
+                        f'R2: {r2}', (min(means[x_axis]) * 0.9, max(cv_data['CV'])), fontsize=10)
                     plt.plot(x_fit, slope * x_fit + intercept, color='red')
                 plt.xlabel(x_axis)
                 plt.ylabel('CV')
-                
 
             plt.title(f'{param}')
             plt.grid(True)
@@ -767,7 +791,7 @@ class StatisticsWrapper:
         for data, color, label in data_groups:
             rois_cv = []
             for roi in rois:
-                roi_cv = 0 
+                roi_cv = 0
                 for param in params:
                     # Calculate CV params
                     means = data[data['ROI'] == roi][param].mean()
@@ -779,15 +803,15 @@ class StatisticsWrapper:
                 rois_cv.append(roi_cv)
 
             groups_rois_cv[label] = rois_cv
-            plt.scatter(rois_labels, rois_cv, color=color, label=label) 
-        
+            plt.scatter(rois_labels, rois_cv, color=color, label=label)
+
         for x, y1, y2 in zip(rois_labels, groups_rois_cv['young'], groups_rois_cv['old']):
 
             plt.plot([x, x], [y1, y2], color='gray', linestyle='--')
 
-        plt.title('Average CV of all parameters')    
+        plt.title('Average CV of all parameters')
         plt.xlabel('ROI')
-        plt.ylabel('Average CV')    
+        plt.ylabel('Average CV')
         plt.legend()
 
     @staticmethod
@@ -812,8 +836,8 @@ class StatisticsWrapper:
             complex_model.fit(x2, y2)
 
             # Calculate the residual sum of squares (RSS) for each model
-            rss1 = np.sum((y1 - simple_model.predict(x1)) ** 2)    
-            rss2 = np.sum((y2 - complex_model.predict(x2)) ** 2)   
+            rss1 = np.sum((y1 - simple_model.predict(x1)) ** 2)
+            rss2 = np.sum((y2 - complex_model.predict(x2)) ** 2)
 
             f_test_params[param] = {
                 "simple_model": {
@@ -835,33 +859,46 @@ class StatisticsWrapper:
 
             # Compute the F-statistic
             f_statistic = ((group1_params['rss'] - group2_params['rss']) / (group2_params['p'] - group1_params['p'])) / \
-                  (group2_params['rss'] / group2_params['df'])
-            # F = (group1_params['rss'] / group2_params['rss']) 
+                (group2_params['rss'] / group2_params['df'])
+            # F = (group1_params['rss'] / group2_params['rss'])
 
             # Determine the critical value of the F-statistic
             alpha = 0.05  # Significance level
             # critical_value = f.ppf(1 - alpha, group1_params['df'], group2_params['df'])
-            p_value = f.sf(f_statistic, group2_params['p'] - group1_params['p'], group2_params['df'])
+            p_value = f.sf(
+                f_statistic, group2_params['p'] - group1_params['p'], group2_params['df'])
 
             # Make a decision
             if p_value < alpha:
-                print(f"Param {param} - Reject the null hypothesis: {group2_name} is significantly better than {group1_name}")
+                print(
+                    f"Param {param} - Reject the null hypothesis: {group2_name} is significantly better than {group1_name}")
             else:
-                print(f"Param {param} - Fail to reject the null hypothesis: No significant difference between {group1_name} and {group2_name}")
-                
+                print(
+                    f"Param {param} - Fail to reject the null hypothesis: No significant difference between {group1_name} and {group2_name}")
+
+    # @staticmethod
+    # def show_rois_differences_in_polar(group1, group2, roi1, roi2,  params, titles):
+    #     group1_roi1 = pd.DataFrame([group1[group1['ROI_name'] == roi1][params].mean()])
+    #     group2_roi1 = pd.DataFrame([group2[group2['ROI_name'] == roi1][params].mean()])
+    #     group1_roi2 = pd.DataFrame([group1[group1['ROI_name'] == roi2][params].mean()])
+    #     group2_roi2 = pd.DataFrame([group2[group2['ROI_name'] == roi2][params].mean()])
+
+    #     group1_polar_data = [{'group': group1_roi1, 'name': roi1, "color": 'red'}, {'group': group1_roi2, 'name': roi2, "color": 'blue'}]
+    #     group2_polar_data = [{'group': group2_roi1, 'name': roi1, "color": 'red'}, {'group': group2_roi2, 'name': roi2, "color": 'blue'}]
+
+    #     PlotsManager.plot_rois_polar([group1_polar_data, group2_polar_data], params, titles)
+
     @staticmethod
-    def show_rois_differences_in_polar(group1, group2, roi1, roi2,  params, titles):
-        group1_roi1 = pd.DataFrame([group1[group1['ROI_name'] == roi1][params].mean()])
-        group2_roi1 = pd.DataFrame([group2[group2['ROI_name'] == roi1][params].mean()])
-        group1_roi2 = pd.DataFrame([group1[group1['ROI_name'] == roi2][params].mean()])
-        group2_roi2 = pd.DataFrame([group2[group2['ROI_name'] == roi2][params].mean()])
+    def show_rois_differences_in_polar(groups, rois, params, titles, colors):
+        polar_data = []
 
-        values = pd.concat([group1_roi1, group2_roi1, group1_roi2, group2_roi2])
-        max_value, min_value = values.max(), values.min()
+        for group in groups:
+            group_polar_data = []
+            for roi, color in zip(rois, colors):
+                group_roi = pd.DataFrame(
+                    [group[group['ROI_name'] == roi][params].mean()])
+                group_polar_data.append(
+                    {'group': group_roi, 'name': roi, 'color': color})
+            polar_data.append(group_polar_data)
 
-        group1_polar_data = [{'group': group1_roi1, 'name': roi1, "color": 'red'}, {'group': group1_roi2, 'name': roi2, "color": 'blue'}]
-        group2_polar_data = [{'group': group2_roi1, 'name': roi1, "color": 'red'}, {'group': group2_roi2, 'name': roi2, "color": 'blue'}]
-        
-        PlotsManager.plot_rois_polar([group1_polar_data, group2_polar_data], params, [min_value, max_value], titles)
-        
-    
+        PlotsManager.plot_rois_polar(polar_data, params, titles)

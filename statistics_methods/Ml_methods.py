@@ -10,21 +10,43 @@ import pandas as pd
 class Ml_methods:
 
     @staticmethod
-    def kmeans_cluster(data, params, label, k):        
-        kmeans = KMeans(n_clusters=k)
-        kmeans.fit(data[params])
+    def kmeans_cluster(data_groups, params, label, k):
+        clustered_data = {}
 
-        cluster_labels = kmeans.labels_
+        # cluster each group data
+        for data, name in data_groups:
+            kmeans = KMeans(n_clusters=k)
+            kmeans.fit(data[params])
 
-        pca = PCA(n_components=2)
-        pca_data = Ml_methods.reduce_dim(pca, data, params, label)
-        pca_data['cluster_label'] = cluster_labels
+            cluster_labels = kmeans.labels_
 
-        for label_name, label_data in pca_data.groupby('label'):
-            plt.figure(figsize=(8, 6))
-            sns.scatterplot(x=label_data['var_1'], y=label_data['var_2'], hue=label_data['cluster_label'], palette='viridis')
-            plt.title(f'k-means Clustering with PCA Projection, {label_name}')
-            plt.show()
+            pca = PCA(n_components=2)
+            pca_data = Ml_methods.reduce_dim(pca, data, params, label)
+            pca_data['cluster_label'] = cluster_labels
+
+            for label_name, label_data in pca_data.groupby('label'):
+                # create a list of this label data for all the groups
+                if label_name not in clustered_data.keys():
+                    clustered_data[label_name] = []
+
+                clustered_data[label_name].append(
+                    {'data': label_data, 'name': name})
+
+        for label_name, label_data in clustered_data.items():
+            fig, ax = plt.subplots(nrows=1, ncols=len(
+                label_data), figsize=(18, 6))
+            fig.suptitle(f'k-means Clustering with PCA ,{label_name}')
+
+            for col, group_clustered_data in enumerate(label_data):
+                data = group_clustered_data['data']
+                name = group_clustered_data['name']
+
+                sns.scatterplot(x=data['var_1'], y=data['var_2'],
+                                hue=data['cluster_label'], palette='viridis', ax=ax[col])
+                ax[col].set_title(
+                    f'{name}')
+
+        plt.show()
 
     @staticmethod
     def choose_k_for_kmeans(data):
@@ -44,13 +66,15 @@ class Ml_methods:
         plt.show()
 
         return silhouette_scores
-    
+
     @staticmethod
     def reduce_dim(model, data, params, label=None):
         reduced_data = model.fit_transform(data[params])
 
-        column_names = [f"var_{i + 1}" for i in range(reduced_data.shape[1])]  # Generate dynamic column names
-        reduced_data = pd.DataFrame(reduced_data, columns=column_names, index=data.index)
+        # Generate dynamic column names
+        column_names = [f"var_{i + 1}" for i in range(reduced_data.shape[1])]
+        reduced_data = pd.DataFrame(
+            reduced_data, columns=column_names, index=data.index)
 
         if label:
             reduced_data['label'] = data[label]
