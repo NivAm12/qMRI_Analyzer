@@ -190,32 +190,32 @@ class PlotsManager:
         # plt.imshow(ndi.rotate(color_map.get_fdata()[slice], 90), cmap='hot', alpha=0.5, vmin=-1)
 
     @staticmethod
-    def plot_rois_polar(data, thetas, titles):
-        fig = make_subplots(rows=1, cols=2, subplot_titles=titles, specs=[
-                            [{"type": "polar"}, {"type": "polar"}]])
+    def plot_rois_polar(data, thetas, sub_titles, cols, plot_title):
+        fig = make_subplots(rows=1, cols=cols, subplot_titles=sub_titles if cols > 1 else [plot_title], specs=[
+                            [{"type": "polar"}]*cols])
 
         for col, polar_group in enumerate(data):
             for roi_group in polar_group:
                 for _, subject_roi in roi_group['group'].iterrows():
-                    r = subject_roi.to_numpy()
                     fig.add_trace(go.Scatterpolar(
                         r=subject_roi.to_numpy(),
                         theta=thetas,
                         fill='toself',
                         # fillcolor=roi_group['color'],
-                        line_color=roi_group['color'],
+                        # line_color=roi_group['color'],
                         name=roi_group['name']),
-                        row=1, col=col+1)
+                        row=1, col=(col+1 if cols > 1 else 1))
 
         fig.layout['polar'].update(dict(
             radialaxis=dict(
                 visible=True,
                 # range=range
             )))
-        fig.layout['polar2'].update(dict(
-            radialaxis=dict(
-                visible=True,
-                # range=range
-            )))
+        if cols > 1:
+            fig.layout['polar2'].update(dict(
+                radialaxis=dict(
+                    visible=True,
+                    # range=range
+                )))
 
         fig.show()

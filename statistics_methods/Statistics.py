@@ -878,18 +878,18 @@ class StatisticsWrapper:
 
 
     @staticmethod
-    def show_rois_differences_in_polar(groups, rois, params, titles, colors, method='mean'):
+    def show_rois_differences_in_polar(groups, rois, params, titles, colors, method='mean', plot_cols=2):
         polar_data = []
 
-        for group in groups:
+        for group, title in zip(groups, titles):
             group_polar_data = []
             for roi, color in zip(rois, colors):
                 method_data = getattr(group[group['ROI_name'] == roi][params], method)
                 group_roi = pd.DataFrame([method_data()])
 
                 group_polar_data.append(
-                    {'group': group_roi, 'name': roi, 'color': color})
+                    {'group': group_roi, 'name': f'{title} {roi}', 'color': color})
 
             polar_data.append(group_polar_data)
 
-        PlotsManager.plot_rois_polar(polar_data, params, titles)
+        PlotsManager.plot_rois_polar(polar_data, params, titles, plot_cols, plot_title=method)
