@@ -876,29 +876,20 @@ class StatisticsWrapper:
                 print(
                     f"Param {param} - Fail to reject the null hypothesis: No significant difference between {group1_name} and {group2_name}")
 
-    # @staticmethod
-    # def show_rois_differences_in_polar(group1, group2, roi1, roi2,  params, titles):
-    #     group1_roi1 = pd.DataFrame([group1[group1['ROI_name'] == roi1][params].mean()])
-    #     group2_roi1 = pd.DataFrame([group2[group2['ROI_name'] == roi1][params].mean()])
-    #     group1_roi2 = pd.DataFrame([group1[group1['ROI_name'] == roi2][params].mean()])
-    #     group2_roi2 = pd.DataFrame([group2[group2['ROI_name'] == roi2][params].mean()])
-
-    #     group1_polar_data = [{'group': group1_roi1, 'name': roi1, "color": 'red'}, {'group': group1_roi2, 'name': roi2, "color": 'blue'}]
-    #     group2_polar_data = [{'group': group2_roi1, 'name': roi1, "color": 'red'}, {'group': group2_roi2, 'name': roi2, "color": 'blue'}]
-
-    #     PlotsManager.plot_rois_polar([group1_polar_data, group2_polar_data], params, titles)
 
     @staticmethod
-    def show_rois_differences_in_polar(groups, rois, params, titles, colors):
+    def show_rois_differences_in_polar(groups, rois, params, titles, colors, method='mean'):
         polar_data = []
 
         for group in groups:
             group_polar_data = []
             for roi, color in zip(rois, colors):
-                group_roi = pd.DataFrame(
-                    [group[group['ROI_name'] == roi][params].mean()])
+                method_data = getattr(group[group['ROI_name'] == roi][params], method)
+                group_roi = pd.DataFrame([method_data()])
+
                 group_polar_data.append(
                     {'group': group_roi, 'name': roi, 'color': color})
+
             polar_data.append(group_polar_data)
 
         PlotsManager.plot_rois_polar(polar_data, params, titles)
