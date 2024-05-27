@@ -12,6 +12,7 @@ import copy
 import scipy.ndimage as ndi
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from nilearn import plotting
 
 
 class PlotsManager:
@@ -175,19 +176,19 @@ class PlotsManager:
             color_map[roi_mask] = roi_color
 
         # save and show the map
-        tr = min(rois_color)
-        color_map[remove_mask] = -4
+        tr = -1
+        color_map[remove_mask] = np.nan
         color_map = nib.Nifti1Image(color_map, seg_file.affine)
 
-        nib.save(color_map, save_path)
-        os.system(
-            f'freeview -v {brain_path} {save_path}:colormap={color_type}')
+        # nib.save(color_map, save_path)
+        fig = plt.figure()
+        plotting.plot_img(color_map, bg_img=brain_path, colorbar=True,
+                          vmin=-1, vmax=1, cmap='coolwarm', cut_coords=(0, 18, 18), figure=fig)
+
+        # os.system(
+        #     f'freeview -v {brain_path} {save_path}:colormap={color_type}')
         # plt.figure(figsize = (5, 5))
         # plt.grid(False)
-
-        # slice = 100
-        # plt.imshow(ndi.rotate(brain_file_data[slice], 90), cmap='gray')
-        # plt.imshow(ndi.rotate(color_map.get_fdata()[slice], 90), cmap='hot', alpha=0.5, vmin=-1)
 
     @staticmethod
     def plot_rois_polar(data, thetas, sub_titles, cols, plot_title):
@@ -201,21 +202,18 @@ class PlotsManager:
                         r=subject_roi.to_numpy(),
                         theta=thetas,
                         fill='toself',
-                        # fillcolor=roi_group['color'],
-                        # line_color=roi_group['color'],
+                        line_color=roi_group['color'],
                         name=roi_group['name']),
                         row=1, col=(col+1 if cols > 1 else 1))
 
         fig.layout['polar'].update(dict(
             radialaxis=dict(
                 visible=True,
-                # range=range
             )))
         if cols > 1:
             fig.layout['polar2'].update(dict(
                 radialaxis=dict(
                     visible=True,
-                    # range=range
                 )))
 
         fig.show()

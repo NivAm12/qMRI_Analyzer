@@ -783,35 +783,33 @@ class StatisticsWrapper:
             plt.legend()
 
     @staticmethod
-    def calculate_cv_for_rois(data_groups, rois, params, fig_size=(20, 8)):
+    def calculate_mean_std_for_rois(data_groups, rois, params, fig_size=(20, 8)):
         rois_labels = [str(roi) for roi in rois]
-        groups_rois_cv = {}
+        groups_rois_std = {}
 
         plt.figure(figsize=fig_size)
         for data, color, label in data_groups:
-            rois_cv = []
+            rois_std = []
             for roi in rois:
-                roi_cv = 0
+                roi_std = 0
                 for param in params:
                     # Calculate CV params
-                    means = data[data['ROI'] == roi][param].mean()
                     stds = data[data['ROI'] == roi][param].std()
-                    cv = (stds / means)
-                    roi_cv += cv
+                    roi_std += stds
 
-                roi_cv /= len(params)
-                rois_cv.append(roi_cv)
+                roi_std /= len(params)
+                rois_std.append(roi_std)
 
-            groups_rois_cv[label] = rois_cv
-            plt.scatter(rois_labels, rois_cv, color=color, label=label)
+            groups_rois_std[label] = rois_std
+            plt.scatter(rois_labels, rois_std, color=color, label=label)
 
-        for x, y1, y2 in zip(rois_labels, groups_rois_cv['young'], groups_rois_cv['old']):
+        for x, y1, y2 in zip(rois_labels, groups_rois_std['young'], groups_rois_std['old']):
 
             plt.plot([x, x], [y1, y2], color='gray', linestyle='--')
 
-        plt.title('Average CV of all parameters')
+        plt.title('Average Std of all parameters')
         plt.xlabel('ROI')
-        plt.ylabel('Average CV')
+        plt.ylabel('Average Std')
         plt.legend()
 
     @staticmethod
@@ -891,5 +889,5 @@ class StatisticsWrapper:
                     {'group': group_roi, 'name': f'{title} {roi}', 'color': color})
 
             polar_data.append(group_polar_data)
-
+            
         PlotsManager.plot_rois_polar(polar_data, params, titles, plot_cols, plot_title=method)
