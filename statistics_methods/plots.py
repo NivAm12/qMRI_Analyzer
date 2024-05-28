@@ -12,7 +12,27 @@ import copy
 import scipy.ndimage as ndi
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from nilearn import plotting
+import nilearn
+from matplotlib.colors import LinearSegmentedColormap
+
+
+## COLORS_MAPS
+# Define a custom colormap
+coolwerm_colors = [
+    (0, 'blue'),     # Blue for the start of the colormap (lowest values)
+    (0.5, 'gray'),  # White for the midpoint of the colormap (zero value)
+    (1, 'red')       # Red for the end of the colormap (highest values)
+]
+vibrant_colors = [
+    (0.0, 'green'),        # Green for -1
+    (0.45, 'green'),       # Green up to just below zero
+    (0.5, 'yellow'),       # Yellow for zero
+    (0.55, 'magenta'),     # Magenta from just above zero
+    (1.0, 'magenta')       # Magenta for 1
+]
+
+custom_cmap_coolwarm = LinearSegmentedColormap.from_list('custom_cmap', coolwerm_colors)
+vibrant_cmap_coolwarm = LinearSegmentedColormap.from_list('custom_cmap', vibrant_colors)
 
 
 class PlotsManager:
@@ -176,19 +196,15 @@ class PlotsManager:
             color_map[roi_mask] = roi_color
 
         # save and show the map
-        tr = -1
-        color_map[remove_mask] = np.nan
+        color_map[remove_mask] = 0
         color_map = nib.Nifti1Image(color_map, seg_file.affine)
-
-        # nib.save(color_map, save_path)
-        fig = plt.figure()
-        plotting.plot_img(color_map, bg_img=brain_path, colorbar=True,
-                          vmin=-1, vmax=1, cmap='coolwarm', cut_coords=(0, 18, 18), figure=fig)
-
-        # os.system(
-        #     f'freeview -v {brain_path} {save_path}:colormap={color_type}')
-        # plt.figure(figsize = (5, 5))
-        # plt.grid(False)
+        
+        nilearn.plotting.plot_img_on_surf(color_map, colorbar=True, surf_mesh='fsaverage',
+                                  plot_abs=False,
+                                  hemispheres=["left", "right"],
+                                  title=title,
+                                  vmin=-1, vmax=1, cmap=custom_cmap_coolwarm, inflate=True,
+                                  )
 
     @staticmethod
     def plot_rois_polar(data, thetas, sub_titles, cols, plot_title):
