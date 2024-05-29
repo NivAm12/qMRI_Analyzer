@@ -31,6 +31,8 @@ PATH_TO_PD_CORTEX_all_params_raw = os.getenv('PATH_TO_PD_CORTEX_all_params_raw')
 PATH_TO_PD_CORTEX_all_params_z_score = os.getenv('PATH_TO_PD_CORTEX_all_params_z_score')
 PATH_TO_PD_SUB_CORTEX_all_params_raw = os.getenv('PATH_TO_PD_SUB_CORTEX_all_params_raw')
 PATH_TO_PD_SUB_CORTEX_all_params_z_score = os.getenv('PATH_TO_PD_SUB_CORTEX_all_params_z_score')
+PATH_TO_CORTEX_AND_GRAY_SUB_CORTEX_all_params_raw = os.getenv('PATH_TO_CORTEX_AND_GRAY_SUB_CORTEX_all_params_raw')
+PATH_TO_CORTEX_AND_GRAY_SUB_CORTEX_all_params_z_score = os.getenv('PATH_TO_CORTEX_AND_GRAY_SUB_CORTEX_all_params_z_score')
 SUBJECTS_INFO_PATH = os.getenv("SUBJECTS_INFO_PATH")
 
 # ---------------- Paths to output data ----------------- #
@@ -178,7 +180,7 @@ ROI_SUBCORTEX = {
     53: 'Right-Hippocampus',
     54: 'Right-Amygdala',
     58: 'Right-Accumbens-area',
-    60: 'Left-VentralDC',
+    60: 'Right-VentralDC',
 }
 
 ROI_CORTEX_AND_GRAY_SUB_CORTEX = {
@@ -257,7 +259,7 @@ ROI_CORTEX_AND_GRAY_SUB_CORTEX = {
     53: 'Right-Hippocampus',
     54: 'Right-Amygdala',
     58: 'Right-Accumbens-area',
-    60: 'Left-VentralDC',
+    60: 'Right-VentralDC',
 }
 
 ROI_FRONTAL_CORTEX = {
