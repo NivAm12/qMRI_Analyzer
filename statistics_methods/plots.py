@@ -12,27 +12,22 @@ import copy
 import scipy.ndimage as ndi
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-import nilearn
+from nilearn import plotting
 from matplotlib.colors import LinearSegmentedColormap
 
 
-## COLORS_MAPS
+# COLORS_MAPS
 # Define a custom colormap
-coolwerm_colors = [
-    (0, 'blue'),     # Blue for the start of the colormap (lowest values)
-    (0.5, 'gray'),  # White for the midpoint of the colormap (zero value)
-    (1, 'red')       # Red for the end of the colormap (highest values)
-]
-vibrant_colors = [
-    (0.0, 'green'),        # Green for -1
-    (0.45, 'green'),       # Green up to just below zero
-    (0.5, 'yellow'),       # Yellow for zero
-    (0.55, 'magenta'),     # Magenta from just above zero
-    (1.0, 'magenta')       # Magenta for 1
+coolwarm_colors = [
+    (0.0, 'blue'),    # Start (lowest values)
+    (0.499, 'gray'),  # Just before zero
+    (0.5, 'gray'),    # Midpoint (zero value)
+    (0.501, 'gray'),  # Just after zero
+    (1.0, 'red')      # End (highest values)
 ]
 
-custom_cmap_coolwarm = LinearSegmentedColormap.from_list('custom_cmap', coolwerm_colors)
-vibrant_cmap_coolwarm = LinearSegmentedColormap.from_list('custom_cmap', vibrant_colors)
+custom_cmap_coolwarm = LinearSegmentedColormap.from_list(
+    'custom_cmap', coolwarm_colors)
 
 
 class PlotsManager:
@@ -198,12 +193,12 @@ class PlotsManager:
         # save and show the map
         color_map[remove_mask] = 0
         color_map = nib.Nifti1Image(color_map, seg_file.affine)
-        
-        nilearn.plotting.plot_img_on_surf(color_map, colorbar=True, surf_mesh='fsaverage',
+
+        plotting.plot_img_on_surf(color_map, colorbar=True, surf_mesh='fsaverage',
                                   plot_abs=False,
                                   hemispheres=["left", "right"],
                                   title=title,
-                                  vmin=-1, vmax=1, cmap=custom_cmap_coolwarm, inflate=True,
+                                  vmin=-1, vmax=1, cmap=custom_cmap_coolwarm, inflate=False,
                                   )
 
     @staticmethod
