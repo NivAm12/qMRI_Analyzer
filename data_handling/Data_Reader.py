@@ -356,10 +356,10 @@ if __name__ == "__main__":
     analysis_dir_prefix = 'H'
 
     # Can be changed - list of all ROIs' numbers from the segmentation
-    rois = list(constants.ROI_SUBCORTEX.keys())
+    rois = list(constants.ROI_CORTEX_AND_GRAY_SUB_CORTEX.keys())
 
     # Can be changed - this is the save address for the output
-    save_address = constants.SAVE_ADDRESS + '/SUB_CORTEX_all_params/'
+    save_address = constants.SAVE_ADDRESS + '/CORTEX_AND_GRAY_SUB_CORTEX._all_params/'
     # Can be changed - using other params - make sure to add another parameter as a name, and tuple of the
     # full path to the map of the parameter and the full path to the compatible segmentation
     params = {
