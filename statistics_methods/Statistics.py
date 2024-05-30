@@ -549,7 +549,7 @@ class StatisticsWrapper:
 
         for subject_name, subject_df in subjects:
             df = subject_df[params_to_work_with]
-            dist = pdist(df, metric='euclidean')
+            dist = pdist(df, metric='cosine')
             distance_matrix = pd.DataFrame(squareform(
                 dist), index=relevant_rois, columns=relevant_rois)
             distances += distance_matrix.to_numpy()

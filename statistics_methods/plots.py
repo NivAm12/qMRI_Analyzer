@@ -20,9 +20,7 @@ from matplotlib.colors import LinearSegmentedColormap
 # Define a custom colormap
 coolwarm_colors = [
     (0.0, 'blue'),    # Start (lowest values)
-    (0.499, 'gray'),  # Just before zero
     (0.5, 'gray'),    # Midpoint (zero value)
-    (0.501, 'gray'),  # Just after zero
     (1.0, 'red')      # End (highest values)
 ]
 
@@ -188,17 +186,22 @@ class PlotsManager:
 
         for roi, roi_color in rois_color.items():
             roi_mask = np.where(seg_file_data == flipped_roi_dict[roi])
-            color_map[roi_mask] = roi_color
+            brain_file_data[roi_mask] = roi_color
 
         # save and show the map
-        color_map[remove_mask] = 0
-        color_map = nib.Nifti1Image(color_map, seg_file.affine)
+        brain_file_data[remove_mask] = 0
+        brain_file_data = nib.Nifti1Image(brain_file_data, seg_file.affine)
 
-        plotting.plot_img_on_surf(color_map, colorbar=True, surf_mesh='fsaverage',
+        # nib.save(brain_file_data, save_path)
+        # os.system(f'freeview -v {brain_path} {seg_path} {save_path}')
+
+        plotting.plot_img_on_surf(brain_file_data, colorbar=True, surf_mesh='fsaverage',
                                   plot_abs=False,
                                   hemispheres=["left", "right"],
                                   title=title,
-                                  vmin=-1, vmax=1, cmap=custom_cmap_coolwarm, inflate=False,
+                                  vol_to_surf_kwargs={
+                                      "interpolation": "nearest"},
+                                  cmap='coolwarm', inflate=False,
                                   )
 
     @staticmethod
