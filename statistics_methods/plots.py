@@ -189,7 +189,7 @@ class PlotsManager:
             brain_file_data[roi_mask] = roi_color
 
         # save and show the map
-        brain_file_data[remove_mask] = 0
+        brain_file_data[remove_mask] = -4
         brain_file_data = nib.Nifti1Image(brain_file_data, seg_file.affine)
 
         # nib.save(brain_file_data, save_path)
