@@ -15,30 +15,53 @@ PATH_TO_CORTEX_4_PARAMS_Z = os.getenv("PATH_TO_CORTEX_4_PARAMS_Z")
 PATH_TO_CORTEX_Z_SCORED = os.getenv("PATH_TO_CORTEX_Z_SCORED")
 PATH_TO_FRONTAL_CORTEX_6_params = os.getenv("PATH_TO_FRONTAL_CORTEX_6_params")
 PATH_TO_FRONTAL_CORTEX_4_params = os.getenv("PATH_TO_FRONTAL_CORTEX_4_params")
-PATH_TO_RIGHT_CORTEX_4_params_ZSCORE = os.getenv("PATH_TO_RIGHT_CORTEX_4_params_ZSCORE")
-PATH_TO_FRONTAL_CORTEX_4_params_RAW = os.getenv("PATH_TO_FRONTAL_CORTEX_4_params_RAW")
-PATH_TO_PUTAMEN_CAUDETE_6_params = os.getenv("PATH_TO_PUTAMEN_CAUDETE_6_params")
-PATH_TO_PUTAMEN_THALAMUS_6_params = os.getenv("PATH_TO_PUTAMEN_THALAMUS_6_params")
-PATH_TO_PALLIDUM_PUTAMEN_CAUDETE_6_params = os.getenv("PATH_TO_PALLIDUM_PUTAMEN_CAUDETE_6_params")
-PATH_TO_AMYGDALA_HIPPOCAMPUS_6_params = os.getenv("PATH_TO_AMYGDALA_HIPPOCAMPUS_6_params")
-PATH_TO_ACCUM_HIPPO_AMYG_6_params = os.getenv("PATH_TO_ACCUM_HIPPO_AMYG_6_params")
-PATH_TO_CORTEX_all_params_z_score = os.getenv('PATH_TO_CORTEX_all_params_z_score')
+PATH_TO_RIGHT_CORTEX_4_params_ZSCORE = os.getenv(
+    "PATH_TO_RIGHT_CORTEX_4_params_ZSCORE")
+PATH_TO_FRONTAL_CORTEX_4_params_RAW = os.getenv(
+    "PATH_TO_FRONTAL_CORTEX_4_params_RAW")
+PATH_TO_PUTAMEN_CAUDETE_6_params = os.getenv(
+    "PATH_TO_PUTAMEN_CAUDETE_6_params")
+PATH_TO_PUTAMEN_THALAMUS_6_params = os.getenv(
+    "PATH_TO_PUTAMEN_THALAMUS_6_params")
+PATH_TO_PALLIDUM_PUTAMEN_CAUDETE_6_params = os.getenv(
+    "PATH_TO_PALLIDUM_PUTAMEN_CAUDETE_6_params")
+PATH_TO_AMYGDALA_HIPPOCAMPUS_6_params = os.getenv(
+    "PATH_TO_AMYGDALA_HIPPOCAMPUS_6_params")
+PATH_TO_ACCUM_HIPPO_AMYG_6_params = os.getenv(
+    "PATH_TO_ACCUM_HIPPO_AMYG_6_params")
+PATH_TO_CORTEX_all_params_z_score = os.getenv(
+    'PATH_TO_CORTEX_all_params_z_score')
 PATH_TO_CORTEX_all_params_raw = os.getenv('PATH_TO_CORTEX_all_params_raw')
-PATH_TO_CORTEX_all_params_robust = os.getenv('PATH_TO_CORTEX_all_params_robust')
-PATH_TO_SUB_CORTEX_all_params_z_score = os.getenv('PATH_TO_SUB_CORTEX_all_params_z_score')
-PATH_TO_SUB_CORTEX_all_params_raw = os.getenv('PATH_TO_SUB_CORTEX_all_params_raw')
-PATH_TO_PD_CORTEX_all_params_raw = os.getenv('PATH_TO_PD_CORTEX_all_params_raw')
-PATH_TO_PD_CORTEX_all_params_z_score = os.getenv('PATH_TO_PD_CORTEX_all_params_z_score')
-PATH_TO_PD_SUB_CORTEX_all_params_raw = os.getenv('PATH_TO_PD_SUB_CORTEX_all_params_raw')
-PATH_TO_PD_SUB_CORTEX_all_params_z_score = os.getenv('PATH_TO_PD_SUB_CORTEX_all_params_z_score')
-PATH_TO_CORTEX_AND_GRAY_SUB_CORTEX_all_params_raw = os.getenv('PATH_TO_CORTEX_AND_GRAY_SUB_CORTEX_all_params_raw')
-PATH_TO_CORTEX_AND_GRAY_SUB_CORTEX_all_params_z_score = os.getenv('PATH_TO_CORTEX_AND_GRAY_SUB_CORTEX_all_params_z_score')
+PATH_TO_CORTEX_all_params_robust = os.getenv(
+    'PATH_TO_CORTEX_all_params_robust')
+PATH_TO_SUB_CORTEX_all_params_z_score = os.getenv(
+    'PATH_TO_SUB_CORTEX_all_params_z_score')
+PATH_TO_SUB_CORTEX_all_params_raw = os.getenv(
+    'PATH_TO_SUB_CORTEX_all_params_raw')
+PATH_TO_PD_CORTEX_all_params_raw = os.getenv(
+    'PATH_TO_PD_CORTEX_all_params_raw')
+PATH_TO_PD_CORTEX_all_params_z_score = os.getenv(
+    'PATH_TO_PD_CORTEX_all_params_z_score')
+PATH_TO_PD_SUB_CORTEX_all_params_raw = os.getenv(
+    'PATH_TO_PD_SUB_CORTEX_all_params_raw')
+PATH_TO_PD_SUB_CORTEX_all_params_z_score = os.getenv(
+    'PATH_TO_PD_SUB_CORTEX_all_params_z_score')
+PATH_TO_CORTEX_AND_GRAY_SUB_CORTEX_all_params_raw = os.getenv(
+    'PATH_TO_CORTEX_AND_GRAY_SUB_CORTEX_all_params_raw')
+PATH_TO_CORTEX_AND_GRAY_SUB_CORTEX_all_params_z_score = os.getenv(
+    'PATH_TO_CORTEX_AND_GRAY_SUB_CORTEX_all_params_z_score')
 SUBJECTS_INFO_PATH = os.getenv("SUBJECTS_INFO_PATH")
+PATH_TO_WM_SUBCORTEX_all_params_raw = os.getenv(
+    'PATH_TO_WM_SUBCORTEX_all_params_z_raw')
+PATH_TO_WM_SUBCORTEX_all_params_z_score = os.getenv(
+    'PATH_TO_WM_SUBCORTEX_all_params_z_score')
 
 # ---------------- Paths to output data ----------------- #
 SAVE_DATA_PATH = os.getenv("SAVE_DATA_PATH")
-SAVE_DATA_OF_ADULTS_Z_SCORE_MEANS = os.getenv("SAVE_DATA_OF_ADULTS_Z_SCORE_MEANS")
-SAVE_DATA_OF_YOUNG_Z_SCORE_MEANS = os.getenv("SAVE_DATA_OF_YOUNG_Z_SCORE_MEANS")
+SAVE_DATA_OF_ADULTS_Z_SCORE_MEANS = os.getenv(
+    "SAVE_DATA_OF_ADULTS_Z_SCORE_MEANS")
+SAVE_DATA_OF_YOUNG_Z_SCORE_MEANS = os.getenv(
+    "SAVE_DATA_OF_YOUNG_Z_SCORE_MEANS")
 SAVE_DATA_OF_ALL_Z_SCORE_MEANS = os.getenv("SAVE_DATA_OF_ALL_Z_SCORE_MEANS")
 SAVE_ADDRESS = os.getenv('SAVE_ADDRESS')
 
@@ -96,7 +119,8 @@ ROI_PALLIDUM_PUTAMEN_CAUDETE = {11: 'Left-Caudate', 12: 'Left-Putamen', 13: 'Lef
 ROI_AMYGDALA_HIPPOCAMPUS = {17: 'Left-Hippocampus', 18: 'Left-Amygdala', 53: 'Right-Hippocampus',
                             54: 'Right-Amygdala'}
 
-ROI_PUTAMEN_CAUDETE = {11: 'Left-Caudate', 12: 'Left-Putamen', 50: 'Right-Caudate', 51: 'Right-Putamen'}
+ROI_PUTAMEN_CAUDETE = {11: 'Left-Caudate', 12: 'Left-Putamen',
+                       50: 'Right-Caudate', 51: 'Right-Putamen'}
 
 ROI_ACCUM_HIPPO_AMYG = {17: 'Left-Hippocampus', 18: 'Left-Amygdala', 26: 'Left-Accumbens-area',
                         53: 'Right-Hippocampus', 54: 'Right-Amygdala', 58: 'Right-Accumbens-area'}
@@ -183,6 +207,70 @@ ROI_SUBCORTEX = {
     60: 'Right-VentralDC',
 }
 
+ROI_WM = {
+    3001: "wm-lh-bankssts",
+    3002: "wm-lh-caudalanteriorcingulate",
+    3003: "wm-lh-caudalmiddlefrontal",
+    3005: "wm-lh-cuneus",
+    3006: "wm-lh-entorhinal",
+    3007: "wm-lh-fusiform",
+    3008: "wm-lh-inferiorparietal",
+    3009: "wm-lh-inferiortemporal",
+    3010: "wm-lh-isthmuscingulate",
+    3011: "wm-lh-lateraloccipital",
+    3012: "wm-lh-lateralorbitofrontal",
+    3013: "wm-lh-lingual",
+    3014: "wm-lh-medialorbitofrontal",
+    3015: "wm-lh-middletemporal",
+    3016: "wm-lh-parahippocampal",
+    3018: "wm-lh-parsopercularis",
+    3019: "wm-lh-parsorbitalis",
+    3020: "wm-lh-parstriangularis",
+    3022: "wm-lh-postcentral",
+    3023: "wm-lh-posteriorcingulate",
+    3024: "wm-lh-precentral",
+    3025: "wm-lh-precuneus",
+    3026: "wm-lh-rostralanteriorcingulat",
+    3027: "wm-lh-rostralmiddlefrontal",
+    3028: "wm-lh-superiorfrontal",
+    3030: "wm-lh-superiortemporal",
+    3031: "wm-lh-supramarginal",
+    3032: "wm-lh-frontalpole",
+    3033: "wm-lh-temporalpole",
+    3035: "wm-lh-insula",
+    4001: "wm-rh-bankssts",
+    4002: "wm-rh-caudalanteriorcingulate",
+    4003: "wm-rh-caudalmiddlefrontal",
+    4005: "wm-rh-cuneus",
+    4006: "wm-rh-entorhinal",
+    4007: "wm-rh-fusiform",
+    4008: "wm-rh-inferiorparietal",
+    4009: "wm-rh-inferiortemporal",
+    4010: "wm-rh-isthmuscingulate",
+    4011: "wm-rh-lateraloccipital",
+    4012: "wm-rh-lateralorbitofrontal",
+    4013: "wm-rh-lingual ",
+    4014: "wm-rh-medialorbitofrontal",
+    4015: "wm-rh-middletemporal",
+    4016: "wm-rh-parahippocampal",
+    4018: "wm-rh-parsopercularis",
+    4019: "wm-rh-parsorbitalis",
+    4020: "wm-rh-parstriangularis",
+    4022: "wm-rh-postcentral",
+    4023: "wm-rh-posteriorcingulate",
+    4024: "wm-rh-precentral",
+    4025: "wm-rh-precuneus",
+    4026: "wm-rh-rostralanteriorcingulat",
+    4027: "wm-rh-rostralmiddlefrontal",
+    4028: "wm-rh-superiorfrontal",
+    4030: "wm-rh-superiortemporal",
+    4031: "wm-rh-supramarginal",
+    4032: "wm-rh-frontalpole",
+    4033: "wm-rh-temporalpole",
+    4035: "wm-rh-insula",
+}
+
+
 ROI_CORTEX_AND_GRAY_SUB_CORTEX = {
     1002: 'ctx-lh-caudalanteriorcingulate',
     1003: 'ctx-lh-caudalmiddlefrontal',
@@ -262,37 +350,10 @@ ROI_CORTEX_AND_GRAY_SUB_CORTEX = {
     60: 'Right-VentralDC',
 }
 
-ROI_FRONTAL_CORTEX = {
-    1003: 'ctx-lh-caudalmiddlefrontal',
-    2003: 'ctx-rh-caudalmiddlefrontal',
-    1012: 'ctx-lh-lateralorbitofrontal',
-    2012: 'ctx-rh-lateralorbitofrontal',
-    1017: 'ctx-lh-paracentral',
-    2017: 'ctx-rh-paracentral',
-    1018: 'ctx-lh-parsopercularis',
-    2018: 'ctx-rh-parsopercularis',
-    1019: 'ctx-lh-parsorbitalis',
-    2019: 'ctx-rh-parsorbitalis',
-    1020: 'ctx-lh-parstriangularis',
-    2020: 'ctx-rh-parstriangularis',
-    1024: 'ctx-lh-precentral',
-    2024: 'ctx-rh-precentral',
-    1027: 'ctx-lh-rostralmiddlefrontal',
-    2027: 'ctx-rh-rostralmiddlefrontal',
-    1028: 'ctx-lh-superiorfrontal',
-    2028: 'ctx-rh-superiorfrontal',
-    1032: 'ctx-lh-frontalpole',
-    2032: 'ctx-rh-frontalpole',
-}
-
-ROI_LEFT_CORTEX = {
-    1000: 'ctx-lh-unknown',
-    1001: 'ctx-lh-bankssts',
+ROI_CORTEX_AND_WM_SUBCORTEX = {
     1002: 'ctx-lh-caudalanteriorcingulate',
     1003: 'ctx-lh-caudalmiddlefrontal',
-    1004: 'ctx-lh-corpuscallosum',
     1005: 'ctx-lh-cuneus',
-    1006: 'ctx-lh-entorhinal',
     1007: 'ctx-lh-fusiform',
     1008: 'ctx-lh-inferiorparietal',
     1009: 'ctx-lh-inferiortemporal',
@@ -303,11 +364,11 @@ ROI_LEFT_CORTEX = {
     1014: 'ctx-lh-medialorbitofrontal',
     1015: 'ctx-lh-middletemporal',
     1016: 'ctx-lh-parahippocampal',
-    1017: 'ctx-lh-paracentral',
+    # 1017: 'ctx-lh-paracentral',
     1018: 'ctx-lh-parsopercularis',
     1019: 'ctx-lh-parsorbitalis',
     1020: 'ctx-lh-parstriangularis',
-    1021: 'ctx-lh-pericalcarine',
+    # 1021: 'ctx-lh-pericalcarine',
     1022: 'ctx-lh-postcentral',
     1023: 'ctx-lh-posteriorcingulate',
     1024: 'ctx-lh-precentral',
@@ -315,24 +376,14 @@ ROI_LEFT_CORTEX = {
     1026: 'ctx-lh-rostralanteriorcingulate',
     1027: 'ctx-lh-rostralmiddlefrontal',
     1028: 'ctx-lh-superiorfrontal',
-    1029: 'ctx-lh-superiorparietal',
+    # 1029: 'ctx-lh-superiorparietal',
     1030: 'ctx-lh-superiortemporal',
     1031: 'ctx-lh-supramarginal',
-    1032: 'ctx-lh-frontalpole',
-    1033: 'ctx-lh-temporalpole',
-    1034: 'ctx-lh-transversetemporal',
-    1035: 'ctx-lh-insula'
-}
-
-
-ROI_RIGTH_CORTEX = {
-    2000: 'ctx-rh-unknown',
-    2001: 'ctx-rh-bankssts',
+    # 1034: 'ctx-lh-transversetemporal',
+    1035: 'ctx-lh-insula',
     2002: 'ctx-rh-caudalanteriorcingulate',
     2003: 'ctx-rh-caudalmiddlefrontal',
-    2004: 'ctx-rh-corpuscallosum',
     2005: 'ctx-rh-cuneus',
-    2006: 'ctx-rh-entorhinal',
     2007: 'ctx-rh-fusiform',
     2008: 'ctx-rh-inferiorparietal',
     2009: 'ctx-rh-inferiortemporal',
@@ -343,11 +394,11 @@ ROI_RIGTH_CORTEX = {
     2014: 'ctx-rh-medialorbitofrontal',
     2015: 'ctx-rh-middletemporal',
     2016: 'ctx-rh-parahippocampal',
-    2017: 'ctx-rh-paracentral',
+    # 2017: 'ctx-rh-paracentral',
     2018: 'ctx-rh-parsopercularis',
     2019: 'ctx-rh-parsorbitalis',
     2020: 'ctx-rh-parstriangularis',
-    2021: 'ctx-rh-pericalcarine',
+    # 2021: 'ctx-rh-pericalcarine',
     2022: 'ctx-rh-postcentral',
     2023: 'ctx-rh-posteriorcingulate',
     2024: 'ctx-rh-precentral',
@@ -355,16 +406,73 @@ ROI_RIGTH_CORTEX = {
     2026: 'ctx-rh-rostralanteriorcingulate',
     2027: 'ctx-rh-rostralmiddlefrontal',
     2028: 'ctx-rh-superiorfrontal',
-    2029: 'ctx-rh-superiorparietal',
+    # 2029: 'ctx-rh-superiorparietal',
     2030: 'ctx-rh-superiortemporal',
     2031: 'ctx-rh-supramarginal',
-    2032: 'ctx-rh-frontalpole',
-    2033: 'ctx-rh-temporalpole',
-    2034: 'ctx-rh-transversetemporal',
-    2035: 'ctx-rh-insula'
+    # 2034: 'ctx-rh-transversetemporal',
+    2035: 'ctx-rh-insula',
+
+    3001: "wm-lh-bankssts",
+    3002: "wm-lh-caudalanteriorcingulate",
+    3003: "wm-lh-caudalmiddlefrontal",
+    3005: "wm-lh-cuneus",
+    3006: "wm-lh-entorhinal",
+    3007: "wm-lh-fusiform",
+    3008: "wm-lh-inferiorparietal",
+    3009: "wm-lh-inferiortemporal",
+    3010: "wm-lh-isthmuscingulate",
+    3011: "wm-lh-lateraloccipital",
+    3012: "wm-lh-lateralorbitofrontal",
+    3013: "wm-lh-lingual",
+    3014: "wm-lh-medialorbitofrontal",
+    3015: "wm-lh-middletemporal",
+    3016: "wm-lh-parahippocampal",
+    3018: "wm-lh-parsopercularis",
+    3019: "wm-lh-parsorbitalis",
+    3020: "wm-lh-parstriangularis",
+    3022: "wm-lh-postcentral",
+    3023: "wm-lh-posteriorcingulate",
+    3024: "wm-lh-precentral",
+    3025: "wm-lh-precuneus",
+    3026: "wm-lh-rostralanteriorcingulat",
+    3027: "wm-lh-rostralmiddlefrontal",
+    3028: "wm-lh-superiorfrontal",
+    3030: "wm-lh-superiortemporal",
+    3031: "wm-lh-supramarginal",
+    3032: "wm-lh-frontalpole",
+    3033: "wm-lh-temporalpole",
+    3035: "wm-lh-insula",
+    4001: "wm-rh-bankssts",
+    4002: "wm-rh-caudalanteriorcingulate",
+    4003: "wm-rh-caudalmiddlefrontal",
+    4005: "wm-rh-cuneus",
+    4006: "wm-rh-entorhinal",
+    4007: "wm-rh-fusiform",
+    4008: "wm-rh-inferiorparietal",
+    4009: "wm-rh-inferiortemporal",
+    4010: "wm-rh-isthmuscingulate",
+    4011: "wm-rh-lateraloccipital",
+    4012: "wm-rh-lateralorbitofrontal",
+    4013: "wm-rh-lingual ",
+    4014: "wm-rh-medialorbitofrontal",
+    4015: "wm-rh-middletemporal",
+    4016: "wm-rh-parahippocampal",
+    4018: "wm-rh-parsopercularis",
+    4019: "wm-rh-parsorbitalis",
+    4020: "wm-rh-parstriangularis",
+    4022: "wm-rh-postcentral",
+    4023: "wm-rh-posteriorcingulate",
+    4024: "wm-rh-precentral",
+    4025: "wm-rh-precuneus",
+    4026: "wm-rh-rostralanteriorcingulat",
+    4027: "wm-rh-rostralmiddlefrontal",
+    4028: "wm-rh-superiorfrontal",
+    4030: "wm-rh-superiortemporal",
+    4031: "wm-rh-supramarginal",
+    4032: "wm-rh-frontalpole",
+    4033: "wm-rh-temporalpole",
+    4035: "wm-rh-insula",
 }
-
-
 
 LOBES = {
     'frontal': ['ctx-lh-caudalmiddlefrontal', 'ctx-lh-lateralorbitofrontal', 'ctx-lh-medialorbitofrontal', 'ctx-lh-parsopercularis', 'ctx-lh-parsorbitalis', 'ctx-lh-parstriangularis', 'ctx-lh-precentral', 'ctx-lh-rostralmiddlefrontal', 'ctx-lh-superiorfrontal', 'ctx-rh-caudalmiddlefrontal', 'ctx-rh-lateralorbitofrontal', 'ctx-rh-medialorbitofrontal', 'ctx-rh-parsopercularis', 'ctx-rh-parsorbitalis', 'ctx-rh-parstriangularis', 'ctx-rh-precentral', 'ctx-rh-rostralmiddlefrontal', 'ctx-rh-superiorfrontal'],
@@ -384,18 +492,20 @@ DICT_NUM_TO_ROIS = {1: SUB_CORTEX_DICT,
 
 # -------------------- MRI Physical Parameters -------------------- #
 BASIC_4_PARAMS = ["r1", "tv", "r2s", "mt"]
-BASIC_4_PARAMS_WITH_SLOPES = ["r1", "tv", "r2s", "mt", "Slope-tv-r1", "Slope-tv-r2s", "Dtv-r1-values", "Dtv-r2s-values"]
+BASIC_4_PARAMS_WITH_SLOPES = ["r1", "tv", "r2s", "mt",
+                              "Slope-tv-r1", "Slope-tv-r2s", "Dtv-r1-values", "Dtv-r2s-values"]
 ALL_PARAMS = ["r1", "tv", "r2s", "mt", "t2", "diffusion_fa", "diffusion_md"]
 ALL_PARAMS_WITH_SLOPES = ["r1", "tv", "r2s", "mt", "t2", "diffusion_fa", "diffusion_md",
                           "Slope-tv-r1", "Slope-tv-r2s", "Slope-tv-mt", "Slope-tv-t2",
                           "Slope-tv-diffusion_fa", "Slope-tv-diffusion_md", "Slope-r2s-r1"]
 SLOPES = ["Slope-tv-r1", "Slope-tv-r2s", "Slope-tv-mt", "Slope-tv-t2",
-                          "Slope-tv-diffusion_fa", "Slope-tv-diffusion_md", "Slope-r2s-r1"]
+          "Slope-tv-diffusion_fa", "Slope-tv-diffusion_md", "Slope-r2s-r1"]
 
 PARAMETERS = ["r1", "tv", "r2s", "mt", "t2", "diffusion"]
 PARAMETERS_W_D_TV_R1_AND_R2S = ["r1", "tv", "r2s", "mt", "t2", "diffusion", "Slope-tv-r1", "Slope-tv-r2s",
                                 "Dtv-r1-values", "Dtv-r2s-values"]
-PARAMS_OF_SLOPES = ["Slope-tv-r1", "Slope-tv-r2s", "Dtv-r1-values", "Dtv-r2s-values"]
+PARAMS_OF_SLOPES = ["Slope-tv-r1", "Slope-tv-r2s",
+                    "Dtv-r1-values", "Dtv-r2s-values"]
 
 # -------------------- Groups Dividers Consts -------------------- #
 OLD = "OLD"
@@ -403,6 +513,8 @@ YOUNG = "YOUNG"
 AGE_THRESHOLD = 55
 
 # -------------------- Enums for statistical actions -------------------- #
+
+
 class Actions(enum.Enum):
     z_score = 1  # Z Score on data - per subject, per parameter, per ROI
     z_score_means = 2  # Z Score on means of all subjects, per parameters, per its ROI
@@ -447,6 +559,10 @@ MAP_R2S = os.getenv("MAP_R2S")
 BASIC_SEG = os.getenv("BASIC_SEG")
 SEG_T2 = os.getenv("SEG_T2")
 SEG_DIFFUSION = os.getenv("SEG_DIFFUSION")
+
+BASIC_SEG_WM = os.getenv('BASIC_SEG_WM')
+SEG_T2_WM = os.getenv('SEG_T2_WM')
+SEG_DIFFUSION_WM = os.getenv('SEG_DIFFUSION_WM')
 
 # Plots values
 COLOR_LIST = {

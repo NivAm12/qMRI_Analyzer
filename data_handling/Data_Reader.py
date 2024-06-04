@@ -356,20 +356,20 @@ if __name__ == "__main__":
     analysis_dir_prefix = 'H'
 
     # Can be changed - list of all ROIs' numbers from the segmentation
-    rois = list(constants.ROI_CORTEX_AND_GRAY_SUB_CORTEX.keys())
+    rois = list(constants.ROI_WM.keys())
 
     # Can be changed - this is the save address for the output
-    save_address = constants.SAVE_ADDRESS + '/CORTEX_AND_GRAY_SUB_CORTEX_all_params/'
+    save_address = constants.SAVE_ADDRESS + '/WM_SUBCORTEX_all_params/'
     # Can be changed - using other params - make sure to add another parameter as a name, and tuple of the
     # full path to the map of the parameter and the full path to the compatible segmentation
     params = {
-        constants.R1: (constants.MAP_R1, constants.BASIC_SEG),
-        constants.R2S: (constants.MAP_R2S, constants.BASIC_SEG),
-        constants.MT: (constants.MAP_MT, constants.BASIC_SEG),
-        constants.TV: (constants.MAP_TV, constants.BASIC_SEG),
-        constants.T2: (constants.MAP_T2, constants.SEG_T2),
-        constants.DIFFUSION_FA: (constants.MAP_DIFFUSION_FA, constants.SEG_DIFFUSION),
-        constants.DIFFUSION_MD: (constants.MAP_DIFFUSION_MD, constants.SEG_DIFFUSION),
+        constants.R1: (constants.MAP_R1, constants.BASIC_SEG_WM),
+        constants.R2S: (constants.MAP_R2S, constants.BASIC_SEG_WM),
+        constants.MT: (constants.MAP_MT, constants.BASIC_SEG_WM),
+        constants.TV: (constants.MAP_TV, constants.BASIC_SEG_WM),
+        constants.T2: (constants.MAP_T2, constants.SEG_T2_WM),
+        constants.DIFFUSION_FA: (constants.MAP_DIFFUSION_FA, constants.SEG_DIFFUSION_WM),
+        constants.DIFFUSION_MD: (constants.MAP_DIFFUSION_MD, constants.SEG_DIFFUSION_WM),
     }
 
     # Can be changed - add more sort of normalizer and fit to it the compatible name to the file
@@ -377,8 +377,8 @@ if __name__ == "__main__":
                             constants.ROBUST_SCALING: FILE_NAME_DMEDIAN}
 
     # ---- Here You Can Change the sort of normalizer ---- #
-    # choose_normalizer = constants.Z_SCORE
-    choose_normalizer = None
+    choose_normalizer = constants.Z_SCORE
+    # choose_normalizer = None
 
     # ---- Here you can change the derivative_dict
     # derivative_dict = {constants.TV: [constants.R1, constants.R2S, constants.MT, constants.T2,
