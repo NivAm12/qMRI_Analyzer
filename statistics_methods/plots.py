@@ -161,46 +161,55 @@ class PlotsManager:
                                         f"cor_{constants.SUB_CORTEX_DICT[rois[i]]}_and_{constants.SUB_CORTEX_DICT[rois[j]]}.png")
                         plt.show()
 
-
     @staticmethod
     def plot_colors_on_brain2(rois_color: pd.Series, prefix: str, title: str):
         hemis = [
-            {'name': 'lh', 'path': constants.EXAMPLE_ANNOT_LH_PATH, 'surf': constants.EXAMPLE_SURFACE_PIAL_LH_PATH, 'hemi': 'left'},
-            {'name': 'rh', 'path': constants.EXAMPLE_ANNOT_RH_PATH, 'surf': constants.EXAMPLE_SURFACE_PIAL_RH_PATH, 'hemi': 'right'}
+            {'name': 'lh', 'path': constants.EXAMPLE_ANNOT_LH_PATH,
+                'surf': constants.EXAMPLE_SURFACE_PIAL_LH_PATH, 'hemi': 'left'},
+            {'name': 'rh', 'path': constants.EXAMPLE_ANNOT_RH_PATH,
+                'surf': constants.EXAMPLE_SURFACE_PIAL_RH_PATH, 'hemi': 'right'}
         ]
 
         cmap = plt.get_cmap('coolwarm')
-        norm = plt.Normalize(vmin=-0.4, vmax=0.8)
-        
-        for hemi in hemis:
+        fig, ax = plt.subplots(1, 3, subplot_kw={'projection': '3d'}, figsize=(15, 5))
+
+        for col, hemi in enumerate(hemis):
             labels, ctab, names = nib.freesurfer.read_annot(hemi['path'])
-            labels_decoded = np.array([f"{prefix}{hemi['name']}-{name.decode()}" for name in names])
-            
+            labels_decoded = np.array(
+                [f"{prefix}{hemi['name']}-{name.decode()}" for name in names])
+
             surface_data = np.zeros(len(labels))
-            
+
             for roi_name, roi_val in rois_color.items():
                 if hemi['name'] not in roi_name:
                     continue
-                
+
                 label_index = np.where(labels_decoded == roi_name)[0][0]
                 surface_data[labels == label_index] = roi_val
-            
+
             # Load the surface mesh
             pial_mesh = surface.load_surf_mesh(hemi['surf'])
-            
+        
             # Plot the surface with the data
-            fig, ax = plt.subplots(1, 1, subplot_kw={'projection': '3d'}, figsize=(10, 10))
             plotting.plot_surf_roi(
-                pial_mesh, roi_map=surface_data, hemi=hemi['hemi'],
-                view='lateral', cmap=cmap, bg_map=None, 
-                title=f'{title} - {hemi["name"]}', axes=ax, colorbar=True, 
+                pial_mesh, roi_map=surface_data, hemi=hemi['hemi'], cmap=cmap, bg_map=None,
+                title=f'{title} - {hemi["name"]} hemi', axes=ax[col], colorbar=True,
                 vmin=-0.4, vmax=0.8
             )
-            plt.show()
+
+        # Plot the original surface with ROIs
+        plotting.plot_surf_roi(
+            pial_mesh, roi_map=labels, hemi=hemi['hemi'],
+            view='lateral', cmap='tab20', bg_map=None, 
+            title=f'Original ROIs - {hemi["name"]}', axes=ax[col+1]
+        ) 
+
+        plt.show()
 
     @staticmethod
     def plot_colors_on_brain(rois_color: pd.Series, prefix: str, title: str):
-        hemis = [{'name': 'lh', 'path': constants.EXAMPLE_ANNOT_LH_PATH}, {'name': 'rh', 'path': constants.EXAMPLE_ANNOT_RH_PATH}]
+        hemis = [{'name': 'lh', 'path': constants.EXAMPLE_ANNOT_LH_PATH}, {
+            'name': 'rh', 'path': constants.EXAMPLE_ANNOT_RH_PATH}]
 
         # Create a colormap for the values
         cmap = plt.get_cmap('seismic')
@@ -208,18 +217,19 @@ class PlotsManager:
 
         for hemi in hemis:
             labels, ctab, names = nib.freesurfer.read_annot(hemi['path'])
-            labels_decoded = np.array([f"{prefix}{hemi['name']}-{name.decode()}" for name in names])
+            labels_decoded = np.array(
+                [f"{prefix}{hemi['name']}-{name.decode()}" for name in names])
 
             for roi_name, roi_val in rois_color.items():
                 if hemi['name'] not in roi_name:
                     continue
-                
+
                 label_index = np.where(labels_decoded == roi_name)[0][0]
                 # Convert the correlation value to an RGB tuple using the colormap
                 rgb = cmap(norm(roi_val))[:3]
                 # Convert RGB to BGR for FreeSurfer compatibility and add alpha channel
                 bgr = (int(rgb[2]*255), int(rgb[1]*255), int(rgb[0]*255), 255)
-                
+
                 # Replace the color in the color table
                 ctab[label_index, :4] = bgr
 
