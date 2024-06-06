@@ -14,6 +14,8 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from nilearn import plotting
 from matplotlib.colors import LinearSegmentedColormap
+import matplotlib.colors as mcolors
+from nilearn import plotting, surface
 
 
 # COLORS_MAPS
@@ -159,50 +161,72 @@ class PlotsManager:
                                         f"cor_{constants.SUB_CORTEX_DICT[rois[i]]}_and_{constants.SUB_CORTEX_DICT[rois[j]]}.png")
                         plt.show()
 
+
     @staticmethod
-    def plot_colors_on_brain(example_subject: str, rois_color: pd.Series, rois_dict: dict,
-                             title: str, color_type: str):
-        rois_values = list(rois_dict.keys())
-        flipped_roi_dict = {value: key for key, value in rois_dict.items()}
-        data_path = os.path.join(constants.ANALYSIS_DIR, example_subject)
-        seg_path = os.path.join(data_path, os.listdir(
-            data_path)[0], constants.BASIC_SEG)
-        brain_path = os.path.join(
-            data_path, os.listdir(data_path)[0], constants.MAP_TV)
-        save_path = os.path.join(
-            constants.CLUSTERING_PATH, f'lut_{title}.nii.gz')
+    def plot_colors_on_brain2(rois_color: pd.Series, prefix: str, title: str):
+        hemis = [
+            {'name': 'lh', 'path': constants.EXAMPLE_ANNOT_LH_PATH, 'surf': constants.EXAMPLE_SURFACE_PIAL_LH_PATH, 'hemi': 'left'},
+            {'name': 'rh', 'path': constants.EXAMPLE_ANNOT_RH_PATH, 'surf': constants.EXAMPLE_SURFACE_PIAL_RH_PATH, 'hemi': 'right'}
+        ]
 
-        # read the map
-        seg_file = nib.load(seg_path)
-        seg_file_data = seg_file.get_fdata()
-        brain_file_data = nib.load(brain_path).get_fdata()
-        color_map = copy.deepcopy(seg_file_data)
+        cmap = plt.get_cmap('coolwarm')
+        norm = plt.Normalize(vmin=-0.4, vmax=0.8)
+        
+        for hemi in hemis:
+            labels, ctab, names = nib.freesurfer.read_annot(hemi['path'])
+            labels_decoded = np.array([f"{prefix}{hemi['name']}-{name.decode()}" for name in names])
+            
+            surface_data = np.zeros(len(labels))
+            
+            for roi_name, roi_val in rois_color.items():
+                if hemi['name'] not in roi_name:
+                    continue
+                
+                label_index = np.where(labels_decoded == roi_name)[0][0]
+                surface_data[labels == label_index] = roi_val
+            
+            # Load the surface mesh
+            pial_mesh = surface.load_surf_mesh(hemi['surf'])
+            
+            # Plot the surface with the data
+            fig, ax = plt.subplots(1, 1, subplot_kw={'projection': '3d'}, figsize=(10, 10))
+            plotting.plot_surf_roi(
+                pial_mesh, roi_map=surface_data, hemi=hemi['hemi'],
+                view='lateral', cmap=cmap, bg_map=None, 
+                title=f'{title} - {hemi["name"]}', axes=ax, colorbar=True, 
+                vmin=-0.4, vmax=0.8
+            )
+            plt.show()
 
-        # paint each roi with his cluster color
-        roi_values_as_other_type = np.array(
-            list(rois_values), dtype=seg_file_data.dtype)
-        remove_mask = np.logical_not(
-            np.isin(seg_file_data, roi_values_as_other_type))
+    @staticmethod
+    def plot_colors_on_brain(rois_color: pd.Series, prefix: str, title: str):
+        hemis = [{'name': 'lh', 'path': constants.EXAMPLE_ANNOT_LH_PATH}, {'name': 'rh', 'path': constants.EXAMPLE_ANNOT_RH_PATH}]
 
-        for roi, roi_color in rois_color.items():
-            roi_mask = np.where(seg_file_data == flipped_roi_dict[roi])
-            brain_file_data[roi_mask] = roi_color
+        # Create a colormap for the values
+        cmap = plt.get_cmap('seismic')
+        norm = plt.Normalize(vmin=-0.4, vmax=0.8)
 
-        # save and show the map
-        brain_file_data[remove_mask] = -4
-        brain_file_data = nib.Nifti1Image(brain_file_data, seg_file.affine)
+        for hemi in hemis:
+            labels, ctab, names = nib.freesurfer.read_annot(hemi['path'])
+            labels_decoded = np.array([f"{prefix}{hemi['name']}-{name.decode()}" for name in names])
 
-        # nib.save(brain_file_data, save_path)
-        # os.system(f'freeview -v {brain_path} {seg_path} {save_path}')
+            for roi_name, roi_val in rois_color.items():
+                if hemi['name'] not in roi_name:
+                    continue
+                
+                label_index = np.where(labels_decoded == roi_name)[0][0]
+                # Convert the correlation value to an RGB tuple using the colormap
+                rgb = cmap(norm(roi_val))[:3]
+                # Convert RGB to BGR for FreeSurfer compatibility and add alpha channel
+                bgr = (int(rgb[2]*255), int(rgb[1]*255), int(rgb[0]*255), 255)
+                
+                # Replace the color in the color table
+                ctab[label_index, :4] = bgr
 
-        plotting.plot_img_on_surf(brain_file_data, colorbar=True, surf_mesh='fsaverage',
-                                  plot_abs=False,
-                                  hemispheres=["left", "right"],
-                                  title=title,
-                                  vol_to_surf_kwargs={
-                                      "interpolation": "nearest"},
-                                  cmap='coolwarm', inflate=False,
-                                  )
+            # Save the updated annotation file
+            save_path = f"{constants.CLUSTERING_PATH}/{hemi['name']}_{title}.annot"
+            nib.freesurfer.write_annot(save_path, labels, ctab, names)
+            print(f'annot file saved at\n {save_path}')
 
     @staticmethod
     def plot_rois_polar(data, thetas, sub_titles, cols, plot_title):
