@@ -189,11 +189,13 @@ class PlotsManager:
 
             # Load the surface mesh
             pial_mesh = surface.load_surf_mesh(hemi['surf'])
-        
+            save_path = f"{constants.CLUSTERING_PATH}/{hemi['name']}_{title}.pial"
+            
             # Plot the surface with the data
             plotting.plot_surf_roi(
                 pial_mesh, roi_map=surface_data, hemi=hemi['hemi'], cmap=cmap, bg_map=None,
                 title=f'{title} - {hemi["name"]} hemi', axes=ax[col], colorbar=True,
+                view='lateral',
                 vmin=-0.4, vmax=0.8
             )
 
