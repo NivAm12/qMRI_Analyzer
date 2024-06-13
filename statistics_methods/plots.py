@@ -16,6 +16,7 @@ from nilearn import plotting
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.colors as mcolors
 from nilearn import plotting, surface
+import matplotlib.ticker as ticker
 
 
 # COLORS_MAPS
@@ -162,24 +163,27 @@ class PlotsManager:
                         plt.show()
 
     @staticmethod
-    def plot_colors_on_brain2(rois_color: pd.Series, prefix: str, title: str):
+    def plot_colors_on_brain2(rois_color: pd.Series, prefix: str, title: str,
+                              lh_annot_path: str, rh_annot_path: str):
         hemis = [
-            {'name': 'lh', 'path': constants.EXAMPLE_ANNOT_LH_PATH,
+            {'name': 'lh', 'annot_path': lh_annot_path,
                 'surf': constants.EXAMPLE_SURFACE_PIAL_LH_PATH, 'hemi': 'left'},
-            {'name': 'rh', 'path': constants.EXAMPLE_ANNOT_RH_PATH,
+            {'name': 'rh', 'annot_path': rh_annot_path,
                 'surf': constants.EXAMPLE_SURFACE_PIAL_RH_PATH, 'hemi': 'right'}
         ]
 
         cmap = plt.get_cmap('coolwarm')
-        fig, ax = plt.subplots(1, 3, subplot_kw={'projection': '3d'}, figsize=(15, 5))
+        fig, ax = plt.subplots(
+            1, 3, subplot_kw={'projection': '3d'}, figsize=(15, 5))
 
         for col, hemi in enumerate(hemis):
-            labels, ctab, names = nib.freesurfer.read_annot(hemi['path'])
+            labels, ctab, names = nib.freesurfer.read_annot(hemi['annot_path'])
             labels_decoded = np.array(
                 [f"{prefix}{hemi['name']}-{name.decode()}" for name in names])
 
-            surface_data = np.zeros(len(labels))
-
+            # surface_data = np.zeros(len(labels))
+            surface_data = np.full(len(labels), np.nan)
+            
             for roi_name, roi_val in rois_color.items():
                 if hemi['name'] not in roi_name:
                     continue
@@ -189,22 +193,27 @@ class PlotsManager:
 
             # Load the surface mesh
             pial_mesh = surface.load_surf_mesh(hemi['surf'])
-            save_path = f"{constants.CLUSTERING_PATH}/{hemi['name']}_{title}.pial"
-            
+            # save_path = f"{constants.CLUSTERING_PATH}/{hemi['name']}_{title}.pial"
+            curvature_path = f"{constants.CLUSTERING_PATH}/{hemi['name']}_{title}.curv"
+            nib.freesurfer.write_morph_data(curvature_path, surface_data)
+            print(f'curvature saved at {curvature_path}')
+
             # Plot the surface with the data
             plotting.plot_surf_roi(
                 pial_mesh, roi_map=surface_data, hemi=hemi['hemi'], cmap=cmap, bg_map=None,
                 title=f'{title} - {hemi["name"]} hemi', axes=ax[col], colorbar=True,
                 view='lateral',
+                threshold=None,
                 vmin=-0.4, vmax=0.8
-            )
+            )   
 
         # Plot the original surface with ROIs
         plotting.plot_surf_roi(
             pial_mesh, roi_map=labels, hemi=hemi['hemi'],
-            view='lateral', cmap='tab20', bg_map=None, 
+            view='lateral', cmap='tab20', bg_map=None,
+            colorbar=True,
             title=f'Original ROIs - {hemi["name"]}', axes=ax[col+1]
-        ) 
+        )
 
         plt.show()
 
