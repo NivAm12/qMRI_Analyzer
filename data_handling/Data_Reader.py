@@ -356,10 +356,10 @@ if __name__ == "__main__":
     analysis_dir_prefix = 'H'
 
     # Can be changed - list of all ROIs' numbers from the segmentation
-    rois = list(constants.ROI_WM.keys())
+    rois = list(constants.ROI_ALL_BRAIN.keys())
 
     # Can be changed - this is the save address for the output
-    save_address = constants.SAVE_ADDRESS + '/WM_SUBCORTEX_all_params/'
+    save_address = constants.SAVE_ADDRESS + '/ALL_BRAIN_all_params/'
     # Can be changed - using other params - make sure to add another parameter as a name, and tuple of the
     # full path to the map of the parameter and the full path to the compatible segmentation
     params = {
