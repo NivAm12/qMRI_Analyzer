@@ -541,7 +541,7 @@ class StatisticsWrapper:
 
     @staticmethod
     def hierarchical_clustering(data: pd.DataFrame, params_to_work_with: list, linkage_metric: str,
-                                project_name: str = None, title: str = None):
+                                project_name: str = None, title: str = None, show: bool = True):
         subjects = data.groupby('subjects')
         relevant_rois = list(data.ROI_name.unique())
         distances = np.zeros((len(relevant_rois),
@@ -558,13 +558,13 @@ class StatisticsWrapper:
         clusters = linkage(distances, method=linkage_metric)
         dendrogram_data = PlotsManager.create_and_plot_dendrogram(clusters,
                                                                   relevant_rois,
-                                                                  title, linkage_metric, project_name)
+                                                                  title, linkage_metric, project_name, show=show)
 
         return {'clusters': clusters, 'dendrogram_data': dendrogram_data}
 
     @staticmethod
     def roi_correlations(data: pd.DataFrame, params_to_work_with: list, rois: list,
-                         group_title: str = None, project_name: str = None, method="pearson"):
+                         group_title: str = None, project_name: str = None, method="pearson", show: bool = True):
         subjects = data.groupby('subjects')
         relevant_rois = list(data.ROI_name.unique())
         correlations = np.zeros((len(relevant_rois),
@@ -584,7 +584,8 @@ class StatisticsWrapper:
         correlations_df = correlations_df[rois]
 
         # plot the heatmap
-        PlotsManager.plot_heatmap(correlations_df, group_title, project_name)
+        if show:
+            PlotsManager.plot_heatmap(correlations_df, group_title, project_name)
 
         return correlations_df
 

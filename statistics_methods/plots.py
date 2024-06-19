@@ -52,7 +52,7 @@ class PlotsManager:
             plt.show()
 
     @staticmethod
-    def create_and_plot_dendrogram(clusters, labels, title, linkage_metric, project_name=None, figsize=(20, 10)):
+    def create_and_plot_dendrogram(clusters, labels, title, linkage_metric, project_name=None, figsize=(20, 15), show=True):
         plt.figure(figsize=figsize)
         dendrogram_data = dendrogram(clusters, labels=labels,
                                      orientation='right', leaf_font_size=8)
@@ -74,7 +74,7 @@ class PlotsManager:
             wandb_run.finish()
             plt.close()
 
-        else:
+        if show:
             plt.show()
 
         return dendrogram_data
