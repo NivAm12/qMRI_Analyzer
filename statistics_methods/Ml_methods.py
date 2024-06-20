@@ -5,6 +5,10 @@ import numpy as np
 from sklearn.decomposition import PCA
 import seaborn as sns
 import pandas as pd
+from sklearn.cluster import SpectralClustering
+from scipy.sparse.csgraph import laplacian
+from scipy.linalg import eigh
+from sklearn.metrics import silhouette_score
 
 
 class Ml_methods:
@@ -80,3 +84,38 @@ class Ml_methods:
             reduced_data['label'] = data[label]
 
         return reduced_data
+    
+    @staticmethod
+    def spectral_clustering(similarity_matrix: pd.DataFrame):
+        # Compute the Laplacian matrix
+        similarity_matrix_np = similarity_matrix.to_numpy()
+        np.fill_diagonal(similarity_matrix_np, 0)
+        similarity_matrix_np[similarity_matrix_np < 0] = 0
+        # Range of clusters to try
+        range_n_clusters = list(range(2, 10))
+
+        # To store the silhouette scores
+        silhouette_scores = []
+
+        for n_clusters in range_n_clusters:
+            spectral_clustering = SpectralClustering(
+                n_clusters=n_clusters,
+                affinity='precomputed',
+                assign_labels='kmeans',
+                random_state=42
+            )
+            labels = spectral_clustering.fit_predict(similarity_matrix_np)
+            silhouette_avg = silhouette_score(similarity_matrix_np, labels, metric='precomputed')
+            silhouette_scores.append(silhouette_avg)
+
+        # Plot silhouette scores
+        plt.plot(range_n_clusters, silhouette_scores, marker='o')
+        plt.xlabel('Number of clusters')
+        plt.ylabel('Silhouette score')
+        plt.title('Silhouette Analysis')
+        plt.show()
+
+        # Choose the number of clusters with the highest silhouette score
+        optimal_clusters = range_n_clusters[np.argmax(silhouette_scores)]
+        print("Optimal number of clusters (Silhouette Analysis):", optimal_clusters)
+

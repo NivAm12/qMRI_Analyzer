@@ -621,7 +621,7 @@ class StatisticsWrapper:
 
     @staticmethod
     def roi_distances(data: pd.DataFrame, params_to_work_with: list, rois: list,
-                      method, title: str = None, project_name: str = None):
+                      method, title: str = None, project_name: str = None, show: bool = True):
         subjects = data.groupby('subjects')
         relevant_rois = list(data.ROI_name.unique())
         distance_matrices = []
@@ -642,8 +642,9 @@ class StatisticsWrapper:
         distance_df = distance_df.reindex(rois)
         distance_df = distance_df[rois]
 
-        # plot the heatmap
-        PlotsManager.plot_heatmap(distance_df, title, project_name)
+        if show:
+            # plot the heatmap
+            PlotsManager.plot_heatmap(distance_df, title, project_name)
 
         return distance_df
 
