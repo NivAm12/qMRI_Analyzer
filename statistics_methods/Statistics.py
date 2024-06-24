@@ -796,7 +796,7 @@ class StatisticsWrapper:
                 roi_std = 0
                 for param in params:
                     # Calculate CV params
-                    stds = data[data['ROI'] == roi][param].std()
+                    stds = data[data['ROI_name'] == roi][param].std()
                     roi_std += stds
 
                 roi_std /= len(params)
@@ -804,9 +804,9 @@ class StatisticsWrapper:
 
             groups_rois_std[label] = rois_std
             plt.scatter(rois_labels, rois_std, color=color, label=label)
+            plt.xticks(rois_labels, rotation='vertical', fontsize=10)
 
         for x, y1, y2 in zip(rois_labels, groups_rois_std['young'], groups_rois_std['old']):
-
             plt.plot([x, x], [y1, y2], color='gray', linestyle='--')
 
         plt.title('Average Std of all parameters')
