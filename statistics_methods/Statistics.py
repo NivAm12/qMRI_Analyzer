@@ -556,9 +556,18 @@ class StatisticsWrapper:
 
         distances /= data.subjects.nunique()
         clusters = linkage(distances, method=linkage_metric)
+
+        # flat_clusters = fcluster(clusters, t=2.5, criterion='distance')
+
+
         dendrogram_data = PlotsManager.create_and_plot_dendrogram(clusters,
                                                                   relevant_rois,
                                                                   title, linkage_metric, project_name, show=show)
+
+        clustered_indexes = {}
+        for cluster_label in np.unique(dendrogram_data['color_list']):
+            # clustered_indexes[cluster_label] = distance_matrix.index[flat_clusters == cluster_label].tolist()
+            print(distance_matrix.index[dendrogram_data['color_list'] == cluster_label].tolist())
 
         return {'clusters': clusters, 'dendrogram_data': dendrogram_data}
 
