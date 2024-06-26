@@ -566,10 +566,10 @@ class StatisticsWrapper:
 
         clustered_indexes = {}
         for cluster_label in np.unique(dendrogram_data['color_list']):
-            # clustered_indexes[cluster_label] = distance_matrix.index[flat_clusters == cluster_label].tolist()
-            print(distance_matrix.index[dendrogram_data['color_list'] == cluster_label].tolist())
+            color_mask = np.array(dendrogram_data['leaves_color_list']) == cluster_label
+            clustered_indexes[cluster_label] = np.array(dendrogram_data['ivl'])[color_mask]
 
-        return {'clusters': clusters, 'dendrogram_data': dendrogram_data}
+        return {'clusters': clusters, 'dendrogram_data': dendrogram_data, 'clusters_groups': clustered_indexes}
 
     @staticmethod
     def roi_correlations(data: pd.DataFrame, params_to_work_with: list, rois: list,
