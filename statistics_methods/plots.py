@@ -174,7 +174,7 @@ class PlotsManager:
 
         cmap = plt.get_cmap('coolwarm')
         fig, ax = plt.subplots(
-            1, 3, subplot_kw={'projection': '3d'}, figsize=(15, 5))
+            1, 2, subplot_kw={'projection': '3d'}, figsize=(15, 5))
 
         for col, hemi in enumerate(hemis):
             labels, ctab, names = nib.freesurfer.read_annot(hemi['annot_path'])
@@ -199,21 +199,28 @@ class PlotsManager:
             print(f'curvature saved at {curvature_path}')
 
             # Plot the surface with the data
-            plotting.plot_surf_roi(
+            surf = plotting.plot_surf_roi(
                 pial_mesh, roi_map=surface_data, hemi=hemi['hemi'], cmap=cmap, bg_map=None,
-                title=f'{title} - {hemi["name"]} hemi', axes=ax[col], colorbar=True,
+                title=f'{title} - {hemi["name"]} hemi', axes=ax[col], colorbar=False,
                 view='lateral',
                 threshold=None,
                 vmin=-0.4, vmax=0.8
-            )   
+            )  
+
+          # Adding a color bar manually
+            norm = plt.Normalize(vmin=-0.4, vmax=0.8)
+            sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+            sm.set_array([])
+            cbar = plt.colorbar(sm, ax=ax[col], orientation='vertical')
+            cbar.set_label('Value')  # Optional: Add a label to the color bar
 
         # Plot the original surface with ROIs
-        plotting.plot_surf_roi(
-            pial_mesh, roi_map=labels, hemi=hemi['hemi'],
-            view='lateral', cmap='tab20', bg_map=None,
-            colorbar=True,
-            title=f'Original ROIs - {hemi["name"]}', axes=ax[col+1]
-        )
+        # plotting.plot_surf_roi(
+        #     pial_mesh, roi_map=labels, hemi=hemi['hemi'],
+        #     view='lateral', cmap='tab20', bg_map=None,
+        #     colorbar=True,
+        #     title=f'Original ROIs - {hemi["name"]}', axes=ax[col+1]
+        # )
 
         plt.show()
 
