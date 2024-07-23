@@ -272,6 +272,10 @@ class PlotsManager:
                         name=roi_group['name']),
                         row=1, col=(col+1 if cols > 1 else 1))
 
+        for annotation in fig['layout']['annotations']: 
+            annotation['yanchor']='top'
+            annotation['y']=1.2
+    
         fig.layout['polar'].update(dict(
             radialaxis=dict(
                 visible=True,
