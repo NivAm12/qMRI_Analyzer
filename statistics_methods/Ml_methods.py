@@ -8,7 +8,7 @@ import pandas as pd
 from sklearn.cluster import SpectralClustering
 from scipy.sparse.csgraph import laplacian
 from scipy.linalg import eigh
-from sklearn.metrics import silhouette_score
+from sklearn.metrics import silhouette_score, davies_bouldin_score
 from sklearn.manifold import TSNE
 import networkx as nx
 
@@ -92,7 +92,7 @@ class Ml_methods:
         # Compute the Laplacian matrix
         similarity_matrix_np = similarity_matrix.to_numpy()
         np.fill_diagonal(similarity_matrix_np, 0)
-        similarity_matrix_np[similarity_matrix_np < 0] = 0
+        similarity_matrix_np[similarity_matrix_np <= 0] = 0
 
         spectral_clustering = SpectralClustering(
             n_clusters=n_clusters,
@@ -101,19 +101,68 @@ class Ml_methods:
             random_state=42
         )
 
-        labels = spectral_clustering.fit_predict(similarity_matrix_np)
+        y_spectral = spectral_clustering.fit_predict(similarity_matrix_np)
+
+        # Compute the Laplacian matrix
+        laplacian = np.diag(np.sum(similarity_matrix_np, axis=1)) - similarity_matrix_np
+
+        # Eigen decomposition
+        eigenvalues, eigenvectors = np.linalg.eigh(laplacian)
+
+        # Select the eigenvectors corresponding to the smallest non-zero eigenvalues
+        k = 3
+        eigenvectors_k = eigenvectors[:, 1:k]
+
+        # Plot the selected eigenvectors
+        plt.figure(figsize=(12, 6))
+        plt.scatter(eigenvectors_k[:, 0], eigenvectors_k[:, 1], c=y_spectral, cmap='viridis')
+        plt.xlabel('Eigenvector 1')
+        plt.ylabel('Eigenvector 2')
+        plt.title('Visualization of Eigenvectors')
+        plt.show()
 
         clusters = {}
 
-        for index, label in zip(similarity_matrix.index, labels):
+        for index, label in zip(similarity_matrix.index, y_spectral):
             if label not in clusters.keys():
                 clusters[label] = []
             clusters[label].append(index)
 
-        return clusters
+        return clusters, y_spectral
 
-        
+    @staticmethod
+    def evaluate_clusters(similarity_matrix: pd.DataFrame, max_clusters: int):
+        silhouette_scores = []
+        davies_bouldin_scores = []
+        similarity_matrix_np = similarity_matrix.to_numpy()
+        similarity_matrix_np[similarity_matrix_np <= 0] = 0
 
+        for n_clusters in range(2, max_clusters + 1):
+            _, labels = Ml_methods.spectral_clustering(similarity_matrix, n_clusters)
+            silhouette_avg = silhouette_score(similarity_matrix_np, labels, metric='precomputed')
+            davies_bouldin_avg = davies_bouldin_score(similarity_matrix_np, labels)
+            
+            silhouette_scores.append((n_clusters, silhouette_avg))
+            davies_bouldin_scores.append((n_clusters, davies_bouldin_avg))
+            
+            print(f'Clusters: {n_clusters}, Silhouette Score: {silhouette_avg}, Davies-Bouldin Index: {davies_bouldin_avg}')
+
+
+        plt.figure(figsize=(14, 7))
+        plt.subplot(1, 2, 1)
+        plt.plot(np.array(silhouette_scores)[:, 0], np.array(silhouette_scores)[:, 1], marker='o')
+        plt.xlabel('Number of Clusters')
+        plt.ylabel('Silhouette Score')
+        plt.title('Silhouette Scores for Different Clusters')
+
+        plt.subplot(1, 2, 2)
+        plt.plot(np.array(davies_bouldin_scores)[:, 0], np.array(davies_bouldin_scores)[:, 1], marker='o')
+        plt.xlabel('Number of Clusters')
+        plt.ylabel('Davies-Bouldin Index')
+        plt.title('Davies-Bouldin Index for Different Clusters')
+
+        plt.show()
+            
     @staticmethod
     def plot_similarity_graph(similarity_matrix: pd.DataFrame, labels: np.ndarray):
         G = nx.Graph()

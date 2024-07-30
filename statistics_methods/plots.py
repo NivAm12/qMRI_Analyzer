@@ -33,7 +33,7 @@ custom_cmap_coolwarm = LinearSegmentedColormap.from_list(
 
 class PlotsManager:
     @staticmethod
-    def plot_heatmap(data: pd.DataFrame, title: str, project_name: str):
+    def plot_heatmap(data: pd.DataFrame, title: str, project_name: str=None):
         sns.set(font_scale=0.5)
         plt.figure(figsize=(20, 10))
         cluster_map = sns.heatmap(data, linewidth=.5, cmap='coolwarm')
