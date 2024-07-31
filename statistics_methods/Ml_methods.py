@@ -10,7 +10,7 @@ from scipy.sparse.csgraph import laplacian
 from scipy.linalg import eigh
 from sklearn.metrics import silhouette_score, davies_bouldin_score
 from sklearn.manifold import TSNE
-import networkx as nx
+from scipy import stats
 
 
 class Ml_methods:
@@ -110,9 +110,17 @@ class Ml_methods:
         eigenvalues, eigenvectors = np.linalg.eigh(laplacian)
 
         # Select the eigenvectors corresponding to the smallest non-zero eigenvalues
-        k = 3
-        eigenvectors_k = eigenvectors[:, 1:k]
+        eigenvectors_k = eigenvectors[:, 1:n_clusters]
+        z_scores = np.abs(stats.zscore(eigenvectors_k, axis=0))
 
+        # Define a threshold for identifying outliers
+        threshold = 2
+
+        # Create a boolean mask to filter out outliers
+        mask = (z_scores < threshold).all(axis=1)
+        eigenvectors_k = eigenvectors_k[mask]
+        y_spectral = y_spectral[mask]
+    
         # Plot the selected eigenvectors
         plt.figure(figsize=(12, 6))
         plt.scatter(eigenvectors_k[:, 0], eigenvectors_k[:, 1], c=y_spectral, cmap='viridis')
@@ -163,34 +171,3 @@ class Ml_methods:
 
         plt.show()
             
-    @staticmethod
-    def plot_similarity_graph(similarity_matrix: pd.DataFrame, labels: np.ndarray):
-        G = nx.Graph()
-    
-        # Add nodes with labels
-        for i in range(len(similarity_matrix)):
-            G.add_node(i, label=similarity_matrix.index[i])  # Use DataFrame index as label
-        
-        # Add edges with weights
-        for i in range(len(similarity_matrix)):
-            for j in range(i + 1, len(similarity_matrix)):
-                if similarity_matrix.iloc[i, j] < 0.2:  # Add edge only for positive similarity
-                    G.add_edge(i, j, weight=similarity_matrix.iloc[i, j])
-        
-        # Get positions for the nodes using a layout algorithm
-        pos = nx.spring_layout(G, seed=42)
-        
-        # Draw the nodes with colors based on the cluster labels
-        unique_labels = np.unique(labels)
-        colors = plt.cm.rainbow(np.linspace(0, 1, len(unique_labels)))
-        color_map = dict(zip(unique_labels, colors))
-        
-        node_colors = [color_map[labels[node]] for node in G.nodes()]
-        
-        plt.figure(figsize=(12, 10))
-        nx.draw_networkx_nodes(G, pos, node_color=node_colors, node_size=300, alpha=0.8)
-        nx.draw_networkx_edges(G, pos, alpha=0.5)
-        nx.draw_networkx_labels(G, pos, labels=nx.get_node_attributes(G, 'label'), font_size=10)  # Use custom labels
-        
-        plt.title('Similarity Graph with Spectral Clustering Labels')
-        plt.show()
