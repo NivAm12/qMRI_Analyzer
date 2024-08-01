@@ -11,6 +11,7 @@ from scipy.linalg import eigh
 from sklearn.metrics import silhouette_score, davies_bouldin_score
 from sklearn.manifold import TSNE
 from scipy import stats
+import constants
 
 
 class Ml_methods:
@@ -88,7 +89,7 @@ class Ml_methods:
         return reduced_data
     
     @staticmethod
-    def spectral_clustering(similarity_matrix: pd.DataFrame, n_clusters: int):
+    def spectral_clustering(similarity_matrix: pd.DataFrame, n_clusters: int, show: bool=False, title: str=''):
         # Compute the Laplacian matrix
         similarity_matrix_np = similarity_matrix.to_numpy()
         np.fill_diagonal(similarity_matrix_np, 0)
@@ -98,13 +99,27 @@ class Ml_methods:
             n_clusters=n_clusters,
             affinity='precomputed',
             assign_labels='kmeans',
-            random_state=42
+            random_state=0
         )
 
         y_spectral = spectral_clustering.fit_predict(similarity_matrix_np)
 
-        # Compute the Laplacian matrix
-        laplacian = np.diag(np.sum(similarity_matrix_np, axis=1)) - similarity_matrix_np
+        clusters = {}
+
+        for index, label in zip(similarity_matrix.index, y_spectral):
+            if label not in clusters.keys():
+                clusters[label] = []
+            clusters[label].append(index)
+
+        if show:
+            Ml_methods.cluster_by_eigenvectors(similarity_matrix_np, y_spectral, n_clusters, similarity_matrix.index, title)
+
+        return clusters, y_spectral
+
+    @staticmethod
+    def cluster_by_eigenvectors(similarity_matrix, y_spectral, n_clusters, names, title):
+                # Compute the Laplacian matrix
+        laplacian = np.diag(np.sum(similarity_matrix, axis=1)) - similarity_matrix
 
         # Eigen decomposition
         eigenvalues, eigenvectors = np.linalg.eigh(laplacian)
@@ -120,23 +135,18 @@ class Ml_methods:
         mask = (z_scores < threshold).all(axis=1)
         eigenvectors_k = eigenvectors_k[mask]
         y_spectral = y_spectral[mask]
-    
+        masked_names = names[mask]
+
+        Ml_methods.plot_clusters_of_rois(eigenvectors_k, masked_names, constants.BRAIN_SYSTEMS, f'Eigenvectors spectral clustering of {title} group')
+        # # Get colors for each name based on prefix
+        # colors = [Ml_methods.get_color_for_prefix(name) for name in masked_names]
         # Plot the selected eigenvectors
-        plt.figure(figsize=(12, 6))
-        plt.scatter(eigenvectors_k[:, 0], eigenvectors_k[:, 1], c=y_spectral, cmap='viridis')
-        plt.xlabel('Eigenvector 1')
-        plt.ylabel('Eigenvector 2')
-        plt.title('Visualization of Eigenvectors')
-        plt.show()
-
-        clusters = {}
-
-        for index, label in zip(similarity_matrix.index, y_spectral):
-            if label not in clusters.keys():
-                clusters[label] = []
-            clusters[label].append(index)
-
-        return clusters, y_spectral
+        # plt.figure(figsize=(12, 6))
+        # plt.scatter(eigenvectors_k[:, 0], eigenvectors_k[:, 1], c=y_spectral, cmap='viridis')
+        # plt.xlabel('Eigenvector 1')
+        # plt.ylabel('Eigenvector 2')
+        # plt.title(f'Eigenvectors spectral clustering of {title} group')
+        # plt.show()
 
     @staticmethod
     def evaluate_clusters(similarity_matrix: pd.DataFrame, max_clusters: int):
@@ -170,4 +180,34 @@ class Ml_methods:
         plt.title('Davies-Bouldin Index for Different Clusters')
 
         plt.show()
+
+    @staticmethod
+    def plot_clusters_of_rois(data, names, hue_dict, title):
+        hue = []
+
+        for name in names:
+            for key, value in hue_dict.items():
+                if name in value:
+                    hue.append(key)
+
+        sns.scatterplot(
+            x=data[:, 0], y=data[:, 1],
+            hue=hue,
+            palette=sns.color_palette("husl", len(hue_dict.keys())),
+            legend="full",
+    ).set_title(title)
+        
+        # plt.figure(figsize=(12, 6))
+        # plt.scatter(data[:, 0], data[:, 1], c=hue, cmap='viridis')
+        # plt.title(title)
+        # plt.legend()
+
+    @staticmethod 
+    def get_color_for_prefix(name):
+        if name.startswith('ctx'):
+            return 'red'
+        elif name.startswith('wm'):
+            return 'blue'
+        else:
+            return 'purple'
             
