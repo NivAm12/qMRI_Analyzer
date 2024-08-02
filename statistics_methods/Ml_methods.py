@@ -184,23 +184,22 @@ class Ml_methods:
     @staticmethod
     def plot_clusters_of_rois(data, names, hue_dict, title):
         hue = []
-
+        names_valid = []
         for name in names:
             for key, value in hue_dict.items():
                 if name in value:
                     hue.append(key)
-
+                    names_valid.append(name)
+        
+        fig, ax =  plt.subplots(1, 1, figsize=(12, 6))
         sns.scatterplot(
             x=data[:, 0], y=data[:, 1],
             hue=hue,
             palette=sns.color_palette("husl", len(hue_dict.keys())),
             legend="full",
+            ax=ax
     ).set_title(title)
         
-        # plt.figure(figsize=(12, 6))
-        # plt.scatter(data[:, 0], data[:, 1], c=hue, cmap='viridis')
-        # plt.title(title)
-        # plt.legend()
 
     @staticmethod 
     def get_color_for_prefix(name):

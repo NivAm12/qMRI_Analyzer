@@ -641,7 +641,18 @@ BRAIN_SYSTEMS = {
         'wm-rh-caudalmiddlefrontal',
         'wm-rh-rostralmiddlefrontal',
         'wm-rh-superiorfrontal',
-        'wm-rh-frontalpole'
+        'wm-rh-frontalpole',
+        'wm-lh-caudalmiddlefrontal',
+        'wm-lh-parstriangularis',
+        'wm-rh-parstriangularis',
+        'wm-lh-parsorbitalis',
+        'wm-rh-parsorbitalis',
+        'wm-lh-lateralorbitofrontal',     # Newly added
+        'wm-rh-lateralorbitofrontal',     # Newly added
+        'wm-lh-parsopercularis',          # Newly added
+        'wm-rh-parsopercularis',          # Newly added
+        'wm-lh-medialorbitofrontal',      # Newly added
+        'wm-rh-medialorbitofrontal'       # Newly added
     ],
     'Parietal': [
         'ctx-lh-inferiorparietal',
@@ -668,7 +679,8 @@ BRAIN_SYSTEMS = {
         'wm-lh-cuneus',
         'wm-lh-lateraloccipital',
         'wm-rh-cuneus',
-        'wm-rh-lateraloccipital'
+        'wm-rh-lateraloccipital',
+        'ctx-rh-cuneus'                   # Newly added
     ],
     'Temporal': [
         'ctx-lh-fusiform',
@@ -694,7 +706,14 @@ BRAIN_SYSTEMS = {
         'wm-rh-lingual',
         'wm-rh-middletemporal',
         'wm-rh-parahippocampal',
-        'wm-rh-superiortemporal'
+        'wm-rh-superiortemporal',
+        'wm-lh-entorhinal',
+        'wm-rh-entorhinal',
+        'wm-rh-lingual ',  # Newly added (space included to match exactly),
+        "wm-rh-bankssts",
+        "wm-lh-bankssts",
+        "wm-lh-temporalpole",
+        "wm-rh-temporalpole"
     ],
     'Limbic': [
         'ctx-lh-caudalanteriorcingulate',
@@ -743,6 +762,7 @@ BRAIN_SYSTEMS = {
         'Right-VentralDC'
     ]
 }
+
 
 # Map brain systems to colors
 BRAIN_SYSTEMS_COLORS = {
