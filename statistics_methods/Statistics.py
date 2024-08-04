@@ -818,7 +818,7 @@ class StatisticsWrapper:
         for x, y1, y2 in zip(rois_labels, groups_rois_std['young'], groups_rois_std['old']):
             plt.plot([x, x], [y1, y2], color='gray', linestyle='--')
 
-        plt.title('Average Std of all parameters')
+        plt.title('Average Std of all parameters', fontsize=12)
         plt.xlabel('ROI')
         plt.ylabel('Average Std')
         plt.legend()

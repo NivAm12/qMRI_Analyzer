@@ -38,7 +38,7 @@ class PlotsManager:
         sns.set(font_scale=0.5)
         plt.figure(figsize=(20, 10))
         cluster_map = sns.heatmap(data, linewidth=.5, cmap='coolwarm')
-        plt.title(f'{title}')
+        plt.title(f'{title}', fontsize=12)
 
         if project_name:
             wandb_run = wandb.init(
@@ -58,7 +58,7 @@ class PlotsManager:
         dendrogram_data = dendrogram(clusters, labels=labels,
                                      orientation='right', leaf_font_size=8)
         plt.title(
-            f'Hierarchical Clustering of {title} group with {linkage_metric} linkage')
+            f'Hierarchical Clustering of {title} group with {linkage_metric} linkage', fontsize=12)
         plt.ylabel('ROI')
         plt.xlabel('Distance')
 
@@ -205,6 +205,7 @@ class PlotsManager:
                 title=f'{title} - {hemi["name"]} hemi', axes=ax[col], colorbar=False,
                 view='lateral',
                 threshold=None,
+                title_font_size=35,
                 vmin=-0.4, vmax=0.8
             )  
 
