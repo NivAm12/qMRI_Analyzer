@@ -61,6 +61,8 @@ class PlotsManager:
             f'Hierarchical Clustering of {title} group with {linkage_metric} linkage', fontsize=12)
         plt.ylabel('ROI')
         plt.xlabel('Distance')
+        plt.grid(False)
+        
 
         if project_name:
             wandb_run = wandb.init(
