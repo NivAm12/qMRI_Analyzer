@@ -53,14 +53,14 @@ class PlotsManager:
             plt.show()
 
     @staticmethod
-    def create_and_plot_dendrogram(clusters, labels, title, linkage_metric, project_name=None, figsize=(20, 12), show=True):
+    def create_and_plot_dendrogram(clusters, labels, title, linkage_metric, project_name=None, figsize=(20, 6), show=True):
         plt.figure(figsize=figsize)
         dendrogram_data = dendrogram(clusters, labels=labels,
-                                     orientation='right', leaf_font_size=8)
+                                     leaf_font_size=12)
         plt.title(
             f'Hierarchical Clustering of {title} group with {linkage_metric} linkage', fontsize=12)
-        plt.ylabel('ROI')
-        plt.xlabel('Distance')
+        plt.xlabel('ROI')
+        plt.ylabel('Distance')
         plt.grid(False)
         
 
