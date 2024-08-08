@@ -613,7 +613,7 @@ LOBES = {
     'parietal': ['ctx-lh-inferiorparietal', 'ctx-lh-superiorparietal', 'ctx-lh-postcentral', 'ctx-lh-precuneus', 'ctx-lh-supramarginal',  'ctx-rh-inferiorparietal', 'ctx-rh-superiorparietal', 'ctx-rh-postcentral', 'ctx-rh-precuneus', 'ctx-rh-supramarginal'],
     'temporal': ['ctx-lh-fusiform', 'ctx-lh-inferiortemporal', 'ctx-lh-middletemporal', 'ctx-lh-parahippocampal', 'ctx-lh-superiortemporal', 'ctx-lh-insula', 'ctx-rh-fusiform', 'ctx-rh-inferiortemporal', 'ctx-rh-middletemporal', 'ctx-rh-parahippocampal', 'ctx-rh-superiortemporal', 'ctx-rh-insula'],
     'occipital': ['ctx-lh-cuneus', 'ctx-lh-lateraloccipital', 'ctx-lh-lingual', 'ctx-lh-pericalcarine', 'ctx-rh-cuneus', 'ctx-rh-lateraloccipital', 'ctx-rh-lingual', 'ctx-rh-pericalcarine'],
-    'cingulate': ['ctx-lh-caudalanteriorcingulate', 'ctx-lh-isthmuscingulate', 'ctx-lh-posteriorcingulate', 'ctx-lh-rostralanteriorcingulate', 'ctx-rh-caudalanteriorcingulate', 'ctx-rh-isthmuscingulate', 'ctx-rh-posteriorcingulate', 'ctx-rh-rostralanteriorcingulate'],
+    # 'cingulate': ['ctx-lh-caudalanteriorcingulate', 'ctx-lh-isthmuscingulate', 'ctx-lh-posteriorcingulate', 'ctx-lh-rostralanteriorcingulate', 'ctx-rh-caudalanteriorcingulate', 'ctx-rh-isthmuscingulate', 'ctx-rh-posteriorcingulate', 'ctx-rh-rostralanteriorcingulate'],
     # 'insula': ['ctx-lh-insula', 'ctx-rh-insula']
 }
 
