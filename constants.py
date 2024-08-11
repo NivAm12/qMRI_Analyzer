@@ -609,12 +609,10 @@ ROI_CORTEX_AND_WM_SUBCORTEX = {
 }
 
 LOBES = {
-    'frontal': ['ctx-lh-caudalmiddlefrontal', 'ctx-lh-lateralorbitofrontal', 'ctx-lh-medialorbitofrontal', 'ctx-lh-parsopercularis', 'ctx-lh-parsorbitalis', 'ctx-lh-parstriangularis', 'ctx-lh-precentral', 'ctx-lh-rostralmiddlefrontal', 'ctx-lh-superiorfrontal', 'ctx-rh-caudalmiddlefrontal', 'ctx-rh-lateralorbitofrontal', 'ctx-rh-medialorbitofrontal', 'ctx-rh-parsopercularis', 'ctx-rh-parsorbitalis', 'ctx-rh-parstriangularis', 'ctx-rh-precentral', 'ctx-rh-rostralmiddlefrontal', 'ctx-rh-superiorfrontal'],
-    'parietal': ['ctx-lh-inferiorparietal', 'ctx-lh-superiorparietal', 'ctx-lh-postcentral', 'ctx-lh-precuneus', 'ctx-lh-supramarginal',  'ctx-rh-inferiorparietal', 'ctx-rh-superiorparietal', 'ctx-rh-postcentral', 'ctx-rh-precuneus', 'ctx-rh-supramarginal'],
+    'frontal': ['ctx-lh-caudalmiddlefrontal', 'ctx-lh-lateralorbitofrontal', 'ctx-lh-medialorbitofrontal', 'ctx-lh-parsopercularis', 'ctx-lh-parsorbitalis', 'ctx-lh-parstriangularis', 'ctx-lh-precentral', 'ctx-lh-rostralmiddlefrontal', 'ctx-lh-superiorfrontal', 'ctx-rh-caudalmiddlefrontal', 'ctx-rh-lateralorbitofrontal', 'ctx-rh-medialorbitofrontal', 'ctx-rh-parsopercularis', 'ctx-rh-parsorbitalis', 'ctx-rh-parstriangularis', 'ctx-rh-precentral', 'ctx-rh-rostralmiddlefrontal', 'ctx-rh-superiorfrontal', 'ctx-lh-caudalanteriorcingulate', 'ctx-rh-caudalanteriorcingulate', 'ctx-lh-rostralanteriorcingulate', 'ctx-rh-rostralanteriorcingulate'],
+    'parietal': ['ctx-lh-inferiorparietal', 'ctx-lh-superiorparietal', 'ctx-lh-postcentral', 'ctx-lh-precuneus', 'ctx-lh-supramarginal',  'ctx-rh-inferiorparietal', 'ctx-rh-superiorparietal', 'ctx-rh-postcentral', 'ctx-rh-precuneus', 'ctx-rh-supramarginal', 'ctx-lh-isthmuscingulate', 'ctx-rh-isthmuscingulate', 'ctx-lh-posteriorcingulate', 'ctx-rh-posteriorcingulate'],
     'temporal': ['ctx-lh-fusiform', 'ctx-lh-inferiortemporal', 'ctx-lh-middletemporal', 'ctx-lh-parahippocampal', 'ctx-lh-superiortemporal', 'ctx-lh-insula', 'ctx-rh-fusiform', 'ctx-rh-inferiortemporal', 'ctx-rh-middletemporal', 'ctx-rh-parahippocampal', 'ctx-rh-superiortemporal', 'ctx-rh-insula'],
     'occipital': ['ctx-lh-cuneus', 'ctx-lh-lateraloccipital', 'ctx-lh-lingual', 'ctx-lh-pericalcarine', 'ctx-rh-cuneus', 'ctx-rh-lateraloccipital', 'ctx-rh-lingual', 'ctx-rh-pericalcarine'],
-    # 'cingulate': ['ctx-lh-caudalanteriorcingulate', 'ctx-lh-isthmuscingulate', 'ctx-lh-posteriorcingulate', 'ctx-lh-rostralanteriorcingulate', 'ctx-rh-caudalanteriorcingulate', 'ctx-rh-isthmuscingulate', 'ctx-rh-posteriorcingulate', 'ctx-rh-rostralanteriorcingulate'],
-    # 'insula': ['ctx-lh-insula', 'ctx-rh-insula']
 }
 
 BRAIN_SYSTEMS = {
