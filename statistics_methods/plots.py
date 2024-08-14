@@ -59,8 +59,8 @@ class PlotsManager:
                                      leaf_font_size=12)
         plt.title(
             f'Hierarchical Clustering of {title} group with {linkage_metric} linkage', fontsize=12)
-        plt.xlabel('ROI')
-        plt.ylabel('Distance')
+        plt.xlabel('ROI', fontdict={'fontsize': 10})
+        plt.ylabel('Distance', fontdict={'fontsize': 10})
         plt.grid(False)
         
 

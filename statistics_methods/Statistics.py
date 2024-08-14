@@ -581,6 +581,7 @@ class StatisticsWrapper:
 
         for subject_name, subject_df in subjects:
             df_corr = subject_df[params_to_work_with].T.corr(method=method)
+            PlotsManager.plot_heatmap(df_corr, '', project_name)
             correlations += df_corr.to_numpy()
 
         correlations /= data.subjects.nunique()
@@ -813,14 +814,13 @@ class StatisticsWrapper:
 
             groups_rois_std[label] = rois_std
             plt.scatter(rois_labels, rois_std, color=color, label=label)
-            plt.xticks(rois_labels, rotation='vertical', fontsize=10)
+            plt.xticks(rois_labels, rotation='vertical', fontsize=16)
 
         for x, y1, y2 in zip(rois_labels, groups_rois_std['young'], groups_rois_std['old']):
             plt.plot([x, x], [y1, y2], color='gray', linestyle='--')
 
-        plt.title('Average Std of all parameters', fontsize=12)
-        plt.xlabel('ROI')
-        plt.ylabel('Average Std')
+        plt.title('Average Std of all parameters', fontdict = {'fontsize' : 30})
+        plt.ylabel('Average Std', fontdict = {'fontsize' : 20})
         plt.legend()
 
     @staticmethod
