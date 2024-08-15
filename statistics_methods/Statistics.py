@@ -581,7 +581,6 @@ class StatisticsWrapper:
 
         for subject_name, subject_df in subjects:
             df_corr = subject_df[params_to_work_with].T.corr(method=method)
-            PlotsManager.plot_heatmap(df_corr, '', project_name)
             correlations += df_corr.to_numpy()
 
         correlations /= data.subjects.nunique()
