@@ -38,6 +38,10 @@ class PlotsManager:
         sns.set(font_scale=0.5)
         plt.figure(figsize=(20, 10))
         cluster_map = sns.heatmap(data, linewidth=.5, cmap='coolwarm')
+
+        cbar = cluster_map.collections[0].colorbar
+        # here set the labelsize by 20
+        cbar.ax.tick_params(labelsize=20)
         plt.title(f'{title}', fontsize=34)
 
         if project_name:
