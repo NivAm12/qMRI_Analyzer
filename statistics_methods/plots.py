@@ -34,7 +34,7 @@ custom_cmap_coolwarm = LinearSegmentedColormap.from_list(
 
 class PlotsManager:
     @staticmethod
-    def plot_heatmap(data: pd.DataFrame, title: str, project_name: str=None):
+    def plot_heatmap(data: pd.DataFrame, title: str, project_name: str = None):
         sns.set(font_scale=0.5)
         plt.figure(figsize=(20, 10))
         cluster_map = sns.heatmap(data, linewidth=.5, cmap='coolwarm')
@@ -66,7 +66,6 @@ class PlotsManager:
         plt.xlabel('ROI', fontdict={'fontsize': 10})
         plt.ylabel('Distance', fontdict={'fontsize': 10})
         plt.grid(False)
-        
 
         if project_name:
             wandb_run = wandb.init(
@@ -190,7 +189,7 @@ class PlotsManager:
 
             # surface_data = np.zeros(len(labels))
             surface_data = np.full(len(labels), np.nan)
-            
+
             for roi_name, roi_val in rois_color.items():
                 if hemi['name'] not in roi_name:
                     continue
@@ -213,7 +212,7 @@ class PlotsManager:
                 threshold=None,
                 title_font_size=35,
                 vmin=-0.4, vmax=0.8
-            )  
+            )
 
           # Adding a color bar manually
             norm = plt.Normalize(vmin=-0.4, vmax=0.8)
@@ -280,19 +279,21 @@ class PlotsManager:
                         name=roi_group['name']),
                         row=1, col=(col+1 if cols > 1 else 1))
 
-        for annotation in fig['layout']['annotations']: 
-            annotation['yanchor']='top'
-            annotation['y']=1.2
-    
+        for annotation in fig['layout']['annotations']:
+            annotation['yanchor'] = 'top'
+            annotation['y'] = 1.2
+
         fig.layout['polar'].update(dict(
             radialaxis=dict(
                 visible=True,
-            )))
+            ),
+            angularaxis=dict(tickfont=dict(size=16))))
         if cols > 1:
             fig.layout['polar2'].update(dict(
                 radialaxis=dict(
                     visible=True,
-                )))
+                ), 
+                angularaxis=dict(tickfont=dict(size=16))))
 
         fig.show()
 
@@ -314,11 +315,12 @@ class PlotsManager:
 
     #     fig.tight_layout()
 
-
     @staticmethod
     def plot_std_for_rois_by_params(data_groups, params, fig_size=(20, 8)):
-        fig, ax = plt.subplots(nrows=len(params), figsize=(fig_size[0], fig_size[1] * len(params)))
-        markers = ['o', 's', 'D', '^', 'v', '<', '>', 'p', '*', 'h', 'H', '+', 'x', 'd', '|', '_']
+        fig, ax = plt.subplots(nrows=len(params), figsize=(
+            fig_size[0], fig_size[1] * len(params)))
+        markers = ['o', 's', 'D', '^', 'v', '<', '>',
+                   'p', '*', 'h', 'H', '+', 'x', 'd', '|', '_']
 
         previous_values = {param: {} for param in params}
 
@@ -327,19 +329,22 @@ class PlotsManager:
 
             for i, (param, marker) in enumerate(zip(params, markers)):
                 # Scatter plot
-                ax[i].scatter(std_df.index, std_df[param], color=color, label=f'{label}', marker=marker)
-                
+                ax[i].scatter(std_df.index, std_df[param],
+                              color=color, label=f'{label}', marker=marker)
+
                 # Plot vertical lines to connect groups
                 for roi in std_df.index:
                     if roi in previous_values[param]:
-                        ax[i].plot([roi, roi], [previous_values[param][roi], std_df[param][roi]], color='gray', linestyle='dotted', linewidth=2)
-                
+                        ax[i].plot([roi, roi], [previous_values[param][roi], std_df[param]
+                                   [roi]], color='gray', linestyle='dotted', linewidth=2)
+
                 # Update previous values
                 for roi in std_df.index:
                     previous_values[param][roi] = std_df[param][roi]
-                
+
                 ax[i].set_xticks(std_df.index)
-                ax[i].set_xticklabels(std_df.index, rotation='vertical', fontsize=10)
+                ax[i].set_xticklabels(
+                    std_df.index, rotation='vertical', fontsize=10)
                 ax[i].grid(False)
                 ax[i].set_title(f'{param.upper()} std')
                 ax[i].legend()
@@ -350,31 +355,35 @@ class PlotsManager:
     @staticmethod
     def plot_similarity_graph(similarity_matrix: pd.DataFrame, labels: np.ndarray):
         G = nx.Graph()
-    
+
         # Add nodes with labels
         for i in range(len(similarity_matrix)):
-            G.add_node(i, label=similarity_matrix.index[i])  # Use DataFrame index as label
-        
+            # Use DataFrame index as label
+            G.add_node(i, label=similarity_matrix.index[i])
+
         # Add edges with weights
         for i in range(len(similarity_matrix)):
             for j in range(i + 1, len(similarity_matrix)):
-                if similarity_matrix.iloc[i, j] < 0.2:  # Add edge only for positive similarity
+                # Add edge only for positive similarity
+                if similarity_matrix.iloc[i, j] < 0.2:
                     G.add_edge(i, j, weight=similarity_matrix.iloc[i, j])
-        
+
         # Get positions for the nodes using a layout algorithm
         pos = nx.spring_layout(G, seed=42)
-        
+
         # Draw the nodes with colors based on the cluster labels
         unique_labels = np.unique(labels)
         colors = plt.cm.rainbow(np.linspace(0, 1, len(unique_labels)))
         color_map = dict(zip(unique_labels, colors))
-        
+
         node_colors = [color_map[labels[node]] for node in G.nodes()]
-        
+
         plt.figure(figsize=(12, 10))
-        nx.draw_networkx_nodes(G, pos, node_color=node_colors, node_size=300, alpha=0.8)
+        nx.draw_networkx_nodes(
+            G, pos, node_color=node_colors, node_size=300, alpha=0.8)
         nx.draw_networkx_edges(G, pos, alpha=0.5)
-        nx.draw_networkx_labels(G, pos, labels=nx.get_node_attributes(G, 'label'), font_size=10)  # Use custom labels
-        
+        nx.draw_networkx_labels(G, pos, labels=nx.get_node_attributes(
+            G, 'label'), font_size=10)  # Use custom labels
+
         plt.title('Similarity Graph with Spectral Clustering Labels')
         plt.show()
