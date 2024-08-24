@@ -820,7 +820,7 @@ class StatisticsWrapper:
 
         plt.title('Average Std of all parameters', fontdict = {'fontsize' : 30})
         plt.ylabel('Average Std', fontdict = {'fontsize' : 20})
-        plt.legend()
+        plt.legend(fontsize=20, loc="upper right")
 
     @staticmethod
     def calculate_cv_f_test(data, group_by_param, params, x_axis):
