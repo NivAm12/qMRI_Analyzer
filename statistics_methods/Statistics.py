@@ -227,7 +227,7 @@ class StatisticsWrapper:
         return group_a, group_b
 
     @staticmethod
-    def t_test_per_parameter_per_area(data1, data2, rois, compare_column, params):
+    def t_test_per_parameter_per_area(data1, data2, rois, compare_column, params, title):
         """
         Calculates T-Test for each parameter per area between data1 and data2 and print them
         :param data1: df to compare with data2
@@ -251,15 +251,13 @@ class StatisticsWrapper:
                 if significance:
                     num_of_significance += 1
 
-            t_test_params[param] = num_of_significance
-            print(
-                f'param {param} number of areas with significance differences: {num_of_significance}')
+            t_test_params[param] = (num_of_significance / len(rois.keys())) * 100
 
         plt.figure(figsize=(10, 4))
-        plt.title('T-test between young and old')
+        plt.title(title)
         plt.bar(t_test_params.keys(), t_test_params.values())
         plt.xlabel('Param')
-        plt.ylabel('ROIS with significance difference')
+        plt.ylabel('ROIs % with significance difference')
 
     @staticmethod
     def plot_values_of_two_groups_per_roi(ROIs, info_per_ROI_per_param1: List[int], info_per_ROI_per_param2: List[int],
