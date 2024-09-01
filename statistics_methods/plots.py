@@ -270,13 +270,15 @@ class PlotsManager:
 
         for col, polar_group in enumerate(data):
             for roi_group in polar_group:
+                show_legend = col < 1
                 for _, subject_roi in roi_group['group'].iterrows():
                     fig.add_trace(go.Scatterpolar(
                         r=subject_roi.to_numpy(),
                         theta=thetas,
                         fill='toself',
                         line_color=roi_group['color'],
-                        name=roi_group['name']),
+                        name=roi_group['name'] if show_legend else '',
+                        showlegend=show_legend),
                         row=1, col=(col+1 if cols > 1 else 1))
 
         for annotation in fig['layout']['annotations']:
@@ -292,28 +294,10 @@ class PlotsManager:
             fig.layout['polar2'].update(dict(
                 radialaxis=dict(
                     visible=True,
-                ), 
+                ),
                 angularaxis=dict(tickfont=dict(size=16))))
 
         fig.show()
-
-    # @staticmethod
-    # def plot_std_for_rois_by_params(data_groups, params, fig_size=(20, 8)):
-    #     fig, ax = plt.subplots(nrows=len(params), figsize=(fig_size[0], fig_size[1] * len(params)))
-    #     markers = ['o', 's', 'D', '^', 'v', '<', '>', 'p', '*', 'h', 'H', '+', 'x', 'd', '|', '_']
-
-    #     for data, color, label in data_groups:
-    #         std_df = data.groupby('ROI_name')[params].std()
-
-    #         for i, (param, marker) in enumerate(zip(params, markers)):
-    #             ax[i].scatter(std_df.index, std_df[param], color=color, label=f'{label} {param}', marker=marker)
-
-    #             ax[i].set_xticks(std_df.index)
-    #             ax[i].set_xticklabels(std_df.index, rotation='vertical', fontsize=10)
-    #             ax[i].grid(True, which='both', linestyle='--', linewidth=0.5)
-    #             ax[i].legend()
-
-    #     fig.tight_layout()
 
     @staticmethod
     def plot_std_for_rois_by_params(data_groups, params, fig_size=(20, 8)):

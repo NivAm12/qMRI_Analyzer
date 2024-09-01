@@ -895,7 +895,7 @@ class StatisticsWrapper:
                 group_roi = pd.DataFrame([method_data()])
 
                 group_polar_data.append(
-                    {'group': group_roi, 'name': f'{title} {roi}', 'color': color})
+                    {'group': group_roi, 'name': f'{roi}', 'color': color})
 
             polar_data.append(group_polar_data)
             
