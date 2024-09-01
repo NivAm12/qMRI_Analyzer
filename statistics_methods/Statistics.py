@@ -627,8 +627,8 @@ class StatisticsWrapper:
         return correlations_df
 
     @staticmethod
-    def roi_distances(data: pd.DataFrame, params_to_work_with: list, rois: list,
-                      method, title: str = None, project_name: str = None, show: bool = True):
+    def roi_distances(data: pd.DataFrame, params_to_work_with: list, rois: list = None,
+                      method = None, title: str = None, project_name: str = None, show: bool = True):
         subjects = data.groupby('subjects')
         relevant_rois = list(data.ROI_name.unique())
         distance_matrices = []
@@ -645,9 +645,10 @@ class StatisticsWrapper:
         distance_df = pd.DataFrame(
             mean_distance_matrix, index=relevant_rois, columns=relevant_rois)
 
-        # reorder the dataframe to match the clustering order
-        distance_df = distance_df.reindex(rois)
-        distance_df = distance_df[rois]
+        if rois:
+            # reorder the dataframe to match the clustering order
+            distance_df = distance_df.reindex(rois)
+            distance_df = distance_df[rois]
 
         if show:
             # plot the heatmap

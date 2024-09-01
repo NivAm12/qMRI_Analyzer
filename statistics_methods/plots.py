@@ -41,7 +41,7 @@ class PlotsManager:
 
         cbar = cluster_map.collections[0].colorbar
         # here set the labelsize by 20
-        cbar.ax.tick_params(labelsize=20)
+        cbar.ax.tick_params(labelsize=30)
         plt.title(f'{title}', fontsize=34)
 
         if project_name:
@@ -62,7 +62,7 @@ class PlotsManager:
         dendrogram_data = dendrogram(clusters, labels=labels,
                                      leaf_font_size=12)
         plt.title(
-            f'Hierarchical Clustering of {title} group with {linkage_metric} linkage', fontsize=12)
+            f'Hierarchical Clustering of {title} group with {linkage_metric} linkage', fontsize=20)
         plt.xlabel('ROI', fontdict={'fontsize': 10})
         plt.ylabel('Distance', fontdict={'fontsize': 10})
         plt.grid(False)

@@ -238,7 +238,7 @@ ROI_ALL_BRAIN = {
     4010: "wm-rh-isthmuscingulate",
     4011: "wm-rh-lateraloccipital",
     4012: "wm-rh-lateralorbitofrontal",
-    4013: "wm-rh-lingual ",
+    4013: "wm-rh-lingual",
     4014: "wm-rh-medialorbitofrontal",
     4015: "wm-rh-middletemporal",
     4016: "wm-rh-parahippocampal",
