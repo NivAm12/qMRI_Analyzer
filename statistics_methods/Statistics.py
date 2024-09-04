@@ -9,18 +9,13 @@ from scipy.stats import pearsonr, f
 from typing import List, Any, Tuple
 import wandb
 from scipy.spatial.distance import pdist, squareform
-from scipy.cluster.hierarchy import linkage, dendrogram, fcluster
-import nibabel as nib
+from scipy.cluster.hierarchy import linkage
 import constants
-import copy
 from .plots import PlotsManager
 from sklearn.linear_model import LinearRegression
-from itertools import combinations
 from sklearn.metrics import r2_score
-import statsmodels.api as sm
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.metrics import silhouette_score
-from sklearn.cluster import KMeans
+import math
 
 
 # -------------------- Enums for statistical actions -------------------- #
@@ -793,7 +788,7 @@ class StatisticsWrapper:
             plt.legend()
 
     @staticmethod
-    def calculate_mean_std_for_rois(data_groups, rois, params, fig_size=(20, 8)):
+    def calculate_mean_std_for_rois(data_groups, rois, params, fig_size=(20, 8), t_test_params=None):
         rois_labels = [str(roi) for roi in rois]
         groups_rois_std = {}
 
@@ -811,15 +806,25 @@ class StatisticsWrapper:
                 rois_std.append(roi_std)
 
             groups_rois_std[label] = rois_std
-            plt.scatter(rois_labels, rois_std, color=color, label=label)
-            plt.xticks(rois_labels, rotation='vertical', fontsize=16)
+            plt.scatter(rois_labels, rois_std, color=color, label=label, s=70)
+            plt.xticks(rois_labels, rotation='vertical', fontsize=20)
+            plt.yticks(fontsize=16)
 
         for x, y1, y2 in zip(rois_labels, groups_rois_std['young'], groups_rois_std['old']):
             plt.plot([x, x], [y1, y2], color='gray', linestyle='--')
 
         plt.title('Average Std of all parameters', fontdict = {'fontsize' : 30})
         plt.ylabel('Average Std', fontdict = {'fontsize' : 20})
-        plt.legend(fontsize=20, loc="upper right")
+        plt.legend(fontsize=24, loc="upper left")
+
+        if t_test_params:
+            results = stats.ttest_ind(a=groups_rois_std[t_test_params[0]], b=groups_rois_std[t_test_params[1]])
+            significance = 'significance' if results.pvalue <= 0.05 else 'no significance'
+            p_val_str = constants.SUPERSCRIPTS[round(math.log10(results.pvalue))]
+            plt.text(0.11, 0.90, f"$p < 10{p_val_str}$", fontsize=24, color='black', transform=plt.gca().transAxes)
+            print(f't_test showed {significance} difference, p < 10{p_val_str}')
+
+        return groups_rois_std
 
     @staticmethod
     def calculate_cv_f_test(data, group_by_param, params, x_axis):
