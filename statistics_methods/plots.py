@@ -170,7 +170,7 @@ class PlotsManager:
 
     @staticmethod
     def plot_colors_on_brain2(rois_color: pd.Series, prefix: str, title: str,
-                              lh_annot_path: str, rh_annot_path: str):
+                              lh_annot_path: str, rh_annot_path: str, cmap: str='coolwarm'):
         hemis = [
             {'name': 'lh', 'annot_path': lh_annot_path,
                 'surf': constants.EXAMPLE_SURFACE_PIAL_LH_PATH, 'hemi': 'left'},
@@ -178,9 +178,9 @@ class PlotsManager:
                 'surf': constants.EXAMPLE_SURFACE_PIAL_RH_PATH, 'hemi': 'right'}
         ]
 
-        cmap = plt.get_cmap('coolwarm')
+        cmap = plt.get_cmap(cmap)
         fig, ax = plt.subplots(
-            1, 2, subplot_kw={'projection': '3d'}, figsize=(15, 5))
+            1, 2, subplot_kw={'projection': '3d'}, figsize=(15, 5), facecolor='white')
 
         for col, hemi in enumerate(hemis):
             labels, ctab, names = nib.freesurfer.read_annot(hemi['annot_path'])
@@ -200,9 +200,9 @@ class PlotsManager:
             # Load the surface mesh
             pial_mesh = surface.load_surf_mesh(hemi['surf'])
             # save_path = f"{constants.CLUSTERING_PATH}/{hemi['name']}_{title}.pial"
-            curvature_path = f"{constants.CLUSTERING_PATH}/{hemi['name']}_{title}.curv"
-            nib.freesurfer.write_morph_data(curvature_path, surface_data)
-            print(f'curvature saved at {curvature_path}')
+            # curvature_path = f"{constants.CLUSTERING_PATH}/{hemi['name']}_{title}.curv"
+            # nib.freesurfer.write_morph_data(curvature_path, surface_data)
+            # print(f'curvature saved at {curvature_path}')
 
             # Plot the surface with the data
             surf = plotting.plot_surf_roi(
@@ -211,11 +211,11 @@ class PlotsManager:
                 view='lateral',
                 threshold=None,
                 title_font_size=35,
-                vmin=-0.4, vmax=0.8
+                vmin=0, vmax=1,
             )
 
           # Adding a color bar manually
-            norm = plt.Normalize(vmin=-0.4, vmax=0.8)
+            norm = plt.Normalize(vmin=0, vmax=1)
             sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
             sm.set_array([])
             cbar = plt.colorbar(sm, ax=ax[col], orientation='vertical')
@@ -229,6 +229,8 @@ class PlotsManager:
         #     title=f'Original ROIs - {hemi["name"]}', axes=ax[col+1]
         # )
 
+        for a in ax:
+            a.set_facecolor('white')
         plt.show()
 
     @staticmethod
