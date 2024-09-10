@@ -373,3 +373,20 @@ class PlotsManager:
 
         plt.title('Similarity Graph with Spectral Clustering Labels')
         plt.show()
+    
+    @staticmethod 
+    def create_brain_plots_by_aging(labels, colors_values, cmap):
+        series_data = {}
+        for i, color_series in enumerate(colors_values):
+            for color in color_series:
+               series_data[f'Series_{i}'] = np.random.uniform(color_series[0],
+                                                               color_series[1], len(labels)) 
+
+        colors_df = pd.DataFrame(series_data, index=labels)
+
+        for i in range(len(colors_values)):
+            PlotsManager.plot_colors_on_brain2(colors_df[f'Series_{i}'], 'ctx-', '',
+                                    lh_annot_path=constants.EXAMPLE_ANNOT_LH_PATH,
+                                    rh_annot_path=constants.EXAMPLE_ANNOT_RH_PATH,
+                                    cmap=cmap)
+
