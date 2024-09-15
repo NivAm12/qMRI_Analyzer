@@ -905,3 +905,77 @@ class StatisticsWrapper:
             polar_data.append(group_polar_data)
             
         PlotsManager.plot_rois_polar(polar_data, params, titles, plot_cols, plot_title=method)
+
+    @staticmethod
+    def check_linear_relation(data, roi1, roi2, params, ax, title):
+        # Extract and reshape x and y
+        x = data[data['ROI_name'] == roi1][params].values.reshape(-1, 1)  # Reshape to (n_samples, 1)
+        y = data[data['ROI_name'] == roi2][params].values.reshape(-1)  # Reshape to (n_samples,)
+        
+        # Linear Regression
+        model = LinearRegression()
+        model.fit(x, y)
+        y_pred = model.predict(x)
+        
+        # Scatter plot and regression line
+        ax.set_facecolor('white')
+        ax.scatter(x, y, s=30, alpha=0.7, edgecolors="k")
+        ax.set_xlabel(roi1, fontsize=14)
+        ax.set_ylabel(roi2, fontsize=14)
+        ax.plot(x, y_pred, c=".3", alpha=0.5)
+        ax.set_title(title, fontsize=16)
+        ax.grid(False)
+        ax.patch.set_edgecolor('black')  
+        ax.patch.set_linewidth(2)  
+
+        # Calculate and add R^2 value to the plot
+        r2 = r2_score(y, y_pred)
+        ax.text(0.05, 0.95, f'$R^2 = {r2:.2f}$', transform=ax.transAxes,
+                fontsize=12, verticalalignment='top', color='black')
+        
+    def identify_similar_pairs(index_names):
+        similar_pairs = set()
+        
+        for name in index_names:
+            if name.startswith('ctx-lh'):
+                corresponding_name = name.replace('ctx-lh', 'ctx-rh')
+            elif name.startswith('wm-lh'):
+                corresponding_name = name.replace('wm-lh', 'wm-rh')
+            elif name.startswith('Left'):
+                corresponding_name = name.replace('Left', 'Right')
+            else:
+                continue
+            
+            if corresponding_name in index_names:
+                # Always store pairs in a sorted order to avoid duplicates
+                pair = tuple(sorted([name, corresponding_name]))
+                similar_pairs.add(pair)
+
+        return similar_pairs
+
+    @staticmethod
+    def calculate_average_for_pairs(df, pairs):
+        distances = []
+        for name1, name2 in pairs:
+            distances.append(df.loc[name1, name2])
+        return np.mean(distances), distances
+
+    @staticmethod
+    def calculate_average_for_rest(df, pairs):
+        total_distances = []
+        for i, row_name in enumerate(df.index):
+            for j, col_name in enumerate(df.columns):
+                if i != j:  # Exclude diagonal elements
+                    if (row_name, col_name) not in pairs and (col_name, row_name) not in pairs:
+                        total_distances.append(df.iloc[i, j])
+
+        return np.mean(total_distances), total_distances
+
+    @staticmethod
+    def calculate_averages(df):
+        similar_pairs = StatisticsWrapper.identify_similar_pairs(df.index)
+        
+        average_similar_pairs, similar_distances = StatisticsWrapper.calculate_average_for_pairs(df, similar_pairs)
+        average_rest, rest_distances = StatisticsWrapper.calculate_average_for_rest(df, similar_pairs)
+        
+        return average_similar_pairs, average_rest, similar_distances, rest_distances
