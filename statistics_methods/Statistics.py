@@ -920,8 +920,9 @@ class StatisticsWrapper:
         # Scatter plot and regression line
         ax.set_facecolor('white')
         ax.scatter(x, y, s=30, alpha=0.7, edgecolors="k")
-        ax.set_xlabel(roi1, fontsize=14)
-        ax.set_ylabel(roi2, fontsize=14)
+        ax.set_xlabel(roi1, fontsize=16)
+        ax.set_ylabel(roi2, fontsize=16)
+        ax.tick_params(axis='both', which='major', labelsize=12)
         ax.plot(x, y_pred, c=".3", alpha=0.5)
         ax.set_title(title, fontsize=16)
         ax.grid(False)

@@ -299,6 +299,14 @@ class PlotsManager:
                 ),
                 angularaxis=dict(tickfont=dict(size=16))))
 
+            # Increase legend font size
+        fig.update_layout(
+            legend=dict(
+                font=dict(
+                    size=18  # Adjust this value to increase or decrease legend size
+                )
+            )
+        )
         fig.show()
 
     @staticmethod
