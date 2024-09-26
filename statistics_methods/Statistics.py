@@ -928,6 +928,7 @@ class StatisticsWrapper:
         ax.grid(False)
         ax.patch.set_edgecolor('black')  
         ax.patch.set_linewidth(2)  
+        
 
         # Calculate and add R^2 value to the plot
         r2 = r2_score(y, y_pred)
