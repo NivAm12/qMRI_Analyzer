@@ -46,6 +46,10 @@ PATH_TO_PD_SUB_CORTEX_all_params_raw = os.getenv(
     'PATH_TO_PD_SUB_CORTEX_all_params_raw')
 PATH_TO_PD_SUB_CORTEX_all_params_z_score = os.getenv(
     'PATH_TO_PD_SUB_CORTEX_all_params_z_score')
+PATH_TO_WM_PD_SUBCORTEX_all_params_raw = os.getenv(
+    'PATH_TO_WM_SUBCORTEX_all_params_z_raw')
+PATH_TO_WM_PD_SUBCORTEX_all_params_z_score = os.getenv(
+    'PATH_TO_WM_SUBCORTEX_all_params_z_score')
 PATH_TO_CORTEX_AND_GRAY_SUB_CORTEX_all_params_raw = os.getenv(
     'PATH_TO_CORTEX_AND_GRAY_SUB_CORTEX_all_params_raw')
 PATH_TO_CORTEX_AND_GRAY_SUB_CORTEX_all_params_z_score = os.getenv(
@@ -880,5 +884,6 @@ SUPERSCRIPTS = {
     -7: '⁻⁷',
     -8: '⁻⁸',
     -9: '⁻⁹',
+    -10: '⁻¹⁰',
     '-': '⁻'
 }

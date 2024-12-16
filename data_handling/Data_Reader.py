@@ -353,23 +353,23 @@ class DataReader:
 if __name__ == "__main__":
     # The input dir containing all data of the subjects after MRI screening
     analysis_dir = constants.ANALYSIS_DIR
-    analysis_dir_prefix = 'H'
+    analysis_dir_prefix = 'PD'
 
     # Can be changed - list of all ROIs' numbers from the segmentation
-    rois = list(constants.ROI_ALL_BRAIN.keys())
+    rois = list(constants.ROI_SUBCORTEX.keys())
 
     # Can be changed - this is the save address for the output
-    save_address = constants.SAVE_ADDRESS + '/ALL_BRAIN_all_params/'
+    save_address = constants.SAVE_ADDRESS + '/PD_SUB_CORTEX_all_params/'
     # Can be changed - using other params - make sure to add another parameter as a name, and tuple of the
     # full path to the map of the parameter and the full path to the compatible segmentation
     params = {
-        constants.R1: (constants.MAP_R1, constants.BASIC_SEG_WM),
-        constants.R2S: (constants.MAP_R2S, constants.BASIC_SEG_WM),
-        constants.MT: (constants.MAP_MT, constants.BASIC_SEG_WM),
-        constants.TV: (constants.MAP_TV, constants.BASIC_SEG_WM),
-        constants.T2: (constants.MAP_T2, constants.SEG_T2_WM),
-        constants.DIFFUSION_FA: (constants.MAP_DIFFUSION_FA, constants.SEG_DIFFUSION_WM),
-        constants.DIFFUSION_MD: (constants.MAP_DIFFUSION_MD, constants.SEG_DIFFUSION_WM),
+        constants.R1: (constants.MAP_R1, constants.BASIC_SEG),
+        constants.R2S: (constants.MAP_R2S, constants.BASIC_SEG),
+        constants.MT: (constants.MAP_MT, constants.BASIC_SEG),
+        constants.TV: (constants.MAP_TV, constants.BASIC_SEG),
+        constants.T2: (constants.MAP_T2, constants.SEG_T2),
+        constants.DIFFUSION_FA: (constants.MAP_DIFFUSION_FA, constants.SEG_DIFFUSION),
+        constants.DIFFUSION_MD: (constants.MAP_DIFFUSION_MD, constants.SEG_DIFFUSION),
     }
 
     # Can be changed - add more sort of normalizer and fit to it the compatible name to the file

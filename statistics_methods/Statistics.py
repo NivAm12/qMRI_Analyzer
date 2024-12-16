@@ -566,7 +566,8 @@ class StatisticsWrapper:
 
     @staticmethod
     def roi_correlations(data: pd.DataFrame, params_to_work_with: list, rois: list,
-                         group_title: str = None, project_name: str = None, method="pearson", show: bool = True):
+                         group_title: str = None, project_name: str = None, method="pearson",
+                        show: bool = True, threshold: float = None):
         subjects = data.groupby('subjects')
         relevant_rois = list(data.ROI_name.unique())
         correlations = np.zeros((len(relevant_rois),
@@ -574,6 +575,11 @@ class StatisticsWrapper:
 
         for subject_name, subject_df in subjects:
             df_corr = subject_df[params_to_work_with].T.corr(method=method)
+
+            if threshold is not None:
+                # Set all correlations less than threshold to 0
+                df_corr[df_corr < threshold] = 0
+
             correlations += df_corr.to_numpy()
 
         correlations /= data.subjects.nunique()
@@ -810,7 +816,7 @@ class StatisticsWrapper:
             plt.xticks(rois_labels, rotation='vertical', fontsize=20)
             plt.yticks(fontsize=16)
 
-        for x, y1, y2 in zip(rois_labels, groups_rois_std['young'], groups_rois_std['old']):
+        for x, y1, y2 in zip(rois_labels, groups_rois_std[t_test_params[0]], groups_rois_std[t_test_params[1]]):
             plt.plot([x, x], [y1, y2], color='gray', linestyle='--')
 
         plt.title('Average Std of all parameters', fontdict = {'fontsize' : 30})
@@ -820,9 +826,10 @@ class StatisticsWrapper:
         if t_test_params:
             results = stats.ttest_ind(a=groups_rois_std[t_test_params[0]], b=groups_rois_std[t_test_params[1]])
             significance = 'significance' if results.pvalue <= 0.05 else 'no significance'
-            p_val_str = constants.SUPERSCRIPTS[round(math.log10(results.pvalue))]
-            plt.text(0.11, 0.90, f"$p < 10{p_val_str}$", fontsize=24, color='black', transform=plt.gca().transAxes)
-            print(f't_test showed {significance} difference, p < 10{p_val_str}')
+            p_val_str = results.pvalue
+            # p_val_str = constants.SUPERSCRIPTS[round(math.log10(results.pvalue))]
+            plt.text(0.11, 0.90, f"$p = {p_val_str}$", fontsize=24, color='black', transform=plt.gca().transAxes)
+            print(f't_test showed {significance} difference, p = {math.log10(results.pvalue)}')
 
         return groups_rois_std
 
