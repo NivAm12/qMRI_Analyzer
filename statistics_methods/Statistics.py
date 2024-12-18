@@ -574,7 +574,8 @@ class StatisticsWrapper:
                                  len(relevant_rois)))
 
         for subject_name, subject_df in subjects:
-            df_corr = subject_df[params_to_work_with].T.corr(method=method)
+            # df_corr = subject_df[params_to_work_with].T.corr(method=method)
+            df_corr = StatisticsWrapper.pairwise_r2(subject_df[params_to_work_with])
 
             if threshold is not None:
                 # Set all correlations less than threshold to 0
@@ -825,11 +826,9 @@ class StatisticsWrapper:
 
         if t_test_params:
             results = stats.ttest_ind(a=groups_rois_std[t_test_params[0]], b=groups_rois_std[t_test_params[1]])
-            significance = 'significance' if results.pvalue <= 0.05 else 'no significance'
-            p_val_str = results.pvalue
+            formatted_p_value = "$P < 0.001$" if results.pvalue < 0.001 else "$P > 0.01$"
             # p_val_str = constants.SUPERSCRIPTS[round(math.log10(results.pvalue))]
-            plt.text(0.11, 0.90, f"$p = {p_val_str}$", fontsize=24, color='black', transform=plt.gca().transAxes)
-            print(f't_test showed {significance} difference, p = {math.log10(results.pvalue)}')
+            plt.text(0.11, 0.90, formatted_p_value, fontsize=24, color='black', transform=plt.gca().transAxes)
 
         return groups_rois_std
 
@@ -988,3 +987,35 @@ class StatisticsWrapper:
         average_rest, rest_distances = StatisticsWrapper.calculate_average_for_rest(df, similar_pairs)
         
         return average_similar_pairs, average_rest, similar_distances, rest_distances
+    
+
+    @staticmethod
+    def pairwise_r2(df):
+        """
+        Calculates pairwise R^2 distances (without centering) between rows of a DataFrame.
+        
+        Parameters:
+            df (pd.DataFrame): The input DataFrame, where rows represent observations.
+            
+        Returns:
+            pd.DataFrame: A DataFrame containing the pairwise R^2 distances.
+        """
+        # Convert DataFrame to NumPy array for fast computation
+        arr = df.values
+
+        # Calculate the sum of squares for each row (denominator)
+        row_sums_of_squares = np.sum(arr ** 2, axis=1)
+
+        # Compute pairwise squared differences using broadcasting
+        pairwise_squared_differences = np.sum((arr[:, None, :] - arr[None, :, :]) ** 2, axis=2)
+
+        # Calculate R^2 for all pairs
+        r2_matrix = 100 * (1 - pairwise_squared_differences / row_sums_of_squares[:, None])
+
+        # Clip negative values to 0
+        r2_matrix = np.clip(r2_matrix, 0, None)
+
+        # Convert back to a DataFrame for readability
+        r2_df = pd.DataFrame(r2_matrix, index=df.index, columns=df.index)
+
+        return r2_df
