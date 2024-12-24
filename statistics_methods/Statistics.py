@@ -801,7 +801,7 @@ class StatisticsWrapper:
 
         fig, ax = plt.subplots(figsize=fig_size)
         ordered_rois = sorted(rois, key=PlotsManager.custom_sort_key)
-
+        print(ordered_rois)
         for data, color, label in data_groups:
             rois_std = []
             for roi in ordered_rois:
@@ -824,7 +824,7 @@ class StatisticsWrapper:
 
         ax.set_title('Average Std of all parameters', fontdict = {'fontsize' : 30})
         ax.set_ylabel('Average Std', fontdict = {'fontsize' : 20})
-        ax.legend(bbox_to_anchor=(1.09, 1), loc="upper right", borderaxespad=0., fontsize=14)
+        ax.legend(bbox_to_anchor=(1.1, 1), loc="upper right", borderaxespad=0., fontsize=18)
         ax.grid(False)
         ax.set_facecolor("#f5f2f0")
         ax.tick_params(axis='y', labelsize=16)
