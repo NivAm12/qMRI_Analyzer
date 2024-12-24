@@ -567,15 +567,15 @@ class StatisticsWrapper:
     @staticmethod
     def roi_correlations(data: pd.DataFrame, params_to_work_with: list, rois: list,
                          group_title: str = None, project_name: str = None, method="pearson",
-                        show: bool = True, threshold: float = None):
+                        show: bool = True, threshold: float = None, show_names: bool = True):
         subjects = data.groupby('subjects')
         relevant_rois = list(data.ROI_name.unique())
         correlations = np.zeros((len(relevant_rois),
                                  len(relevant_rois)))
 
         for subject_name, subject_df in subjects:
-            # df_corr = subject_df[params_to_work_with].T.corr(method=method)
-            df_corr = StatisticsWrapper.pairwise_r2(subject_df[params_to_work_with])
+            df_corr = subject_df[params_to_work_with].T.corr(method=method)
+            # df_corr = StatisticsWrapper.pairwise_r2(subject_df[params_to_work_with])
 
             if threshold is not None:
                 # Set all correlations less than threshold to 0
@@ -594,7 +594,7 @@ class StatisticsWrapper:
 
         # plot the heatmap
         if show:
-            PlotsManager.plot_heatmap(correlations_df, group_title, project_name)
+            PlotsManager.plot_heatmap(correlations_df, group_title, project_name, show_names)
 
         return correlations_df
 
@@ -819,16 +819,10 @@ class StatisticsWrapper:
 
         for x, y1, y2 in zip(rois_labels, groups_rois_std[t_test_params[0]], groups_rois_std[t_test_params[1]]):
             plt.plot([x, x], [y1, y2], color='gray', linestyle='--')
-
+        
         plt.title('Average Std of all parameters', fontdict = {'fontsize' : 30})
         plt.ylabel('Average Std', fontdict = {'fontsize' : 20})
         plt.legend(fontsize=24, loc="upper left")
-
-        if t_test_params:
-            results = stats.ttest_ind(a=groups_rois_std[t_test_params[0]], b=groups_rois_std[t_test_params[1]])
-            formatted_p_value = "$P < 0.001$" if results.pvalue < 0.001 else "$P > 0.01$"
-            # p_val_str = constants.SUPERSCRIPTS[round(math.log10(results.pvalue))]
-            plt.text(0.11, 0.90, formatted_p_value, fontsize=24, color='black', transform=plt.gca().transAxes)
 
         return groups_rois_std
 

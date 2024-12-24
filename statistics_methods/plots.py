@@ -34,10 +34,10 @@ custom_cmap_coolwarm = LinearSegmentedColormap.from_list(
 
 class PlotsManager:
     @staticmethod
-    def plot_heatmap(data: pd.DataFrame, title: str, project_name: str = None):
+    def plot_heatmap(data: pd.DataFrame, title: str, project_name: str = None, show_names: bool = True):
         sns.set(font_scale=0.5)
         plt.figure(figsize=(20, 10))
-        cluster_map = sns.heatmap(data, linewidth=.5, cmap='coolwarm')
+        cluster_map = sns.heatmap(data, linewidth=.5, cmap='coolwarm', yticklabels=show_names, xticklabels=show_names)
 
         cbar = cluster_map.collections[0].colorbar
         # here set the labelsize by 20
@@ -398,3 +398,15 @@ class PlotsManager:
                                     rh_annot_path=constants.EXAMPLE_ANNOT_RH_PATH,
                                     cmap=cmap)
 
+    @staticmethod
+    def add_dividers(ax: plt.Axes):
+        ctx_values = {"name": 'Cortex', "start": -1, "end": len(constants.ROI_CORTEX) - 0.3, "color": 'green', "p": "$P<0.01$"}
+        wm_values = {"name": 'White matter', "start": len(constants.ROI_CORTEX) -0.3,
+                    "end": len(constants.ROI_CORTEX) + len(constants.ROI_WM) - 0.3, "color": 'yellow', "p": "$P>0.01$"}
+        sub_g_values = {"name": 'Subcortical', "start": len(constants.ROI_CORTEX) + len(constants.ROI_WM) -0.3,
+                        "end": len(constants.ROI_CORTEX) + len(constants.ROI_WM) + len(constants.ROI_SUBCORTEX) + 1, "color": 'pink', "p": "$P>0.01$"}
+        divide_values = [ctx_values, wm_values, sub_g_values]
+        
+        for divide_value in divide_values:
+            ax.axvline(divide_value['end'], alpha=0.5, linestyle='--', linewidth=2)
+            ax.text((divide_value['start'] + divide_value['end']) / 2, 0, divide_value['name'], ha='center', va='center', fontsize=18)  
