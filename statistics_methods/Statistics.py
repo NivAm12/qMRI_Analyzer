@@ -582,6 +582,8 @@ class StatisticsWrapper:
                 df_corr[df_corr < threshold] = 0
 
             correlations += df_corr.to_numpy()
+        
+        PlotsManager.plot_heatmap(df_corr, "", project_name, False)
 
         correlations /= data.subjects.nunique()
         # labels = [label[4:] for label in relevant_rois]  # remove prefix as 'ctx'
