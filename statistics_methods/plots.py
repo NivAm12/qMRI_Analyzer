@@ -399,7 +399,7 @@ class PlotsManager:
                                     cmap=cmap)
 
     @staticmethod
-    def add_dividers(ax: plt.Axes):
+    def add_dividers(ax: plt.Axes, y_loc=0):
         ctx_values = {"name": 'Cortex', "start": -1, "end": len(constants.ROI_CORTEX) - 0.3, "color": 'green', "p": "$P<0.01$"}
         wm_values = {"name": 'White matter', "start": len(constants.ROI_CORTEX) -0.3,
                     "end": len(constants.ROI_CORTEX) + len(constants.ROI_WM) - 0.3, "color": 'yellow', "p": "$P>0.01$"}
@@ -409,4 +409,13 @@ class PlotsManager:
         
         for divide_value in divide_values:
             ax.axvline(divide_value['end'], alpha=0.5, linestyle='--', linewidth=2)
-            ax.text((divide_value['start'] + divide_value['end']) / 2, 0, divide_value['name'], ha='center', va='center', fontsize=18)  
+            ax.text((divide_value['start'] + divide_value['end']) / 2, y_loc, divide_value['name'], ha='center', va='center', fontsize=18)  
+
+    @staticmethod
+    def custom_sort_key(s):
+        if s.startswith('ctx'):
+            return (0, s)  # First priority
+        elif s.startswith('wm'):
+            return (1, s)  # Second priority
+        else:
+            return (2, s)  # Third priority

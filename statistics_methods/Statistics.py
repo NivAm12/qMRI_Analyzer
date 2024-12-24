@@ -799,10 +799,12 @@ class StatisticsWrapper:
         rois_labels = [str(roi) for roi in rois]
         groups_rois_std = {}
 
-        plt.figure(figsize=fig_size)
+        fig, ax = plt.subplots(figsize=fig_size)
+        ordered_rois = sorted(rois, key=PlotsManager.custom_sort_key)
+
         for data, color, label in data_groups:
             rois_std = []
-            for roi in rois:
+            for roi in ordered_rois:
                 roi_std = 0
                 for param in params:
                     # Calculate CV params
@@ -813,17 +815,19 @@ class StatisticsWrapper:
                 rois_std.append(roi_std)
 
             groups_rois_std[label] = rois_std
-            plt.scatter(rois_labels, rois_std, color=color, label=label, s=70)
-            plt.xticks(rois_labels, rotation='vertical', fontsize=20)
-            plt.yticks(fontsize=16)
+            ax.scatter(rois_labels, rois_std, color=color, label=label, s=40)
+            PlotsManager.add_dividers(ax, y_loc=0.03)      
+            ax.set_xticks([])
 
         for x, y1, y2 in zip(rois_labels, groups_rois_std[t_test_params[0]], groups_rois_std[t_test_params[1]]):
-            plt.plot([x, x], [y1, y2], color='gray', linestyle='--')
-        
-        plt.title('Average Std of all parameters', fontdict = {'fontsize' : 30})
-        plt.ylabel('Average Std', fontdict = {'fontsize' : 20})
-        plt.legend(fontsize=24, loc="upper left")
+            ax.plot([x, x], [y1, y2], color='gray', linestyle='--')
 
+        ax.set_title('Average Std of all parameters', fontdict = {'fontsize' : 30})
+        ax.set_ylabel('Average Std', fontdict = {'fontsize' : 20})
+        ax.legend(bbox_to_anchor=(1.09, 1), loc="upper right", borderaxespad=0., fontsize=14)
+        ax.grid(False)
+        ax.set_facecolor("#f5f2f0")
+        ax.tick_params(axis='y', labelsize=16)
         return groups_rois_std
 
     @staticmethod
